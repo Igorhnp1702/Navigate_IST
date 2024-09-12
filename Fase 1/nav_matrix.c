@@ -11,12 +11,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nav_matrix.h"
+#include "structs.h"
 
-int **read_matriz(FILE *fp, int L_max, int C_max, int dimensao, int *diff_flag, int *empty_flag)
+
+Parameters READ_PARAMETERS(Files File){
+
+    Parameters parameters = (Parameters)malloc(sizeof(struct _parameters));
+    fscanf(File->Input, "%d %d %d %d %d ", &(parameters->L), &(parameters->C), &(parameters->l_1),  &(parameters->c_1),  &(parameters->k));
+
+    if((parameters->k) == 0){
+        fscanf(File->Input, "%d %d", &(parameters->l_2), &(parameters->c_2));
+        return parameters;
+    }
+    parameters->l_2 = NULL;
+    parameters->c_2 = NULL;
+    return parameters;
+}
+
+
+Element **read_matriz(Files File, int L_max, int C_max, int dimensao, int *diff_flag, int *empty_flag)
 {
-    int **matriz, i, j, valor, aux = L_max-1, line_feed = 0;
 
-    matriz = (int**)calloc(L_max, sizeof(int*));
+    Element **matriz;
+
+    int i, j, valor, aux = L_max-1, line_feed = 0;
+
+    matriz = (Element**)calloc(L_max, sizeof(Element*));
     if(matriz == NULL)
     {
         exit(0);
@@ -24,7 +44,7 @@ int **read_matriz(FILE *fp, int L_max, int C_max, int dimensao, int *diff_flag, 
     
     for(i = 0; i < L_max; i++)
     {
-        matriz[i] = (int*) calloc(C_max, sizeof(int));
+        matriz[i] = (Element*) calloc(C_max, sizeof(Element));
         if(matriz[i] == NULL)
         {
             exit(0);
@@ -33,17 +53,21 @@ int **read_matriz(FILE *fp, int L_max, int C_max, int dimensao, int *diff_flag, 
 
     for(i = 0, j = 0; i < dimensao; i++)
     {
-        if((fscanf(fp, "%d", &valor)) != EOF){
+        if((fscanf(File->Input, "%d", &valor)) != EOF){
             
-            matriz[aux][j] = valor;
+            //matriz[aux][j] = valor;
+            matriz[aux][j] = (Element)malloc(sizeof(struct _element));
+            matriz[aux][j]->energia = valor;
+            matriz[aux][j]->paths = Create_List_Path(); // Inicializar List_Path
+
 
             if((j-1) > 0){
-                if((matriz[aux][j] != matriz[aux][j-1]) && *diff_flag == 0){
+                if((matriz[aux][j]->energia != matriz[aux][j-1]->energia) && *diff_flag == 0){
                     *diff_flag = 1;
                 }
             }
              if(aux < (L_max-1) && line_feed == 1){
-                if((matriz[aux][j] != matriz[aux+1][j]) && *diff_flag == 0){
+                if((matriz[aux][j]->energia != matriz[aux+1][j]->energia) && *diff_flag == 0){
                     *diff_flag = 1;
                 }
                 line_feed = 0;
@@ -57,19 +81,23 @@ int **read_matriz(FILE *fp, int L_max, int C_max, int dimensao, int *diff_flag, 
             else j++;
         }
     }
-    if(*diff_flag == 0 && matriz[0][0] == -1){
+    if(*diff_flag == 0 && matriz[0][0]->energia == -1){
         *empty_flag = 1;
     }
     
     return matriz;
 }
 
-void reset_matriz(int **matriz, int L_max, int C_max){
+void reset_matriz(Element **matriz, int L_max, int C_max){
+    int i, j;
 
-    int i;
-    
-    for(i = 0; i < L_max; i++)
-    {
+    for (i = 0; i < L_max; i++) {
+        for (j = 0; j < C_max; j++) {
+            if (matriz[i][j] != NULL) {
+                FREE_List_Path(matriz[i][j]->paths);
+                free(matriz[i][j]);
+            }
+        }
         free(matriz[i]);
     }
 

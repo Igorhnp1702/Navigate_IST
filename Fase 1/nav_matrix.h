@@ -27,7 +27,7 @@
  * 
  * Retorno: Uma matriz de inteiros
  */
-int **read_matriz(FILE *fp, int L_max, int C_max, int dimensao, int *diff_flag, int *empty_flag);
+int **read_matriz(Files File, int L_max, int C_max, int dimensao, int *diff_flag, int *empty_flag);
 
 /*
  * reset_matriz()
