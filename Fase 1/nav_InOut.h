@@ -4,7 +4,7 @@
  * Autores:
  * 
  *  Igor Paruque ist1102901
- *  Gonçalo Pires ist199947
+ *  Mónica Ferreira ist1106520
 *******************************************************************************/
 
 #ifndef InOutFileHeader
@@ -29,7 +29,7 @@
 int check_ext(char *argv, char *ext);
 
 /*
- * Output()
+ * Out_string()
  *
  *  Argumentos:
  * 
@@ -41,7 +41,7 @@ int check_ext(char *argv, char *ext);
  * 
  *  Retorno: String com o nome do ficheiro de saida, com a sua extensão 
  */
-char *Output(char *Input, char *extIn, char *extOut);
+char *Out_string(char *Input, char *extIn, char *extOut);
 
 /*
  * abre_ficheiros()
@@ -68,6 +68,6 @@ FILE *abre_ficheiros (char *nome, char *mode);
  * 
  * Retorno: void
  */
-void fecha_ficheiros(*FILE fp);
+void fecha_ficheiros(FILE *fp);
 
 #endif

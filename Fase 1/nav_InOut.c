@@ -5,7 +5,7 @@
  * Autores:
  * 
  *  Igor Paruque ist1102901
- *  Gonçalo Pires ist199947
+ *  Mónica Ferreira ist1106520
 *******************************************************************************/
 
 #include <stdlib.h>
@@ -77,7 +77,7 @@ FILE *abre_ficheiros (char *nome, char *mode)
     return (f);
 }
 
-void fecha_ficheiros(*FILE fp){
+void fecha_ficheiros(FILE *fp){
     fclose(fp);
 }
 

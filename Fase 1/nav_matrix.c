@@ -4,7 +4,7 @@
  * Autores:
  * 
  *  Igor Paruque ist1102901
- *  Gonçalo Pires ist199947
+ *  Mónica Ferreira ist1106520
 *******************************************************************************/
 
 #include <stdio.h>
