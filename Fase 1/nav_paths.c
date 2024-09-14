@@ -3,6 +3,7 @@
 
 #include "structs.h"
 
+
 // Cria a ramificação de um caminho
 Node* Create_Node (Position *path, int passos, int energia) {
     

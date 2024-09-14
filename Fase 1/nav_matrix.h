@@ -10,6 +10,8 @@
 #ifndef MatrixFileHeader
 #define MatrixFileHeader
 
+#include "structs.h"
+
 /*
  * read_matriz()
  *
@@ -27,7 +29,7 @@
  * 
  * Retorno: Uma matriz de inteiros
  */
-int **read_matriz(Files File, int L_max, int C_max, int dimensao, int *diff_flag, int *empty_flag);
+Element **read_matriz(Files File, int L_max, int C_max, int dimensao, int *diff_flag, int *empty_flag);
 
 /*
  * reset_matriz()
@@ -43,6 +45,6 @@ int **read_matriz(Files File, int L_max, int C_max, int dimensao, int *diff_flag
  * 
  * Retorno: void
  */
-void reset_matriz(int **matriz, int L_max, int C_max);
+void reset_matriz(Element **matriz, int L_max, int C_max);
 
 #endif
