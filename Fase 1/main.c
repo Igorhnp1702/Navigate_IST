@@ -21,17 +21,18 @@ int main (int argc, char* argv[]){
     }
 
     /* Tenta abrir os ficheiros de entrada e de saída */
-    Files *fblock = open_files(argv[1]);
+    Files *fblock = open_files(argv[1], &fblock);
 
     if(fblock == NULL){
         exit(0);
     }
+    
 
     /* Resolução de problemas */
     ProbInfo *problem;
 
-    while((problem = read_problem(fblock)) == NULL){
-        
+    while((problem = read_problem(fblock)) != NULL){
+        printf("\n\nentrei\n\n");
         if(problem->flag == 1){
             bad_prob_ans(fblock->Output, problem);
         }

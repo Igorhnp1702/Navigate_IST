@@ -12,7 +12,6 @@
 
 
 ProbInfo *read_problem(Files *fblock){
-
     ProbInfo *prob;
     if((prob = (ProbInfo*)calloc(1,sizeof(ProbInfo*))) == NULL){
         exit(0);

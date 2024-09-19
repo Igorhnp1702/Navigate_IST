@@ -99,7 +99,7 @@ FILE* Open_Write_File(char* filename);
  * um para o de saída. Esta função faz questão de verificar se a extensão do ficheiro de entrada
  * está correta ou não
  */
-Files *open_files(char* Input_Filename);
+Files *open_files(char* Input_Filename, Files **File);
 
 /*
  * close_files()
