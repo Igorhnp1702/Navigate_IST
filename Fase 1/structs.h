@@ -1,3 +1,12 @@
+/******************************************************************************
+ * Ficheiro das structs utilizadas no projeto Navigate_IST
+ * 
+ * Autores:
+ * 
+ *  Igor Paruque ist1102901
+ *  Mónica Ferreira ist1106520
+ ******************************************************************************/
+
 #ifndef __structs__
 #define __structs__
 
@@ -53,7 +62,5 @@ typedef struct _element {
     List_Path *paths;
 
 } *Element;
-
-
 
 #endif

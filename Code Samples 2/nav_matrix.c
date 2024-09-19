@@ -14,13 +14,13 @@
 #include "structs.h"
 
 
-Parameters READ_PARAMETERS(Files File){
+Parameters READ_PARAMETERS(Files fblock){
 
     Parameters parameters = (Parameters)malloc(sizeof(struct _parameters));
-    fscanf(File->Input, "%d %d %d %d %d ", &(parameters->L), &(parameters->C), &(parameters->l_1),  &(parameters->c_1),  &(parameters->k));
+    fscanf(fblock->Input, "%d %d %d %d %d ", &(parameters->L), &(parameters->C), &(parameters->l_1),  &(parameters->c_1),  &(parameters->k));
 
     if((parameters->k) == 0){
-        fscanf(File->Input, "%d %d", &(parameters->l_2), &(parameters->c_2));
+        fscanf(fblock->Input, "%d %d", &(parameters->l_2), &(parameters->c_2));
         return parameters;
     }
     parameters->l_2 = NULL;
