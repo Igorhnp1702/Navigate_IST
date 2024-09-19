@@ -34,11 +34,4 @@ typedef struct _prob_info{
 
 }*ProbInfo;
 
-typedef struct Node {
-
-    int l;
-    int c;
-    int energia;    
-} Item;
-
 #endif

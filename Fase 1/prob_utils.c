@@ -252,4 +252,16 @@ void t3_solver(FILE *fpOut, ProbInfo prob_node){
 
 void free_prob_node(ProbInfo prob_node){
 
+    int i, j;
+
+    for (i = 0; i < prob_node->L; i++) {
+        for (j = 0; j < prob_node->C; j++) {
+            if (prob_node->matrix[i][j] != NULL) {                
+                free(prob_node->matrix[i][j]);
+            }
+        }
+        free(prob_node->matrix[i]);
+    }
+    free(prob_node->matrix);
+    free(prob_node);
 }

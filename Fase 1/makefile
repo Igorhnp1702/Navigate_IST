@@ -9,18 +9,15 @@
 
 CFLAGS = -Wall -std=c99 -g
 
-navigate: nav_main.o nav_InOut.o nav_matrix.o
-	gcc $(CFLAGS) -o navigate nav_main.o nav_InOut.o nav_matrix.o
+navigate: main.o IOmodule.o prob_utils.o
+	gcc $(CFLAGS) -o navigate main.o IOmodule.o prob_utils.o
 	
-nav_main.o: nav_main.c nav_header.h
-	gcc $(CFLAGS) -c nav_main.c	
+nav_main.o: main.c structs.h IOmodule.h prob_utils.h 
+	gcc $(CFLAGS) -c main.c	
 		
-nav_InOut.o: nav_InOut.c nav_InOut.h 
-	gcc $(CFLAGS) -c nav_InOut.c
+IOmodule.o: IOmodule.h structs.h IOmodule.c
+	gcc $(CFLAGS) -c IOmodule.c
 
-nav_matrix.o: nav_matrix.c nav_matrix.h
-	gcc $(CFLAGS) -c nav_matrix.c
-
-nav_paths.o: nav_paths.c structs.h
-	gcc $(CFLAGS) -c nav_paths.c structs.h
+prob_utils.o: structs.h prob_utils.h prob_utils.c
+	gcc $(CFLAGS) -c prob_utils.c
 	

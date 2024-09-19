@@ -32,18 +32,19 @@ int main (int argc, char* argv[]){
 
     while((problem = read_problem(fblock)) == NULL){
         
-        switch(problem->tarefa){
-            case 1:
-                t1_solver(*fblock->Output, problem);
-                break;
-            case 2:
-                t2_solver(*fblock->Output, problem);
-                break;
-            case 3:
-                t3_solver(*fblock->Output, problem);
-                break;
+        if(problem->flag == 1){
+            bad_prob_ans(fblock->Output, problem);
         }
-        free_problem();
+        else if(problem->tarefa == 1){
+            t1_solver(fblock->Output, problem);
+        }
+        else if(problem->tarefa == 2){
+            t2_solver(fblock->Output, problem);
+        }
+        else if(problem->tarefa == 3){
+            t3_solver(fblock->Output, problem);
+        }
+        free_prob_node(problem);
     }
 
     /* Prepara para fechar o programa */
