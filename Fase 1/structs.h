@@ -19,48 +19,27 @@ typedef struct _files {
     FILE* Output;
 } *Files;
 
-
-typedef struct _parameters {
+typedef struct _prob_info{
     
     int L;
     int C;
     int l_1;
     int c_1;
     int k;
+    int tarefa;
     int l_2;
     int c_2;
+    int flag;
+    int **matrix;
 
-} *Parameters;
-
-
-typedef struct {
-    int l;
-    int c;
-} Position;
-
+}*ProbInfo;
 
 typedef struct Node {
 
-    Position *path;
-    int passos;
+    int l;
+    int c;
     int energia;
     struct Node *next;
-
 } Node;
-
-typedef struct {
-
-    Node *head;
-    int n_paths;
-
-} List_Path;
-
-
-typedef struct _element {
-    
-    int energia;
-    List_Path *paths;
-
-} *Element;
 
 #endif

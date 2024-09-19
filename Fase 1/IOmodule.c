@@ -112,3 +112,7 @@ Files open_files(char* Input_Filename){
     /* Else the pointer will be null (wrong extension) and the program should terminate */
     return File;    
 }
+
+void close_files(Files fblock){
+    
+}

@@ -7,8 +7,8 @@
  *  Mónica Ferreira ist1106520
  ******************************************************************************/
 
-#ifndef __files__
-#define __files__
+#ifndef __IOmodule__
+#define __IOmodule__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,6 +100,20 @@ FILE* Open_Write_File(char* filename);
  * está correta ou não
  */
 Files open_files(char* Input_Filename);
+
+/*
+ * close_files()
+ *
+ * Argumentos:
+ * 
+ *  -fblock = apontador para um bloco de memória que contém o apontador do 
+ * ficheiro de entrada e o ficheiro de saída
+ * 
+ * Descrição: Fecha os ficheiros presentes no bloco e liberta a sua memória
+ * 
+ * Retorno: void
+ */
+void close_files(Files fblock);
 
 
 

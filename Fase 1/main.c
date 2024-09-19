@@ -28,12 +28,11 @@ int main (int argc, char* argv[]){
     }
 
     /* Resolução de problemas */
-    int tarefa;
+    
 
     while(){
-
         read_problem();
-        switch(tarefa){
+        switch(){
             case 1:
                 break;
             case 2:
@@ -45,9 +44,7 @@ int main (int argc, char* argv[]){
     }
 
     /* Prepara para fechar o programa */
-    fecha_ficheiros(fpIn);
-    fecha_ficheiros(fpOut);    
-    free(saida);
+    close_files(fblock);
 
     return 0;
 }
