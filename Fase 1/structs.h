@@ -38,8 +38,7 @@ typedef struct Node {
 
     int l;
     int c;
-    int energia;
-    struct Node *next;
-} Node;
+    int energia;    
+} Item;
 
 #endif

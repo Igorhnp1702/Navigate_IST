@@ -90,4 +90,18 @@ void t2_solver(FILE fpOut, ProbInfo prob_node);
  */
 void t3_solver(FILE fpOut, ProbInfo prob_node);
 
+/*
+ * free_prob_node()
+ * 
+ * Argumentos:
+ * 
+ *  -prob_node = apontador para um bloco de memória que contém a informação de um problema
+ * 
+ * Descrição: Função que liberta toda a memória alocada dinamicamente para conter a
+ * informação de um problema
+ * 
+ * Retorno: void
+ */
+void free_prob_node(ProbInfo prob_node);
+
 #endif
