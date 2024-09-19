@@ -11,10 +11,10 @@
 #include <stdio.h>
 
 
-ProbInfo read_problem(Files fblock){
+ProbInfo *read_problem(Files *fblock){
 
-    ProbInfo prob;
-    if(prob = (ProbInfo)calloc(1,sizeof(ProbInfo)) == NULL){
+    ProbInfo *prob;
+    if((prob = (ProbInfo*)calloc(1,sizeof(ProbInfo*))) == NULL){
         exit(0);
     }
     fscanf(fblock->Input, "%d %d %d %d %d ", &(prob->L), &(prob->C), &(prob->l_1),  &(prob->c_1),  &(prob->k));
@@ -67,7 +67,7 @@ ProbInfo read_problem(Files fblock){
     }
     int i;
     
-    for(i = 0; i < prob->matrix[i]; i++)
+    for(i = 0; i < prob->L; i++)
     {
         prob->matrix[i] = (int*) calloc(prob->C, sizeof(int));
         if(prob->matrix[i] == NULL)
@@ -91,7 +91,7 @@ ProbInfo read_problem(Files fblock){
     return prob;
 }
 
-void bad_prob_ans(FILE *fpOut, ProbInfo prob_node){
+void bad_prob_ans(FILE *fpOut, ProbInfo *prob_node){
     if(prob_node->tarefa == 1){
          fprintf(fpOut, "%d %d %d %d %d %d \n", 
         prob_node->L, prob_node->C, prob_node->l_1, prob_node->c_1, prob_node->k, 0);
@@ -106,10 +106,11 @@ void bad_prob_ans(FILE *fpOut, ProbInfo prob_node){
          fprintf(fpOut, "%d %d %d %d %d %d %d \n", 
         prob_node->L, prob_node->C, prob_node->l_1, prob_node->c_1, prob_node->k, prob_node->l_2, prob_node->c_2);
     }
+    return;
     
 }
 
-void t1_solver(FILE *fpOut, ProbInfo prob_node){
+void t1_solver(FILE *fpOut, ProbInfo *prob_node){
 
     int max_pos_val = 0;
 
@@ -157,7 +158,7 @@ void t1_solver(FILE *fpOut, ProbInfo prob_node){
     return;
 }
 
-void t2_solver(FILE *fpOut, ProbInfo prob_node){
+void t2_solver(FILE *fpOut, ProbInfo *prob_node){
 
     int sum = 0;
 
@@ -205,7 +206,7 @@ void t2_solver(FILE *fpOut, ProbInfo prob_node){
     return;
 }
 
-void t3_solver(FILE *fpOut, ProbInfo prob_node){
+void t3_solver(FILE *fpOut, ProbInfo *prob_node){
 
     int line_diff = prob_node->l_2 - prob_node->l_1;
     int column_diff = prob_node->c_2 - prob_node->c_1;
@@ -250,16 +251,12 @@ void t3_solver(FILE *fpOut, ProbInfo prob_node){
     return;    
 }
 
-void free_prob_node(ProbInfo prob_node){
+void free_prob_node(ProbInfo *prob_node){
 
-    int i, j;
+    int i;
 
     for (i = 0; i < prob_node->L; i++) {
-        for (j = 0; j < prob_node->C; j++) {
-            if (prob_node->matrix[i][j] != NULL) {                
-                free(prob_node->matrix[i][j]);
-            }
-        }
+        
         free(prob_node->matrix[i]);
     }
     free(prob_node->matrix);

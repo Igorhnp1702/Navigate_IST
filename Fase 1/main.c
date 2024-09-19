@@ -21,14 +21,14 @@ int main (int argc, char* argv[]){
     }
 
     /* Tenta abrir os ficheiros de entrada e de saída */
-    Files fblock = open_files(argv[1]);
+    Files *fblock = open_files(argv[1]);
 
     if(fblock == NULL){
         exit(0);
     }
 
     /* Resolução de problemas */
-    ProbInfo problem;
+    ProbInfo *problem;
 
     while((problem = read_problem(fblock)) == NULL){
         

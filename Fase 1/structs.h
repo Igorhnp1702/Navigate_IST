@@ -17,7 +17,7 @@
 typedef struct _files {
     FILE* Input;
     FILE* Output;
-} *Files;
+} Files;
 
 typedef struct _prob_info{
     
@@ -32,6 +32,6 @@ typedef struct _prob_info{
     int flag;
     int **matrix;
 
-}*ProbInfo;
+}ProbInfo;
 
 #endif
