@@ -28,16 +28,19 @@ int main (int argc, char* argv[]){
     }
 
     /* Resolução de problemas */
-    
+    ProbInfo problem;
 
-    while(){
-        read_problem();
-        switch(){
+    while((problem = read_problem(fblock)) == NULL){
+        
+        switch(problem->tarefa){
             case 1:
+                t1_solver(*fblock->Output, problem);
                 break;
             case 2:
+                t2_solver(*fblock->Output, problem);
                 break;
             case 3:
+                t3_solver(*fblock->Output, problem);
                 break;
         }
         free_problem();

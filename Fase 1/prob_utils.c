@@ -9,7 +9,7 @@
 
 #include "prob_utils.h"
 #include <stdio.h>
-#include "lists.h"
+
 
 ProbInfo read_problem(Files fblock){
 
@@ -92,7 +92,21 @@ ProbInfo read_problem(Files fblock){
 }
 
 void bad_prob_ans(FILE *fpOut, ProbInfo prob_node){
+    if(prob_node->tarefa == 1){
+         fprintf(fpOut, "%d %d %d %d %d %d \n", 
+        prob_node->L, prob_node->C, prob_node->l_1, prob_node->c_1, prob_node->k, 0);
+    }
 
+    if(prob_node->tarefa == 2){
+         fprintf(fpOut, "%d %d %d %d %d %d \n", 
+        prob_node->L, prob_node->C, prob_node->l_1, prob_node->c_1, prob_node->k, 0);
+    }
+
+    if(prob_node->tarefa == 3){
+         fprintf(fpOut, "%d %d %d %d %d %d %d \n", 
+        prob_node->L, prob_node->C, prob_node->l_1, prob_node->c_1, prob_node->k, prob_node->l_2, prob_node->c_2);
+    }
+    
 }
 
 void t1_solver(FILE *fpOut, ProbInfo prob_node){
