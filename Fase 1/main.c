@@ -31,8 +31,9 @@ int main (int argc, char* argv[]){
     /* Resolução de problemas */
     ProbInfo *problem;
 
-    while((problem = read_problem(fblock)) != NULL){
+    while((problem = read_problem(fblock)) == NULL){
         printf("\n\nentrei\n\n");
+
         if(problem->flag == 1){
             bad_prob_ans(fblock->Output, problem);
         }

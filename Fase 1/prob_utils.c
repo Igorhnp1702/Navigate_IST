@@ -13,10 +13,16 @@
 
 ProbInfo *read_problem(Files *fblock){
     ProbInfo *prob;
+
     if((prob = (ProbInfo*)calloc(1,sizeof(ProbInfo*))) == NULL){
         exit(0);
     }
+    if (fblock->Input == NULL) {
+    printf("Error: fblock->Input is null\n");
+    exit(1);
+}
     fscanf(fblock->Input, "%d %d %d %d %d ", &(prob->L), &(prob->C), &(prob->l_1),  &(prob->c_1),  &(prob->k));
+                printf("\nread_problem\n\n");
 
     /* if the dimensions of the matrix are negative */
     if(prob->L <= 0 || prob->C <= 0){

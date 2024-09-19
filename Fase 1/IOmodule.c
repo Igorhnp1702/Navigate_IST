@@ -87,7 +87,7 @@ FILE* Open_Write_File(char* filename){
 }
 
 
-Files *open_files(char* Input_Filename, Files **File){
+Files *open_files(char* Input_Filename, Files *File){
 
     
 
@@ -102,15 +102,15 @@ Files *open_files(char* Input_Filename, Files **File){
 
         Output_Filename = change_filenames_extension(Input_Filename, Output_Filename, Input_Filename_len, extension_in_len);
 
-        *File = (Files*) malloc( sizeof(Files) );
-        (*File)->Input = Open_Read_File(Input_Filename);
-        (*File)->Output = Open_Write_File(Output_Filename);
+        File = (Files*) malloc( sizeof(Files) );
+        (File)->Input = Open_Read_File(Input_Filename);
+        (File)->Output = Open_Write_File(Output_Filename);
         
         free(Output_Filename);
     }
 
     /* Else the pointer will be null (wrong extension) and the program should terminate */
-    return *File;    
+    return File;    
 }
 
 void close_files(Files *fblock){
