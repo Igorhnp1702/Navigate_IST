@@ -50,7 +50,7 @@ int main (int argc, char* argv[]){
     }
 
     /* Prepara para fechar o programa */
-    close_files(fblock);
+    close_files(&fblock);
 
     return 0;
 }

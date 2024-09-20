@@ -21,6 +21,5 @@ IOmodule.o: IOmodule.h structs.h IOmodule.c
 prob_utils.o: structs.h prob_utils.h prob_utils.c
 	gcc $(CFLAGS) -c prob_utils.c
 
-make clean objects:
-	make navigate
+clean:
 	rm *.o
