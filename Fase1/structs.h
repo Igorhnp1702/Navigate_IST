@@ -11,7 +11,7 @@
 #define __structs__
 
 #include <stdio.h>
-#include <stdbool.h>
+
 
 
 typedef struct _files {
