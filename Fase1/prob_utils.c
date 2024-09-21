@@ -196,7 +196,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
         }    
     }
 
-    fprintf(fpOut, "%d %d %d %d %d %d \n", 
+    fprintf(fpOut, "%d %d %d %d %d %d\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, max_pos_val);
     return;
 }
@@ -213,7 +213,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node){
         }
     }
             
-    fprintf(fpOut, "%d %d %d %d %d %d \n", 
+    fprintf(fpOut, "%d %d %d %d %d %d\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, sum);
     return;
 }
@@ -224,7 +224,7 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
     int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1;
     int L_steps = 0, C_steps = 0, new_line = (*prob_node)->c_1;
     
-    fprintf(fpOut, "%d %d %d %d %d %d %d \n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, 
+    fprintf(fpOut, "%d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, 
         (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
 
     do{
@@ -233,14 +233,14 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
             L_steps--;
             line_diff++;
             new_line = (*prob_node)->l_1 - L_steps;
-            fprintf(fpOut, "%d %d %d \n", new_line, (*prob_node)->c_1, 
+            fprintf(fpOut, "%d %d %d\n", new_line, (*prob_node)->c_1, 
             (*prob_node)->matrix[new_line - 1][(*prob_node)->c_1 - 1]);
 
         }else if(line_diff > 0){ /* Go down */
             L_steps++;
             line_diff--;
             new_line = (*prob_node)->l_1 + L_steps;
-            fprintf(fpOut, "%d %d %d \n", new_line, (*prob_node)->c_1, 
+            fprintf(fpOut, "%d %d %d\n", new_line, (*prob_node)->c_1, 
             (*prob_node)->matrix[new_line - 1][(*prob_node)->c_1 - 1]);
         }
         /* Else, we are in the right line, start moving horizontaly */
@@ -249,14 +249,14 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
 
             C_steps++;
             column_diff--;
-            fprintf(fpOut, "%d %d %d \n", new_line, (*prob_node)->c_1 + C_steps, 
+            fprintf(fpOut, "%d %d %d\n", new_line, (*prob_node)->c_1 + C_steps, 
             (*prob_node)->matrix[new_line - 1][(*prob_node)->c_1 + C_steps - 1]);
 
         }else if(line_diff == 0 && column_diff < 0){ /* Go left */
 
             C_steps++;
             column_diff--;
-            fprintf(fpOut, "%d %d %d \n", new_line, (*prob_node)->c_1 + C_steps, 
+            fprintf(fpOut, "%d %d %d\n", new_line, (*prob_node)->c_1 + C_steps, 
             (*prob_node)->matrix[new_line - 1][(*prob_node)->c_1 + C_steps - 1]);
         }
     }while (line_diff != 0 || column_diff != 0);
