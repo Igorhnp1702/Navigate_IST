@@ -34,8 +34,7 @@ int main (int argc, char* argv[]){
         exit(0);
     }
 
-    while((read_problem(fblock, &problem)) == 1){
-        printf("\n\nentrei\n\n");
+    while((read_problem(fblock, &problem)) == 1){        
 
         if(problem->flag == 1){
             bad_prob_ans(fblock->Output, &problem);

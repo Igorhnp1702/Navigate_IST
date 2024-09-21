@@ -227,7 +227,7 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
     fprintf(fpOut, "%d %d %d %d %d %d %d \n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, 
         (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
 
-    while (line_diff != 0 && column_diff != 0){
+    do{
         
         if(line_diff < 0){ /* Go up */
             L_steps--;
@@ -245,21 +245,21 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
         }
         /* Else, we are in the right line, start moving horizontaly */
 
-        if(line_diff == 0 && column_diff >= 0){ /* Go right */
+        if(line_diff == 0 && column_diff > 0){ /* Go right */
 
             C_steps++;
             column_diff--;
             fprintf(fpOut, "%d %d %d \n", new_line, (*prob_node)->c_1 + C_steps, 
             (*prob_node)->matrix[new_line - 1][(*prob_node)->c_1 + C_steps - 1]);
 
-        }else if(line_diff == 0 && column_diff <= 0){ /* Go left */
+        }else if(line_diff == 0 && column_diff < 0){ /* Go left */
 
             C_steps++;
             column_diff--;
             fprintf(fpOut, "%d %d %d \n", new_line, (*prob_node)->c_1 + C_steps, 
             (*prob_node)->matrix[new_line - 1][(*prob_node)->c_1 + C_steps - 1]);
         }
-    }
+    }while (line_diff != 0 || column_diff != 0);
     return;    
 }
 
