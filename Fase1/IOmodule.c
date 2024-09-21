@@ -68,8 +68,6 @@ char* change_filenames_extension(const char* FileName, char* New_FileName, size_
 FILE* Open_Read_File(char* filename){
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        free(filename);
-        filename = NULL;
         exit(0);
     }
     return file;
@@ -92,7 +90,7 @@ Files *open_files(char* Input_Filename, Files **File){
     
 
     /* If the right extension is found */
-    if(check_ext(Input_Filename) == 1){
+    if(check_ext(Input_Filename) == 0){
 
         size_t Input_Filename_len = strlen(Input_Filename);
         size_t extension_in_len = strlen(extension_in);
@@ -116,5 +114,4 @@ Files *open_files(char* Input_Filename, Files **File){
 void close_files(Files **fblock){
     fclose((*fblock)->Input);
     fclose((*fblock)->Output);
-    free(fblock);
 }

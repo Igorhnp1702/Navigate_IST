@@ -22,4 +22,42 @@ prob_utils.o: structs.h prob_utils.h prob_utils.c
 	gcc $(CFLAGS) -c prob_utils.c
 
 clean:
+	make
 	rm *.o
+
+valdiff:
+	valgrind --leak-check=full ./navigate TestInputs/Simples01/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples01/
+	diff -q TestOutputs/Nossos/Simples01/*.sol1maps TestOutputs/Corretos/Simples01/*.query
+	valgrind --leak-check=full ./navigate TestInputs/Simples02/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples02/
+	diff -q TestOutputs/Nossos/Simples02/*.sol1maps TestOutputs/Corretos/Simples02/*.query
+
+val:
+	valgrind --leak-check=full ./navigate TestInputs/Simples01/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples01/
+	valgrind --leak-check=full ./navigate TestInputs/Simples02/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples02/
+
+diff:
+	diff -q TestOutputs/Nossos/Simples01/*.sol1maps TestOutputs/Corretos/Simples01/*.query
+	diff -q TestOutputs/Nossos/Simples02/*.sol1maps TestOutputs/Corretos/Simples02/*.query
+
+run:
+	./navigate TestInputs/Simples01/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples01/
+	./navigate TestInputs/Simples02/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples02/
+
+rundiff:
+	./navigate TestInputs/Simples01/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples01/
+	./navigate TestInputs/Simples02/*.1maps
+	mv *.sol1maps -t TestOutputs/Nossos/Simples02/
+	diff -q TestOutputs/Nossos/Simples01/*.sol1maps TestOutputs/Corretos/Simples01/*.query
+	diff -q TestOutputs/Nossos/Simples02/*.sol1maps TestOutputs/Corretos/Simples02/*.query
+
+
+
+
+ 

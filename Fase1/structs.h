@@ -30,6 +30,8 @@ typedef struct _prob_info{
     int l_2;
     int c_2;
     int flag;
+    int *diamond_vect;
+    int diamond_size;
     int **matrix;
 
 }ProbInfo;

@@ -1,6 +1,10 @@
-Fase\ 1/TestInputs
-Fase\ 1/TestOutputs
+Fase1/TestInputs/
+Fase1/TestOutputs/
 *.o
 */navigate
 *.query
 *.1maps
+*.sol1maps
+*.sol1maps
+*.json
+.vscode/
