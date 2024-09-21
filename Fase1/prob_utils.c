@@ -32,12 +32,14 @@ int read_problem(Files *fblock, ProbInfo **prob){
         /* if the dimensions of the matrix are negative */
         if((*prob)->L <= 0 || (*prob)->C <= 0){
             (*prob)->flag = 1; /* it's a bad problem */
+            Get_tarefa( prob, fblock,  L,  C,  l_2,  c_2,  prob_flag);
             return prob_flag; 
         }
         
         /* if the start position is out of bounds */
         if(((*prob)->l_1 > (*prob)->L || (*prob)->l_1 < 0) || ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 < 0)){
             (*prob)->flag = 1; /* it's a bad problem */
+            Get_tarefa( prob, fblock,  L,  C,  l_2,  c_2,  prob_flag);
             return prob_flag; 
         } 
 
@@ -46,7 +48,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         int remaining_nums = L * C;   
 
         int aux = 0;
-        Get_tarefa( prob, fblock,  L,  C,  l_2,  c_2,  prob_flag);
+        prob_flag = Get_tarefa( prob, fblock,  L,  C,  l_2,  c_2,  prob_flag);
 
         
         /* read the diamond from the file to memory */
@@ -103,7 +105,6 @@ int read_problem(Files *fblock, ProbInfo **prob){
 
 
         /* Then, pass the information from the file to memory */
-        // O SEGFAULT É NESTE WHILE
         while (numbs_2_read_to_diamond != 0)
         {
             
@@ -136,7 +137,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
     return prob_flag;    
 }
 
-void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, int prob_flag) {
+int Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, int prob_flag) {
 
         int aux = 0;
         int i, j;
@@ -148,7 +149,7 @@ void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, 
             if(((*prob)->l_2 > (*prob)->L || (*prob)->l_2 < 0) || ((*prob)->c_2 > (*prob)->C || (*prob)->c_2 < 0)){
                 
                 (*prob)->flag = 1; /* it's a bad problem */
-                return ;
+                return prob_flag;
             }
             (*prob)->tarefa = 3;            
             
@@ -168,7 +169,7 @@ void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, 
                     (*prob)->matrix[i][j] = aux;
                 }
             }                        
-            return ;
+            return prob_flag;
 
         }else if((*prob)->k < 0){
 
@@ -180,12 +181,12 @@ void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, 
             (*prob)->l_2 = -1;
             (*prob)->c_2 = -1;
         }
-
+    return prob_flag;
 }
 
 
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
-    printf("sitio ola\n");
+
     printf("(*prob_node)->tarefa: %d\n", (*prob_node)->tarefa);
     if((*prob_node)->tarefa == 1){
          fprintf(fpOut, "%d %d %d %d %d %d\n", 

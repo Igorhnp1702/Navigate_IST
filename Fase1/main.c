@@ -33,11 +33,11 @@ int main (int argc, char* argv[]){
     if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
         exit(0);
     }
-
-    while((read_problem(fblock, &problem)) == 1){        
+    int sol;
+    while((sol=read_problem(fblock, &problem)) == 1){        
+    printf("sol: %d\n", sol);
 
         if(problem->flag == 1){
-            printf("sitio certo\n");
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->tarefa == 1){
