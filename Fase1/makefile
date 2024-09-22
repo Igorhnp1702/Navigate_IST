@@ -1,5 +1,5 @@
 ############################################# 
-# Ficheiro makefile do grupo 
+# Ficheiro makefile do grupo 51
 #
 # Autores:
 #
@@ -7,9 +7,9 @@
 # Mónica Ferreira ist1106520
 #############################################
 
-CFLAGS = -Wall -std=c99 -g
+CFLAGS = -Wall -std=c99 -g #flags to use
 
-navigate: main.o IOmodule.o prob_utils.o
+navigate: main.o IOmodule.o prob_utils.o #program compilation
 	gcc $(CFLAGS) -o navigate main.o IOmodule.o prob_utils.o
 	
 main.o: main.c structs.h IOmodule.h prob_utils.h 
@@ -21,15 +21,22 @@ IOmodule.o: IOmodule.h structs.h IOmodule.c
 prob_utils.o: structs.h prob_utils.h prob_utils.c
 	gcc $(CFLAGS) -c prob_utils.c
 
-clean:
+clean: # clean object files
 	make
 	rm *.o
-	
-valdiff: val diffs move 
 
-rundiffs: run diffs move
+valtest: # test a specific file for memory leaks
+	valgrind --leak-check=full ./navigate ./TestInputs/$(ARG).1maps
+	code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query		
 
-runmove: run move
+difftest: # test a specific file for differences in the solution
+	./navigate ./TestInputs/$(ARG).1maps
+	diff ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
+	code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
+
+valall: val move # test all files for memory leaks 
+
+diffall: run diffs move # test all files for differences in the solution
 
 val:
 	valgrind --leak-check=full ./navigate  ./TestInputs/Simples01/t0001.1maps ; \
