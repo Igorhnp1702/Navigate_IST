@@ -26,13 +26,13 @@ clean: # clean object files
 	rm *.o
 
 valtest: # test a specific file for memory leaks
-	valgrind --leak-check=full ./navigate ./TestInputs/$(ARG).1maps
-	code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query		
+	valgrind --leak-check=full ./navigate ./TestInputs/$(ARG).1maps 
+#code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query		
 
 difftest: # test a specific file for differences in the solution
-	./navigate ./TestInputs/$(ARG).1maps
+	./navigate ./TestInputs/$(ARG).1maps ; \
 	diff ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
-	code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
+#code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
 
 valall: val move # test all files for memory leaks 
 
