@@ -37,6 +37,7 @@ int main (int argc, char* argv[]){
     while((read_problem(fblock, &problem)) == 1){        
 
         if(problem->flag == 1){
+            printf("sitio certo\n");
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->tarefa == 1){
