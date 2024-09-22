@@ -43,10 +43,9 @@ int read_problem(Files *fblock, ProbInfo **prob);
  * 
  * Retorno: Void
  */
+void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node);
 
 void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, int prob_flag);
-
-void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node);
 
 /*
  * t1_solver()
