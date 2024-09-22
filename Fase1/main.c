@@ -50,7 +50,7 @@ int main (int argc, char* argv[]){
         }
         free_prob_node_data(&problem);        
     }
-
+    
     /* Prepara para fechar o programa */
     free(problem);
     close_files(&fblock);
