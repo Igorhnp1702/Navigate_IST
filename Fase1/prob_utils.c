@@ -13,7 +13,7 @@
 
 int read_problem(Files *fblock, ProbInfo **prob){
     
-    int L, C, l_1, c_1, k, l_2 = -1, c_2 = -1, prob_flag = 0;
+    int L, C, l_1, c_1, k, prob_flag = 0, aux;
     
     (*prob)->flag = 0; /* so far, its a good problem */
     if (fblock->Input == NULL) {
@@ -22,38 +22,51 @@ int read_problem(Files *fblock, ProbInfo **prob){
     }
 
     if((fscanf(fblock->Input, "%d %d %d %d %d", &L, &C, &l_1, &c_1, &k)) != EOF){ /* read the header from file to memory */
-        prob_flag = 1;
-        (*prob)->L = L;
-        (*prob)->C = C;
-        (*prob)->l_1 = l_1;
-        (*prob)->c_1 = c_1;
-        (*prob)->k = k;
         
+        int remaining_nums = L * C;     // remaining map cells to read from the file
+        (*prob)->L = L;
+        (*prob)->C = C; 
+        (*prob)->l_1 = l_1; 
+        (*prob)->c_1 = c_1; 
+        (*prob)->k = k; 
+        prob_flag = 1;
+        
+        Get_tarefa(prob, fblock,  (*prob)->L,  (*prob)->C); /* figure out which task we should solve */        
+
         /* if the dimensions of the matrix are negative */
         if((*prob)->L <= 0 || (*prob)->C <= 0){
             (*prob)->flag = 1; /* it's a bad problem */
+            while (remaining_nums != 0)
+            {
+                fscanf(fblock->Input, "%d", &aux);
+                remaining_nums--;
+            }  
             return prob_flag; 
         }
         
         /* if the start position is out of bounds */
         if(((*prob)->l_1 > (*prob)->L || (*prob)->l_1 < 0) || ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 < 0)){
             (*prob)->flag = 1; /* it's a bad problem */
+            while (remaining_nums != 0)
+            {
+                fscanf(fblock->Input, "%d", &aux);
+                remaining_nums--;
+            }  
             return prob_flag; 
         } 
-
-           
-
-        int aux = 0;
-        Get_tarefa(prob, fblock,  L,  C,  l_2,  c_2,  prob_flag); /* figure out which task we should solve */
-
-        if((*prob)->tarefa == 3){
+                           
+        if((*prob)->tarefa == 3){  // no diamond to read, the map is in memory
+            while (remaining_nums != 0)
+            {
+                fscanf(fblock->Input, "%d", &aux);
+                remaining_nums--;
+            }  
             return prob_flag;
         }
         
         /* read the diamond from the file to memory */
         int i;                                              // iterator
-        int line_tracker = 1, column_tracker = 1;           // trackers to know my position on the map, while reading the file
-        int remaining_nums = L * C;                         // remaining map cells to read from the file
+        int line_tracker = 1, column_tracker = 1;           // trackers to know my position on the map, while reading the file        
         int radius = k; if(radius < 0) radius = -radius;    // radius of the diamond
         int dist_to_edge_R = C - c_1;                       // distance between the center of the diamond and the right edge of the map
         int dist_to_edge_L = c_1 - 1;                       // distance between the center of the diamond and the left edge of the map
@@ -104,7 +117,8 @@ int read_problem(Files *fblock, ProbInfo **prob){
             }else numbs_2_read_to_diamond += abs((2*radius + 1) - 2*abs(l_1 - i));
         }
 
-        (*prob)->diamond_size = numbs_2_read_to_diamond;
+        numbs_2_read_to_diamond--; // the center of the diamond does not count
+        (*prob)->diamond_size = numbs_2_read_to_diamond; // the center of the diamond does not count
 
         if (numbs_2_read_to_diamond > 0){        
             (*prob)->diamond_vect = (int*)calloc(numbs_2_read_to_diamond, sizeof(int));
@@ -122,7 +136,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
             dist_Ctracker_center = abs(c_1 - column_tracker);
             dist_Ltracker_center = abs(l_1 - line_tracker);
 
-            if(dist_Ctracker_center + dist_Ltracker_center <= radius){
+            if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
     
                 (*prob)->diamond_vect[i] = aux;
                 i++;
@@ -145,14 +159,15 @@ int read_problem(Files *fblock, ProbInfo **prob){
     return prob_flag;    
 }
 
-void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, int prob_flag) {
+void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C) {
 
         int aux = 0;
         int i, j;
         if(((*prob)->k) == 0){
-            fscanf(fblock->Input, "%d %d", &l_2, &c_2);
-            (*prob)->l_2 = l_2;
-            (*prob)->c_2 = c_2;
+            fscanf(fblock->Input, "%d", &aux);
+            (*prob)->l_2 = aux;
+            fscanf(fblock->Input, "%d", &aux);
+            (*prob)->c_2 = aux;
             /* if the end position is out of bounds */
             if(((*prob)->l_2 > (*prob)->L || (*prob)->l_2 < 0) || ((*prob)->c_2 > (*prob)->C || (*prob)->c_2 < 0)){
                 
@@ -194,20 +209,19 @@ void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C, int l_2, int c_2, 
 
 
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
-    printf("sitio ola\n");
-    printf("(*prob_node)->tarefa: %d\n", (*prob_node)->tarefa);
+    
     if((*prob_node)->tarefa == 1){
-         fprintf(fpOut, "%d %d %d %d %d %d\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, 0);
+         fprintf(fpOut, "%d %d %d %d %d\n\n", 
+        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k);
     }
 
     if((*prob_node)->tarefa == 2){
-         fprintf(fpOut, "%d %d %d %d %d %d\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, 0);
+         fprintf(fpOut, "%d %d %d %d %d\n\n", 
+        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k);
     }
 
     if((*prob_node)->tarefa == 3){
-         fprintf(fpOut, "%d %d %d %d %d %d %d\n", 
+         fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
     }
     return;
@@ -229,7 +243,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
         }    
     }
 
-    fprintf(fpOut, "%d %d %d %d %d %d\n", 
+    fprintf(fpOut, "%d %d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, max_pos_val);
     return;
 }
@@ -246,7 +260,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node){
         }
     }
             
-    fprintf(fpOut, "%d %d %d %d %d %d\n", 
+    fprintf(fpOut, "%d %d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, sum);
     return;
 }
@@ -295,6 +309,7 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
             (*prob_node)->matrix[new_line - 1][new_column - 1]);
         }
     }while (line_diff != 0 || column_diff != 0);
+    fprintf(fpOut,"\n");
     return;    
 }
 
