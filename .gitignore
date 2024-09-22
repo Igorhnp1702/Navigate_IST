@@ -1,4 +1,8 @@
-
+Fase1/TestInputs/
+Fase1/TestOutputs/
+*.query
+*.1maps
+*.sol1maps
 *.o
 */navigate
 *.json
