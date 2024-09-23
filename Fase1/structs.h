@@ -17,6 +17,15 @@ typedef struct _files {
     FILE* Output;
 } Files;
 
+
+typedef struct _path_vect{
+    
+    int row;
+    int col;
+    int energy;
+
+}path_vect;
+
 typedef struct _prob_info{
     
     int L;
@@ -29,9 +38,15 @@ typedef struct _prob_info{
     int c_2;
     int flag;
     int *diamond_vect;
+    path_vect *path_vect;
+    int path_size;
     int diamond_size;
     int **matrix;
 
 }ProbInfo;
+
+
+
+
 
 #endif

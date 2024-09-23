@@ -219,13 +219,26 @@ void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C) {
                 exit(0);
             }
         }
+        
+        path_vect_solver(prob);
+// falta ler a matriz e fazer a comparação ao mesmo tempo
+        while ((*prob)->path_size>0)
+        {
+    
+            fscanf(fblock->Input, "%d", &aux);
+            if(){
+                (*prob)->path_vect->energy = aux;
+            
+            }  
+        }
+        
 
         for(i = 0; i < L; i++){
             for(j = 0; j < C; j++){
                 fscanf(fblock->Input, "%d", &aux);
                 (*prob)->matrix[i][j] = aux;
             }
-        }                        
+        }                   
         return ;
 
     }else if((*prob)->k < 0){
@@ -344,6 +357,63 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
         }
     }while (line_diff != 0 || column_diff != 0);
     fprintf(fpOut,"\n");
+    return;    
+}
+
+void path_vect_solver(ProbInfo **prob_node){
+
+    int line_diff = (*prob_node)->l_2 - (*prob_node)->l_1;
+    int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1;
+    int L_steps = 0, C_steps = 0, new_line = (*prob_node)->l_1, new_column = (*prob_node)->c_1;
+    int i;
+
+    (*prob_node)->path_size = line_diff+column_diff;
+    for(i=0; i<(*prob_node)->path_size; i++){
+
+       (*prob_node)->path_vect[i] = (path_vect)calloc(sizeof(path_vect));
+    }
+    do{
+        
+        if(line_diff < 0){ /* Go up */
+            L_steps--;
+            line_diff++;
+            new_line = (*prob_node)->l_1 + L_steps;
+            (*prob_node)->path_vect[i]->row = new_line;
+            (*prob_node)->path_vect->col = new_column;
+            (*prob_node)->path_size++;
+
+        }else if(line_diff > 0){ /* Go down */
+            L_steps++;
+            line_diff--;
+            new_line = (*prob_node)->l_1 + L_steps;
+            (*prob_node)->path_vect->row = new_line;
+            (*prob_node)->path_vect->col = new_column;
+            (*prob_node)->path_size++;
+
+        }
+        /* Else, we are in the right line, start moving horizontaly */
+
+        if(line_diff == 0 && column_diff > 0){ /* Go right */
+
+            C_steps++;
+            column_diff--;
+            new_column = (*prob_node)->c_1 + C_steps;
+            (*prob_node)->path_vect->row = new_line;
+            (*prob_node)->path_vect->col = new_column;
+            (*prob_node)->path_size++;
+
+
+        }else if(line_diff == 0 && column_diff < 0){ /* Go left */
+
+            C_steps--;
+            column_diff++;
+            new_column = (*prob_node)->c_1 + C_steps ;
+            (*prob_node)->path_vect->row = new_line;
+            (*prob_node)->path_vect->col = new_column;
+            (*prob_node)->path_size++;
+
+        }
+    }while (line_diff != 0 || column_diff != 0);
     return;    
 }
 

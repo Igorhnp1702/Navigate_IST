@@ -90,6 +90,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node);
  * 
  * Retorno: void
  */
+
 void t3_solver(FILE *fpOut, ProbInfo **prob_node);
 
 /*
@@ -104,6 +105,9 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node);
  * 
  * Retorno: void
  */
+
+void path_vect_solver(ProbInfo **prob_node);
+
 void free_prob_node_data(ProbInfo **prob_node);
 
 #endif
