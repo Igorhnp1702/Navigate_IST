@@ -12,8 +12,6 @@
 
 #include <stdio.h>
 
-
-
 typedef struct _files {
     FILE* Input;
     FILE* Output;

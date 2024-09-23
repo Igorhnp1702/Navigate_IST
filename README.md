@@ -10,6 +10,6 @@ Fase 1 = Folder with the code for the 1st submission
 
 Fase 2 = Folder with the code for the 2nd submission
 
-InFiles for testing = folder with input files to test the code
+TestInputs = folder with input files to test the code
 
-OutFiles of the tests = folder where the output files of the tests will land
+TestOutputs = folder where the output files of the tests will land

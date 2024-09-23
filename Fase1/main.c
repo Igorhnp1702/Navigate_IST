@@ -30,14 +30,16 @@ int main (int argc, char* argv[]){
 
     /* Resolução de problemas */
     ProbInfo *problem;
+    int alert;
     if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
         exit(0);
     }
-    int sol;
-    while((sol=read_problem(fblock, &problem)) == 1){        
-    printf("sol: %d\n", sol);
+    alert = read_problem(fblock, &problem);
+
+    while(alert == 1){        
 
         if(problem->flag == 1){
+            //printf("sitio certo\n");
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->tarefa == 1){
@@ -49,9 +51,14 @@ int main (int argc, char* argv[]){
         else if(problem->tarefa == 3){
             t3_solver(fblock->Output, &problem);
         }
-        free_prob_node_data(&problem);        
+        free_prob_node_data(&problem); 
+        free(problem);
+        if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
+            exit(0);
+        }
+        alert = read_problem(fblock, &problem);       
     }
-
+    
     /* Prepara para fechar o programa */
     free(problem);
     close_files(&fblock);
