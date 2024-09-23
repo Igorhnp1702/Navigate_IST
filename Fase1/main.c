@@ -39,7 +39,7 @@ int main (int argc, char* argv[]){
     while(alert == 1){        
 
         if(problem->flag == 1){
-            printf("sitio certo\n");
+            //printf("sitio certo\n");
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->tarefa == 1){
