@@ -1,5 +1,5 @@
 /******************************************************************************
- * Ficheiro *.c das funcionalidades do projeto
+ * Ficheiro *.c com as funções de análise e resolução dos problemas 
  * 
  * Autores:
  * 
@@ -16,9 +16,8 @@ int read_problem(Files *fblock, ProbInfo **prob){
     int L, C, l_1, c_1, k, prob_flag = 0, aux;
     
     (*prob)->bad = 0; /* so far, its a good problem */
-    if (fblock->Input == NULL) {
-        printf("Error: fblock->Input is null\n");
-        exit(1);
+    if (fblock->Input == NULL) {        
+        exit(0);
     }
 
     if((fscanf(fblock->Input, "%d %d %d %d %d", &L, &C, &l_1, &c_1, &k)) != EOF){ /* read the header from file to memory */
@@ -48,12 +47,12 @@ int read_problem(Files *fblock, ProbInfo **prob){
         int columns_missing_L;                              // same as above, to the left of the center of the diamond
         int lines_missing_B;                                // lines missing beneath the center of the diamond
         int lines_missing_T;                                // same as above, above the center of the diamond
-        int first_cell_line;
-        int first_cell_column;
-        int dist_Ctracker_center;
-        int dist_Ltracker_center;
-        int numbs_before_diamond_start;
-        int numbs_2_read_to_diamond;
+        int first_cell_line;                                // line of the first cell that belongs to the path
+        int first_cell_column;                              // column of the first cell that belongs to the path
+        int dist_Ctracker_center;                           // distance between the column tracker and the column of the diamond center
+        int dist_Ltracker_center;                           // distance between the line tracker and the line of the diamond center
+        int numbs_before_diamond_start;                     // number of integers to skip in order to find the first cell that belongs to the diamond
+        int numbs_2_read_to_diamond;                        // number of integers to read from the file and save in the diamond's data structure
     
         if(radius >= dist_to_edge_R){
             columns_missing_R = abs(dist_to_edge_R - radius);
@@ -126,15 +125,15 @@ int read_problem(Files *fblock, ProbInfo **prob){
             }           
         }
     
-        numbs_2_read_to_diamond--; // the center of the diamond does not count
-        (*prob)->diamond_size = numbs_2_read_to_diamond; // the center of the diamond does not count
+        numbs_2_read_to_diamond--;  // the center of the diamond does not count
+        (*prob)->diamond_size = numbs_2_read_to_diamond; 
 
         if (numbs_2_read_to_diamond > 0){        
             (*prob)->diamond_vect = (int*)calloc(numbs_2_read_to_diamond, sizeof(int));
         }        
         i = 0;
 
-        while (numbs_before_diamond_start != 0)
+        while (numbs_before_diamond_start != 0) //skip the useless numbers
         {
             fscanf(fblock->Input, "%d", &aux);
             numbs_before_diamond_start--;
@@ -166,7 +165,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
             }
         }
 
-        while (remaining_nums != 0)
+        while (remaining_nums != 0) //skip the rest of the map
         {
             fscanf(fblock->Input, "%d", &aux);
             remaining_nums--;
@@ -182,7 +181,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
     int exit_signal = 0;
 
     if(((*prob)->k) == 0){
-        (*prob)->tarefa = 3;        
+        (*prob)->task = 3;        
         fscanf(fblock->Input, "%d", &aux);
         (*prob)->l_2 = aux;
         fscanf(fblock->Input, "%d", &aux);
@@ -203,12 +202,12 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         }
     }
     else if((*prob)->k < 0){
-        (*prob)->tarefa = 1;
+        (*prob)->task = 1;
         (*prob)->l_2 = -1;
         (*prob)->c_2 = -1;
     }
     else if ((*prob)->k > 0){
-        (*prob)->tarefa = 2;
+        (*prob)->task = 2;
         (*prob)->l_2 = -1;
         (*prob)->c_2 = -1;
     }
@@ -218,7 +217,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
     ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 <= 0)) && (*prob)->bad == 0){
         (*prob)->bad = 1; /* it's a bad problem */
         exit_signal++;
-        while (remaining_nums != 0)
+        while (remaining_nums != 0) // skip the map
         {
             fscanf(fblock->Input, "%d", &aux);
             remaining_nums--;
@@ -229,14 +228,14 @@ int check_prob(ProbInfo **prob, Files *fblock) {
     if(((*prob)->L <= 0 || (*prob)->C <= 0) && (*prob)->bad == 0){
         (*prob)->bad = 1; /* it's a bad problem */
         exit_signal++;
-        while (remaining_nums != 0)
+        while (remaining_nums != 0) // skip the map
         {
             fscanf(fblock->Input, "%d", &aux);
             remaining_nums--;
         }  
         return exit_signal; 
     }
-    if ((*prob)->tarefa == 3){
+    if ((*prob)->task == 3){
                 
         exit_signal++;        // no diamond to read, the path is in memory
         int i = 0, j;
@@ -281,7 +280,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
                 line_tracker++;
             }                          
         }        
-        while (remaining_nums != 0)
+        while (remaining_nums != 0) 
         {
             fscanf(fblock->Input, "%d", &aux);
             remaining_nums--;
@@ -294,22 +293,21 @@ int check_prob(ProbInfo **prob, Files *fblock) {
 
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     
-    if((*prob_node)->tarefa == 1){
+    if((*prob_node)->task == 1){
          fprintf(fpOut, "%d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k);
     }
 
-    if((*prob_node)->tarefa == 2){
+    if((*prob_node)->task == 2){
          fprintf(fpOut, "%d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k);
     }
 
-    if((*prob_node)->tarefa == 3){
+    if((*prob_node)->task == 3){
          fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
     }
-    return;
-    
+    return;    
 }
 
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){
@@ -355,7 +353,9 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
     fprintf(fpOut, "%d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, 
         (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
 
-    for(i = 0; i < (*prob_node)->path_size; i++){
+    /* Just read the matrix from start to finish and print the values in each entry */
+    
+    for(i = 0; i < (*prob_node)->path_size; i++){        
         fprintf(fpOut, "%d %d %d\n", (*prob_node)->path_vect[i]->row, (*prob_node)->path_vect[i]->col, (*prob_node)->path_vect[i]->energy);
     }        
     
@@ -365,22 +365,22 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node){
 
 int path_vect_solver(ProbInfo **prob_node){
 
-    int line_diff = (*prob_node)->l_2 - (*prob_node)->l_1;
-    int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1;
+    int line_diff = (*prob_node)->l_2 - (*prob_node)->l_1;   // difference of lines between the starting cell and the target cell
+    int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1; // difference of columns between the starting cell and the target cell
     int L_steps = 0, C_steps = 0, new_line = (*prob_node)->l_1, new_column = (*prob_node)->c_1;
     int i, first_cell_line, first_cell_col, numbs_2_first;
 
-    if(line_diff < 0){
+    if(line_diff < 0){ // first line is above the starting point
         first_cell_line = (*prob_node)->l_1 + line_diff;
     }else{
-        first_cell_line = (*prob_node)->l_1;
+        first_cell_line = (*prob_node)->l_1; // first line is the line of the starting point
     }
 
-    if(column_diff < 0){
+    if(column_diff < 0){  // first column is to the left of the starting point
         first_cell_col = (*prob_node)->c_1 + column_diff;
     }
     else{
-        first_cell_col = (*prob_node)->c_1;
+        first_cell_col = (*prob_node)->c_1; // first column is the column of the starting point
     }
     numbs_2_first = (first_cell_line - 1) * (*prob_node)->C + first_cell_col - 1;
 
@@ -437,7 +437,7 @@ int path_vect_solver(ProbInfo **prob_node){
 }
 
 void free_prob_node_data(ProbInfo **prob_node){    
-    if((*prob_node)->tarefa == 3){
+    if((*prob_node)->task == 3){
         for (int i= 0; i < (*prob_node)->path_size; i++) {        
             free((*prob_node)->path_vect[i]);
         }

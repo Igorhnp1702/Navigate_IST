@@ -10,10 +10,6 @@
 #ifndef __IOmodule__
 #define __IOmodule__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "structs.h"
 
 /*
@@ -26,7 +22,6 @@
  * Descrição: aloca dinamicamente uma string com str_len bytes
  * 
  * Retorno: Um apontador para um bloco de caracteres com str_len bytes
- * 
  */
 char* malloc_str(size_t str_len);
 
@@ -114,8 +109,6 @@ Files *open_files(char* Input_Filename, Files **File);
  * Retorno: void
  */
 void close_files(Files **fblock);
-
-
 
 #endif
 
