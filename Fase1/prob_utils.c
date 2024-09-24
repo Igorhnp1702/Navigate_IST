@@ -15,7 +15,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
     
     int L, C, l_1, c_1, k, prob_flag = 0, aux;
     
-    (*prob)->flag = 0; /* so far, its a good problem */
+    (*prob)->bad = 0; /* so far, its a good problem */
     if (fblock->Input == NULL) {
         printf("Error: fblock->Input is null\n");
         exit(1);
@@ -23,7 +23,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
 
     if((fscanf(fblock->Input, "%d %d %d %d %d", &L, &C, &l_1, &c_1, &k)) != EOF){ /* read the header from file to memory */
         
-        int remaining_nums = L * C;     // remaining map cells to read from the file
+        int remaining_nums = L * C;     // remaining map cells to read from the file        
         (*prob)->L = L;
         (*prob)->C = C; 
         (*prob)->l_1 = l_1; 
@@ -31,38 +31,15 @@ int read_problem(Files *fblock, ProbInfo **prob){
         (*prob)->k = k; 
         prob_flag = 1;
         
-        Get_tarefa(prob, fblock,  (*prob)->L,  (*prob)->C); /* figure out which task we should solve */        
-
-        /* if the dimensions of the matrix are negative */
-        if((*prob)->L <= 0 || (*prob)->C <= 0){
-            (*prob)->flag = 1; /* it's a bad problem */
-            while (remaining_nums != 0)
-            {
-                fscanf(fblock->Input, "%d", &aux);
-                remaining_nums--;
-            }  
-            return prob_flag; 
-        }
-        
-        /* if the start position is out of bounds */
-        if(((*prob)->l_1 > (*prob)->L || (*prob)->l_1 < 0) || ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 < 0)){
-            (*prob)->flag = 1; /* it's a bad problem */
-            while (remaining_nums != 0)
-            {
-                fscanf(fblock->Input, "%d", &aux);
-                remaining_nums--;
-            }  
-            return prob_flag; 
-        } 
-                           
-        if((*prob)->tarefa == 3){  // no diamond to read, the map is in memory           
+        /* analyze the parameters */        
+        if (check_prob(prob, fblock) == 1){
             return prob_flag;
-        }
-        
+        } 
+                
         /* read the diamond from the file to memory */
-        int i;                                              // iterator
+        
         int line_tracker = 1, column_tracker = 1;           // trackers to know my position on the map, while reading the file        
-        int radius = k; if(radius < 0) radius = - radius;    // radius of the diamond
+        int radius = k; if(radius < 0) radius = - radius;   // radius of the diamond
         int dist_to_edge_R = C - c_1;                       // distance between the center of the diamond and the right edge of the map
         int dist_to_edge_L = c_1 - 1;                       // distance between the center of the diamond and the left edge of the map
         int dist_to_bottom = L - l_1;                       // same as above for the bottom edge
@@ -99,9 +76,14 @@ int read_problem(Files *fblock, ProbInfo **prob){
             first_cell_column = c_1;
         }
         
-        else{ // lines_missing_T > 0, each line missing on top subtracts 1 to the column
+        if(lines_missing_T > 0 && lines_missing_T < c_1){ // lines_missing_T > 0, each line missing on top subtracts 1 to the column
             first_cell_line = 1;            
             first_cell_column = c_1 - lines_missing_T;
+        }
+
+        else{
+            first_cell_line = 1;            
+            first_cell_column = 1;
         }      
         
         numbs_before_diamond_start = (first_cell_line-1)*C + first_cell_column - 1;
@@ -120,6 +102,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         
         //cells in the center column of the diamond
         numbs_2_read_to_diamond = 2 * radius + 1 - lines_missing_T - lines_missing_B; 
+        int i;               
 
         // left side of the diamond 
         for(i = 1; i <= radius - columns_missing_L; i++){
@@ -181,7 +164,6 @@ int read_problem(Files *fblock, ProbInfo **prob){
                 column_tracker = 1;
                 line_tracker++;
             }
-                               
         }
 
         while (remaining_nums != 0)
@@ -193,65 +175,120 @@ int read_problem(Files *fblock, ProbInfo **prob){
     return prob_flag;    
 }
 
-void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C) {
+int check_prob(ProbInfo **prob, Files *fblock) {
 
+    int remaining_nums = (*prob)->L * (*prob)->C;                 // remaining map cells to read from the file        
     int aux = 0;
-    int i, j;
+    int exit_signal = 0;
+
     if(((*prob)->k) == 0){
+        (*prob)->tarefa = 3;        
         fscanf(fblock->Input, "%d", &aux);
         (*prob)->l_2 = aux;
         fscanf(fblock->Input, "%d", &aux);
         (*prob)->c_2 = aux;
+
         /* if the end position is out of bounds */
-        if(((*prob)->l_2 > (*prob)->L || (*prob)->l_2 < 0) || ((*prob)->c_2 > (*prob)->C || (*prob)->c_2 < 0)){
+        if(((*prob)->l_2 > (*prob)->L || (*prob)->l_2 <= 0) || ((*prob)->c_2 > (*prob)->C || (*prob)->c_2 <= 0)){
             
-            (*prob)->flag = 1; /* it's a bad problem */
-            return ;
-        }
-        (*prob)->tarefa = 3;            
-        
-        if(((*prob)->matrix = (int**)calloc(L, sizeof(int*))) == NULL){
-            exit(0);        
-        }
-
-        for(i = 0; i < L; i++){
-            if(((*prob)->matrix[i] = (int*)calloc(C, sizeof(int))) == NULL){
-                exit(0);
-            }
-        }
-        
-        path_vect_solver(prob);
-// falta ler a matriz e fazer a comparação ao mesmo tempo
-        while ((*prob)->path_size>0)
-        {
-    
-            fscanf(fblock->Input, "%d", &aux);
-            if(){
-                (*prob)->path_vect->energy = aux;
-            
-            }  
-        }
-        
-
-        for(i = 0; i < L; i++){
-            for(j = 0; j < C; j++){
+            (*prob)->bad = 1; /* it's a bad problem */
+            exit_signal++;            
+            //skip the map
+            while (remaining_nums != 0)
+            {
                 fscanf(fblock->Input, "%d", &aux);
-                (*prob)->matrix[i][j] = aux;
-            }
-        }                   
-        return ;
-
-    }else if((*prob)->k < 0){
-
+                remaining_nums--;
+            }    
+            return exit_signal;
+        }
+    }
+    else if((*prob)->k < 0){
         (*prob)->tarefa = 1;
         (*prob)->l_2 = -1;
         (*prob)->c_2 = -1;
-    }else if ((*prob)->k > 0){
+    }
+    else if ((*prob)->k > 0){
         (*prob)->tarefa = 2;
         (*prob)->l_2 = -1;
         (*prob)->c_2 = -1;
     }
+      
+    /* if the start position is out of bounds */
+    if((((*prob)->l_1 > (*prob)->L || (*prob)->l_1 <= 0) || 
+    ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 <= 0)) && (*prob)->bad == 0){
+        (*prob)->bad = 1; /* it's a bad problem */
+        exit_signal++;
+        while (remaining_nums != 0)
+        {
+            fscanf(fblock->Input, "%d", &aux);
+            remaining_nums--;
+        }  
+        return exit_signal; 
+    } 
+     /* if the dimensions of the matrix are negative */
+    if(((*prob)->L <= 0 || (*prob)->C <= 0) && (*prob)->bad == 0){
+        (*prob)->bad = 1; /* it's a bad problem */
+        exit_signal++;
+        while (remaining_nums != 0)
+        {
+            fscanf(fblock->Input, "%d", &aux);
+            remaining_nums--;
+        }  
+        return exit_signal; 
+    }
+    if ((*prob)->tarefa == 3){
+                
+        exit_signal++;        // no diamond to read, the path is in memory
+        int i = 0, j;
+        int line_tracker = 1, column_tracker = 1;   // trackers to know my position on the map, while reading the file          
+        int numbs_2_first_cell;                
+                                               
+        numbs_2_first_cell = path_vect_solver(prob);        
+        
+        // read the file and save the path in memory
 
+        while(numbs_2_first_cell != 0) //skip the numbers before the path
+        {
+            fscanf(fblock->Input, "%d", &aux);
+            numbs_2_first_cell--;
+            remaining_nums--;
+            column_tracker++;  
+            if(column_tracker > (*prob)->C){
+                column_tracker = 1;
+                line_tracker++;
+            }
+        }
+        i = 0;
+                
+        while(i < (*prob)->path_size){ //fill the path vector
+
+            fscanf(fblock->Input, "%d", &aux); // get an integer
+            remaining_nums--;
+
+            for(j = 0; j < (*prob)->path_size; j++){
+
+                // see if it belongs to the path
+                if(((*prob)->path_vect[j]->row == line_tracker) && ((*prob)->path_vect[j]->col == column_tracker)){
+                    (*prob)->path_vect[j]->energy = aux;
+                    i++;
+                    break;
+                }
+            }
+            // update the trackers
+            column_tracker++;  
+            if(column_tracker > (*prob)->C ){
+                column_tracker = 1;
+                line_tracker++;
+            }                          
+        }        
+        while (remaining_nums != 0)
+        {
+            fscanf(fblock->Input, "%d", &aux);
+            remaining_nums--;
+        }
+        return exit_signal;                                  
+    }
+    return exit_signal;
 }
 
 
@@ -278,11 +315,10 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     int max_pos_val = 0;
-    
-    /* Traverse the diamond and find the cell with the maximum positive energy*/
-
     int i;
-
+    
+    /* Traverse the diamond and find the cell with the maximum positive energy */
+    
     for(i = 0; i < (*prob_node)->diamond_size; i++){
                     
         if((*prob_node)->diamond_vect[i] > max_pos_val){
@@ -314,64 +350,47 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node){
 
 void t3_solver(FILE *fpOut, ProbInfo **prob_node){
 
-    int line_diff = (*prob_node)->l_2 - (*prob_node)->l_1;
-    int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1;
-    int L_steps = 0, C_steps = 0, new_line = (*prob_node)->l_1, new_column = (*prob_node)->c_1;
+    int i;    
     
     fprintf(fpOut, "%d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, 
         (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
 
-    do{
-        
-        if(line_diff < 0){ /* Go up */
-            L_steps--;
-            line_diff++;
-            new_line = (*prob_node)->l_1 + L_steps;
-            fprintf(fpOut, "%d %d %d\n", new_line, new_column, 
-            (*prob_node)->matrix[new_line - 1][new_column - 1]);
-
-        }else if(line_diff > 0){ /* Go down */
-            L_steps++;
-            line_diff--;
-            new_line = (*prob_node)->l_1 + L_steps;
-            fprintf(fpOut, "%d %d %d\n", new_line, new_column, 
-            (*prob_node)->matrix[new_line - 1][new_column - 1]);
-        }
-        /* Else, we are in the right line, start moving horizontaly */
-
-        if(line_diff == 0 && column_diff > 0){ /* Go right */
-
-            C_steps++;
-            column_diff--;
-            new_column = (*prob_node)->c_1 + C_steps;
-            fprintf(fpOut, "%d %d %d\n", new_line, new_column, 
-            (*prob_node)->matrix[new_line - 1][new_column- 1]);
-
-        }else if(line_diff == 0 && column_diff < 0){ /* Go left */
-
-            C_steps--;
-            column_diff++;
-            new_column = (*prob_node)->c_1 + C_steps ;
-            fprintf(fpOut, "%d %d %d\n", new_line, new_column, 
-            (*prob_node)->matrix[new_line - 1][new_column - 1]);
-        }
-    }while (line_diff != 0 || column_diff != 0);
+    for(i = 0; i < (*prob_node)->path_size; i++){
+        fprintf(fpOut, "%d %d %d\n", (*prob_node)->path_vect[i]->row, (*prob_node)->path_vect[i]->col, (*prob_node)->path_vect[i]->energy);
+    }        
+    
     fprintf(fpOut,"\n");
     return;    
 }
 
-void path_vect_solver(ProbInfo **prob_node){
+int path_vect_solver(ProbInfo **prob_node){
 
     int line_diff = (*prob_node)->l_2 - (*prob_node)->l_1;
     int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1;
     int L_steps = 0, C_steps = 0, new_line = (*prob_node)->l_1, new_column = (*prob_node)->c_1;
-    int i;
+    int i, first_cell_line, first_cell_col, numbs_2_first;
 
-    (*prob_node)->path_size = line_diff+column_diff;
-    for(i=0; i<(*prob_node)->path_size; i++){
-
-       (*prob_node)->path_vect[i] = (path_vect)calloc(sizeof(path_vect));
+    if(line_diff < 0){
+        first_cell_line = (*prob_node)->l_1 + line_diff;
+    }else{
+        first_cell_line = (*prob_node)->l_1;
     }
+
+    if(column_diff < 0){
+        first_cell_col = (*prob_node)->c_1 + column_diff;
+    }
+    else{
+        first_cell_col = (*prob_node)->c_1;
+    }
+    numbs_2_first = (first_cell_line - 1) * (*prob_node)->C + first_cell_col - 1;
+
+    (*prob_node)->path_size = abs(line_diff) + abs(column_diff);
+    (*prob_node)->path_vect = (cell**)calloc((*prob_node)->path_size,sizeof(cell*));
+
+    for(i = 0; i<(*prob_node)->path_size; i++){
+       (*prob_node)->path_vect[i] = (cell*)calloc(1,sizeof(cell));
+    }
+    i = 0;
     do{
         
         if(line_diff < 0){ /* Go up */
@@ -379,16 +398,16 @@ void path_vect_solver(ProbInfo **prob_node){
             line_diff++;
             new_line = (*prob_node)->l_1 + L_steps;
             (*prob_node)->path_vect[i]->row = new_line;
-            (*prob_node)->path_vect->col = new_column;
-            (*prob_node)->path_size++;
+            (*prob_node)->path_vect[i]->col = new_column;            
+            i++;
 
         }else if(line_diff > 0){ /* Go down */
             L_steps++;
             line_diff--;
             new_line = (*prob_node)->l_1 + L_steps;
-            (*prob_node)->path_vect->row = new_line;
-            (*prob_node)->path_vect->col = new_column;
-            (*prob_node)->path_size++;
+            (*prob_node)->path_vect[i]->row = new_line;
+            (*prob_node)->path_vect[i]->col = new_column;            
+            i++;
 
         }
         /* Else, we are in the right line, start moving horizontaly */
@@ -398,9 +417,9 @@ void path_vect_solver(ProbInfo **prob_node){
             C_steps++;
             column_diff--;
             new_column = (*prob_node)->c_1 + C_steps;
-            (*prob_node)->path_vect->row = new_line;
-            (*prob_node)->path_vect->col = new_column;
-            (*prob_node)->path_size++;
+            (*prob_node)->path_vect[i]->row = new_line;
+            (*prob_node)->path_vect[i]->col = new_column;            
+            i++;
 
 
         }else if(line_diff == 0 && column_diff < 0){ /* Go left */
@@ -408,21 +427,21 @@ void path_vect_solver(ProbInfo **prob_node){
             C_steps--;
             column_diff++;
             new_column = (*prob_node)->c_1 + C_steps ;
-            (*prob_node)->path_vect->row = new_line;
-            (*prob_node)->path_vect->col = new_column;
-            (*prob_node)->path_size++;
+            (*prob_node)->path_vect[i]->row = new_line;
+            (*prob_node)->path_vect[i]->col = new_column;            
+            i++;
 
         }
-    }while (line_diff != 0 || column_diff != 0);
-    return;    
+    }while ((line_diff != 0 || column_diff != 0) && i < (*prob_node)->path_size);
+    return numbs_2_first;    
 }
 
 void free_prob_node_data(ProbInfo **prob_node){    
     if((*prob_node)->tarefa == 3){
-        for (int i= 0; i < (*prob_node)->L; i++) {        
-            free((*prob_node)->matrix[i]);
+        for (int i= 0; i < (*prob_node)->path_size; i++) {        
+            free((*prob_node)->path_vect[i]);
         }
-        free((*prob_node)->matrix);
+        free((*prob_node)->path_vect);
         return;
     }
     free((*prob_node)->diamond_vect);

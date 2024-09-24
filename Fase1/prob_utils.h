@@ -45,7 +45,7 @@ int read_problem(Files *fblock, ProbInfo **prob);
  */
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node);
 
-void Get_tarefa(ProbInfo **prob, Files *fblock, int L, int C);
+int check_prob(ProbInfo **prob, Files *fblock);
 
 /*
  * t1_solver()
@@ -106,7 +106,7 @@ void t3_solver(FILE *fpOut, ProbInfo **prob_node);
  * Retorno: void
  */
 
-void path_vect_solver(ProbInfo **prob_node);
+int path_vect_solver(ProbInfo **prob_node);
 
 void free_prob_node_data(ProbInfo **prob_node);
 

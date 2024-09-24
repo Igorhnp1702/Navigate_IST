@@ -18,13 +18,13 @@ typedef struct _files {
 } Files;
 
 
-typedef struct _path_vect{
+typedef struct _cell{
     
     int row;
     int col;
-    int energy;
+    int energy;    
 
-}path_vect;
+}cell;
 
 typedef struct _prob_info{
     
@@ -36,9 +36,9 @@ typedef struct _prob_info{
     int tarefa;
     int l_2;
     int c_2;
-    int flag;
+    int bad;
     int *diamond_vect;
-    path_vect *path_vect;
+    cell **path_vect;
     int path_size;
     int diamond_size;
     int **matrix;
