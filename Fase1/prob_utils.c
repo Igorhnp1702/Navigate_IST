@@ -135,7 +135,9 @@ int read_problem(Files *fblock, ProbInfo **prob){
 
         while (numbs_before_diamond_start != 0) //skip the useless numbers
         {
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
             numbs_before_diamond_start--;
             remaining_nums--;
         }
@@ -146,7 +148,9 @@ int read_problem(Files *fblock, ProbInfo **prob){
         while (numbs_2_read_to_diamond != 0)
         {
             
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
             
             remaining_nums--;
             dist_Ctracker_center = abs(c_1 - column_tracker);
@@ -167,7 +171,9 @@ int read_problem(Files *fblock, ProbInfo **prob){
 
         while (remaining_nums != 0) //skip the rest of the map
         {
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
             remaining_nums--;
         }                
     }
@@ -182,9 +188,13 @@ int check_prob(ProbInfo **prob, Files *fblock) {
 
     if(((*prob)->k) == 0){
         (*prob)->task = 3;        
-        fscanf(fblock->Input, "%d", &aux);
+        if(fscanf(fblock->Input, "%d", &aux)!= 1){
+            exit(0);
+        }
         (*prob)->l_2 = aux;
-        fscanf(fblock->Input, "%d", &aux);
+        if(fscanf(fblock->Input, "%d", &aux)!= 1){
+            exit(0);
+        }
         (*prob)->c_2 = aux;
 
         /* if the end position is out of bounds */
@@ -195,7 +205,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
             //skip the map
             while (remaining_nums != 0)
             {
-                fscanf(fblock->Input, "%d", &aux);
+                if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                    exit(0);
+                }
                 remaining_nums--;
             }    
             return exit_signal;
@@ -219,7 +231,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         exit_signal++;
         while (remaining_nums != 0) // skip the map
         {
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
             remaining_nums--;
         }  
         return exit_signal; 
@@ -230,7 +244,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         exit_signal++;
         while (remaining_nums != 0) // skip the map
         {
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
             remaining_nums--;
         }  
         return exit_signal; 
@@ -248,7 +264,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
 
         while(numbs_2_first_cell != 0) //skip the numbers before the path
         {
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
             numbs_2_first_cell--;
             remaining_nums--;
             column_tracker++;  
@@ -261,7 +279,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
                 
         while(i < (*prob)->path_size){ //fill the path vector
 
-            fscanf(fblock->Input, "%d", &aux); // get an integer
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){// get an integer
+                exit(0);
+            } 
             remaining_nums--;
 
             for(j = 0; j < (*prob)->path_size; j++){
@@ -282,7 +302,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         }        
         while (remaining_nums != 0) 
         {
-            fscanf(fblock->Input, "%d", &aux);
+            if(fscanf(fblock->Input, "%d", &aux)!=1){
+                exit(0);
+            }
             remaining_nums--;
         }
         return exit_signal;                                  
