@@ -7,3 +7,5 @@ Fase1/TestOutputs/
 */navigate
 *.json
 .vscode/
+*.txt
+*.out
