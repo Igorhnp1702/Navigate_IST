@@ -95,7 +95,16 @@ val:
 	valgrind --leak-check=full ./navigate  ./TestInputs/Medios02/t6007.1maps ; \
 	valgrind --leak-check=full ./navigate  ./TestInputs/Medios02/t6008.1maps ; \
 	valgrind --leak-check=full ./navigate  ./TestInputs/Medios02/t6009.1maps ; \
-	valgrind --leak-check=full ./navigate  ./TestInputs/Medios02/t6010.1maps 
+	valgrind --leak-check=full ./navigate  ./TestInputs/Medios02/t6010.1maps ;\
+	\
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8001.1maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8002.1maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8003.1maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8004.1maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8005.1maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8006.1maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Avancados01/t8007.1maps ; 
+	
 
 run:
 	./navigate  ./TestInputs/Simples01/t0001.1maps ; \
@@ -155,7 +164,15 @@ run:
 	./navigate  ./TestInputs/Medios02/t6007.1maps ; \
 	./navigate  ./TestInputs/Medios02/t6008.1maps ; \
 	./navigate  ./TestInputs/Medios02/t6009.1maps ; \
-	./navigate  ./TestInputs/Medios02/t6010.1maps 
+	./navigate  ./TestInputs/Medios02/t6010.1maps ; \
+	\
+	./navigate  ./TestInputs/Avancados01/t8001.1maps ; \
+	./navigate  ./TestInputs/Avancados01/t8002.1maps ; \
+	./navigate  ./TestInputs/Avancados01/t8003.1maps ; \
+	./navigate  ./TestInputs/Avancados01/t8004.1maps ; \
+	./navigate  ./TestInputs/Avancados01/t8005.1maps ; \
+	./navigate  ./TestInputs/Avancados01/t8006.1maps ; \
+	./navigate  ./TestInputs/Avancados01/t8007.1maps ; 
 
 move:
 	mv ./TestInputs/Simples01/t0*.sol1maps -t ./TestOutputs/Nossos/Simples01/ ;\
@@ -164,6 +181,7 @@ move:
 	mv ./TestInputs/Simples02/t3*.sol1maps -t ./TestOutputs/Nossos/Simples02/ ;\
 	mv ./TestInputs/Medios01/t4*.sol1maps -t ./TestOutputs/Nossos/Medios01/   ;\
 	mv ./TestInputs/Medios02/t6*.sol1maps -t ./TestOutputs/Nossos/Medios02/	  ;\
+	mv ./TestInputs/Avancados01/t8*.sol1maps -t ./TestOutputs/Nossos/Avancados01/	 
 
 diffs:
 	diff -s ./TestInputs/Simples01/t0001.sol1maps ./TestOutputs/Corretos/Simples01/t0001.query ; \
@@ -202,6 +220,7 @@ diffs:
 	diff -s ./TestInputs/Simples02/t3006.sol1maps ./TestOutputs/Corretos/Simples02/t3006.query ; \
 	diff -s ./TestInputs/Simples02/t3007.sol1maps ./TestOutputs/Corretos/Simples02/t3007.query ; \
 	diff -s ./TestInputs/Simples02/t3008.sol1maps ./TestOutputs/Corretos/Simples02/t3008.query ; \
+	\
 	diff -s ./TestInputs/Medios01/t4001.sol1maps ./TestOutputs/Corretos/Medios01/t4001.query ; \
 	diff -s ./TestInputs/Medios01/t4002.sol1maps ./TestOutputs/Corretos/Medios01/t4002.query ; \
 	diff -s ./TestInputs/Medios01/t4003.sol1maps ./TestOutputs/Corretos/Medios01/t4003.query ; \
@@ -223,6 +242,15 @@ diffs:
 	diff -s ./TestInputs/Medios02/t6008.sol1maps ./TestOutputs/Corretos/Medios02/t6008.query ; \
 	diff -s ./TestInputs/Medios02/t6009.sol1maps ./TestOutputs/Corretos/Medios02/t6009.query ; \
 	diff -s ./TestInputs/Medios02/t6010.sol1maps ./TestOutputs/Corretos/Medios02/t6010.query ; \
+	\
+	diff -s ./TestInputs/Avancados01/t8001.sol1maps ./TestOutputs/Corretos/Avancados01/t8001.query ; \
+	diff -s ./TestInputs/Avancados01/t8002.sol1maps ./TestOutputs/Corretos/Avancados01/t8002.query ; \
+	diff -s ./TestInputs/Avancados01/t8003.sol1maps ./TestOutputs/Corretos/Avancados01/t8003.query ; \
+	diff -s ./TestInputs/Avancados01/t8004.sol1maps ./TestOutputs/Corretos/Avancados01/t8004.query ; \
+	diff -s ./TestInputs/Avancados01/t8005.sol1maps ./TestOutputs/Corretos/Avancados01/t8005.query ; \
+	diff -s ./TestInputs/Avancados01/t8006.sol1maps ./TestOutputs/Corretos/Avancados01/t8006.query ; \
+	diff -s ./TestInputs/Avancados01/t8007.sol1maps ./TestOutputs/Corretos/Avancados01/t8007.query  
+	
 
 	
 
