@@ -13,21 +13,23 @@
 
 int read_problem(Files *fblock, ProbInfo **prob){
     
-    int L, C, l_1, c_1, k, prob_flag = 0, aux;
-    
+    int L, C, l_1, c_1, k, task, inicial_energy, prob_flag = 0, aux;
+
     (*prob)->bad = 0; /* so far, its a good problem */
     if (fblock->Input == NULL) {        
         exit(0);
     }
 
-    if((fscanf(fblock->Input, "%d %d %d %d %d", &L, &C, &l_1, &c_1, &k)) != EOF){ /* read the header from file to memory */
+    if((fscanf(fblock->Input, "%d %d %d %d %d %d %d", &L, &C, &task, &l_1, &c_1, &k, &inicial_energy)) != EOF){ /* read the header from file to memory */
         
         int remaining_nums = L * C;     // remaining map cells to read from the file        
         (*prob)->L = L;
-        (*prob)->C = C; 
+        (*prob)->C = C;
+        (*prob)->task = task;
         (*prob)->l_1 = l_1; 
         (*prob)->c_1 = c_1; 
-        (*prob)->k = k; 
+        (*prob)->k = k;
+        (*prob)->inicial_energy = inicial_energy; 
         prob_flag = 1;
         
         /* analyze the parameters */        
@@ -186,44 +188,27 @@ int check_prob(ProbInfo **prob, Files *fblock) {
     int aux = 0;
     int exit_signal = 0;
 
-    if(((*prob)->k) == 0){
-        (*prob)->task = 3;        
-        if(fscanf(fblock->Input, "%d", &aux)!= 1){
-            exit(0);
-        }
-        (*prob)->l_2 = aux;
-        if(fscanf(fblock->Input, "%d", &aux)!= 1){
-            exit(0);
-        }
-        (*prob)->c_2 = aux;
-
-        /* if the end position is out of bounds */
-        if(((*prob)->l_2 > (*prob)->L || (*prob)->l_2 <= 0) || ((*prob)->c_2 > (*prob)->C || (*prob)->c_2 <= 0)){
-            
-            (*prob)->bad = 1; /* it's a bad problem */
-            exit_signal++;            
-            //skip the map
-            while (remaining_nums != 0)
-            {
-                if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                    exit(0);
-                }
-                remaining_nums--;
-            }    
-            return exit_signal;
-        }
-    }
-    else if((*prob)->k < 0){
-        (*prob)->task = 1;
-        (*prob)->l_2 = -1;
-        (*prob)->c_2 = -1;
-    }
-    else if ((*prob)->k > 0){
+    if (((*prob)->task) == -2){
         (*prob)->task = 2;
-        (*prob)->l_2 = -1;
-        (*prob)->c_2 = -1;
     }
-      
+    else if(((*prob)->task) > 0){
+        (*prob)->minimum_energy = (*prob)->task;
+        (*prob)->task = 1;
+    }
+    else{
+        (*prob)->bad = 1; /* it's a bad problem */
+        exit_signal++;
+        while (remaining_nums != 0) // skip the map
+        {
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
+            remaining_nums--;
+        }  
+        return exit_signal;
+    }
+
+
     /* if the start position is out of bounds */
     if((((*prob)->l_1 > (*prob)->L || (*prob)->l_1 <= 0) || 
     ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 <= 0)) && (*prob)->bad == 0){
@@ -251,64 +236,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         }  
         return exit_signal; 
     }
-    if ((*prob)->task == 3){
-                
-        exit_signal++;        // no diamond to read, the path is in memory
-        int i = 0, j;
-        int line_tracker = 1, column_tracker = 1;   // trackers to know my position on the map, while reading the file          
-        int numbs_2_first_cell;                
-                                               
-        numbs_2_first_cell = path_vect_solver(prob);        
-        
-        // read the file and save the path in memory
 
-        while(numbs_2_first_cell != 0) //skip the numbers before the path
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            numbs_2_first_cell--;
-            remaining_nums--;
-            column_tracker++;  
-            if(column_tracker > (*prob)->C){
-                column_tracker = 1;
-                line_tracker++;
-            }
-        }
-        i = 0;
-                
-        while(i < (*prob)->path_size){ //fill the path vector
-
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){// get an integer
-                exit(0);
-            } 
-            remaining_nums--;
-
-            for(j = 0; j < (*prob)->path_size; j++){
-
-                // see if it belongs to the path
-                if(((*prob)->path_vect[j]->row == line_tracker) && ((*prob)->path_vect[j]->col == column_tracker)){
-                    (*prob)->path_vect[j]->energy = aux;
-                    i++;
-                    break;
-                }
-            }
-            // update the trackers
-            column_tracker++;  
-            if(column_tracker > (*prob)->C ){
-                column_tracker = 1;
-                line_tracker++;
-            }                          
-        }        
-        while (remaining_nums != 0) 
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!=1){
-                exit(0);
-            }
-            remaining_nums--;
-        }
-        return exit_signal;                                  
-    }
     return exit_signal;
 }
 

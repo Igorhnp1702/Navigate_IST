@@ -76,12 +76,13 @@ typedef struct _prob_info{
     
     int L;
     int C;
+    int task;
     int l_1;
     int c_1;
     int k;
-    int task;
-    int l_2;
-    int c_2;
+    int inicial_energy;
+    int minimum_energy;
+
     int bad;
     int *diamond_vect;
     cell **path_vect;
