@@ -47,6 +47,17 @@ typedef struct _cell{
 
 }cell;
 
+
+typedef struct _cel_list
+{
+    cell celula;
+    Cel_List next; 
+
+}*Cel_List;
+
+
+
+
 /*
  * ProbInfo datatype
  *

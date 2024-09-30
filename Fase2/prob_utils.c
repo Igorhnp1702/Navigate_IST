@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-int read_problem(Files *fblock, ProbInfo **prob){z
+int read_problem(Files *fblock, ProbInfo **prob){
     
     int L, C, l_1, c_1, k, task, inicial_energy, prob_flag = 0, aux;
 
@@ -256,12 +256,34 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     return;    
 }
 
+Cel_List DFS(ProbInfo **prob_node){
+
+    Cel_List c_list = (Cel_List)calloc(1,sizeof(struct _cel_list));
+
+
+
+
+
+
+    return c_list;
+}
+
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     int max_pos_val = 0;
     int i;
     
     /* Traverse the diamond and find the cell with the maximum positive energy */
+    
+    
+
+
+
+    
+    
+    
+    
+    
     
     for(i = 0; i < (*prob_node)->diamond_size; i++){
                     
