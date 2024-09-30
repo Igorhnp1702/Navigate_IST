@@ -134,7 +134,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         (*prob)->diamond_size = numbs_2_read_to_diamond; 
 
         if (numbs_2_read_to_diamond > 0){        
-            (*prob)->diamond_vect = (int*)calloc(numbs_2_read_to_diamond, sizeof(int));
+            (*prob)->diamond_vect = (cell*)calloc(numbs_2_read_to_diamond, sizeof(cell));
         }        
         i = 0;
 
@@ -163,7 +163,9 @@ int read_problem(Files *fblock, ProbInfo **prob){
 
             if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
     
-                (*prob)->diamond_vect[i] = aux;
+                (*prob)->diamond_vect[i].energy = aux;
+                (*prob)->diamond_vect[i].row = line_tracker;
+                (*prob)->diamond_vect[i].col = column_tracker;
                 i++;
                 numbs_2_read_to_diamond--;
             }
