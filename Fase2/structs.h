@@ -47,14 +47,12 @@ typedef struct _cell{
 
 }cell;
 
+typedef struct _cel_list *Cel_List;
 
-typedef struct _cel_list
-{
+struct _cel_list {
     cell celula;
     Cel_List next; 
-
-}*Cel_List;
-
+};
 
 
 
