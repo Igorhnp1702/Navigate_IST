@@ -29,7 +29,7 @@ valtest: # test a specific file for memory leaks
 #code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query		
 
 difftest: # test a specific file for differences in the solution
-	./navigate ./TestInputs/$(	diff -s ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
+	./navigate ./TestInputs/$(ARG).maps ;	diff -s ./TestInputs/$(ARG).solmaps ./TestOutputs/Corretos/$(ARG).query
 #code ./TestInputs/$(ARG).sol1maps ./TestOutputs/Corretos/$(ARG).query
 
 valall: val move # test all files for memory leaks 
@@ -120,7 +120,7 @@ run:
 	./navigate  ./TestInputs/t1003.maps ; \
 	./navigate  ./TestInputs/t1004.maps ; \
 	./navigate  ./TestInputs/t1005.maps ; \
-	./navigate  ./TestInputs/t100
+	./navigate  ./TestInputs/t1004.maps ; \
 	./navigate  ./TestInputs/t1007.maps ; \
 	./navigate  ./TestInputs/t1008.maps ; \
 	./navigate  ./TestInputs/t1009.maps ; \
