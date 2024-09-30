@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-int read_problem(Files *fblock, ProbInfo **prob){
+int read_problem(Files *fblock, ProbInfo **prob){z
     
     int L, C, l_1, c_1, k, task, inicial_energy, prob_flag = 0, aux;
 
@@ -244,19 +244,15 @@ int check_prob(ProbInfo **prob, Files *fblock) {
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     
     if((*prob_node)->task == 1){
-         fprintf(fpOut, "%d %d %d %d %d\n\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k);
+         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n\n", 
+        (*prob_node)->L, (*prob_node)->C, (*prob_node)->minimum_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->inicial_energy);
     }
 
     if((*prob_node)->task == 2){
-         fprintf(fpOut, "%d %d %d %d %d\n\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k);
+         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n\n", 
+        (*prob_node)->L, (*prob_node)->C, (*prob_node)->minimum_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->inicial_energy);
     }
 
-    if((*prob_node)->task == 3){
-         fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
-    }
     return;    
 }
 
