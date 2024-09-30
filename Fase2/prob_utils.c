@@ -261,20 +261,9 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     return;    
 }
 
-Cel_List DFS(ProbInfo **prob_node){
+void DFS(ProbInfo** prob, ) {
 
-    Cel_List c_list = (Cel_List)calloc(1,sizeof(struct _cel_list));
-
-    while(){
-
-
-
-
-    }
-
-
-
-
+    Cel_List c_list = (Cel_List)calloc(1, sizeof(struct _cel_list));
     return c_list;
 }
 
