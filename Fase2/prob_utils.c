@@ -10,6 +10,9 @@
 #include "prob_utils.h"
 #include <stdio.h>
 
+//ler coordenadas no read_problem
+// DFS acessar coordenadas do read_problem
+
 
 int read_problem(Files *fblock, ProbInfo **prob){
     
@@ -260,7 +263,12 @@ Cel_List DFS(ProbInfo **prob_node){
 
     Cel_List c_list = (Cel_List)calloc(1,sizeof(struct _cel_list));
 
+    while(){
 
+
+
+
+    }
 
 
 

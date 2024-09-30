@@ -95,7 +95,7 @@ typedef struct _prob_info{
     int minimum_energy;
 
     int bad;
-    int *diamond_vect;
+    cell *diamond_vect;
     cell **path_vect;
     int path_size;
     int diamond_size;    
