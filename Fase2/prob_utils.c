@@ -249,22 +249,43 @@ int check_prob(ProbInfo **prob, Files *fblock) {
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     
     if((*prob_node)->task == 1){
-         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n\n", 
+         fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->minimum_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->inicial_energy);
     }
 
     if((*prob_node)->task == 2){
-         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n\n", 
+         fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
         (*prob_node)->L, (*prob_node)->C, (*prob_node)->minimum_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->inicial_energy);
     }
 
     return;    
 }
 
-void DFS(ProbInfo** prob, ) {
+/*void DFS(ProbInfo** prob, ) {
 
     Cel_List c_list = (Cel_List)calloc(1, sizeof(struct _cel_list));
     return c_list;
+}*/
+void DFS(ProbInfo* prob, int row, int col, int energy, Cel_List** c_list) {
+
+    if (row >= 1 && row <= prob->L && col >= 1 && col <= prob->C) {
+
+        int index = (row - 1) * prob->C + col - 1;
+
+        if (index >= 0 && index < prob->diamond_size && prob->diamond_vect[index].energy == energy) {
+
+            Cel_List* new_cell = (Cel_List*)calloc(1, sizeof(Cel_List));
+            (*new_cell)->celula.row = row;
+            (*new_cell)->celula.col = col;
+            (*new_cell)->next = **c_list;
+            *c_list = new_cell;
+
+            DFS(prob, row - 1, col, energy, c_list);
+            DFS(prob, row + 1, col, energy, c_list);
+            DFS(prob, row, col - 1, energy, c_list);
+            DFS(prob, row, col + 1, energy, c_list);
+        }
+    }
 }
 
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){

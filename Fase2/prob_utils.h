@@ -77,7 +77,7 @@ int path_vect_solver(ProbInfo **prob_node);
  * Retorno: Void
  */
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node);
-
+void DFS(ProbInfo* prob, int row, int col, int energy, Cel_List** c_list);
 /*
  * t1_solver()
  *
