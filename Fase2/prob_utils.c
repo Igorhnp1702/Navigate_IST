@@ -10,7 +10,7 @@
 #include "prob_utils.h"
 #include <stdio.h>
 
-//ler coordenadas no read_problem
+// ler coordenadas no read_problem
 // DFS acessar coordenadas do read_problem
 
 
@@ -266,27 +266,53 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     Cel_List c_list = (Cel_List)calloc(1, sizeof(struct _cel_list));
     return c_list;
 }*/
-void DFS(ProbInfo* prob, int row, int col, int energy, Cel_List** c_list) {
 
-    if (row >= 1 && row <= prob->L && col >= 1 && col <= prob->C) {
-
-        int index = (row - 1) * prob->C + col - 1;
-
-        if (index >= 0 && index < prob->diamond_size && prob->diamond_vect[index].energy == energy) {
-
-            Cel_List* new_cell = (Cel_List*)calloc(1, sizeof(Cel_List));
-            (*new_cell)->celula.row = row;
-            (*new_cell)->celula.col = col;
-            (*new_cell)->next = **c_list;
-            *c_list = new_cell;
-
-            DFS(prob, row - 1, col, energy, c_list);
-            DFS(prob, row + 1, col, energy, c_list);
-            DFS(prob, row, col - 1, energy, c_list);
-            DFS(prob, row, col + 1, energy, c_list);
+void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path) {
+    
+    if (row >= 1 && row <= (*prob_node)->L && col >= 1 && col <= (*prob_node)->C) {
+        int index = (row - 1) * (*prob_node)->C + col - 1;
+        if (index >= 0 && index < (*prob_node)->diamond_size && (*prob_node)->diamond_vect[index].energy == energy) {
+            if (k == 0) {
+                if (energy > *max_energy) {
+                    *max_energy = energy;
+                    *max_path_length = 0;
+                    struct _cel_list* new_cell = (struct _cel_list*)calloc(1, sizeof(struct _cel_list));
+                    new_cell->celula.row = row;
+                    new_cell->celula.col = col;
+                    new_cell->next = **max_path;
+                    **max_path = new_cell;
+                }
+            } else {
+                DFS_max_energy(prob_node, row - 1, col, energy, k - 1, max_energy, max_path_length, max_path);
+                DFS_max_energy(prob_node, row + 1, col, energy, k - 1, max_energy, max_path_length, max_path);
+                DFS_max_energy(prob_node, row, col - 1, energy, k - 1, max_energy, max_path_length, max_path);
+                DFS_max_energy(prob_node, row, col + 1, energy, k - 1, max_energy, max_path_length, max_path);
+            }
         }
     }
 }
+
+
+void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
+    int max_energy = 0;
+    int max_path_length = 0;
+    struct _cel_list* max_path = NULL;
+    struct _cel_list** max_path_ptr = &max_path;
+    for (int i = 0; i < (*prob_node)->diamond_size; i++) {
+        DFS_max_energy(prob_node, (*prob_node)->diamond_vect[i].row, (*prob_node)->diamond_vect[i].col, (*prob_node)->diamond_vect[i].energy, (*prob_node)->k, &max_energy, &max_path_length, &max_path_ptr);
+    }
+    fprintf(fpOut, "%d %d %d %d %d %d\n", (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, max_energy);
+    struct _cel_list* current = *max_path_ptr;
+    while (current != NULL) {
+        fprintf(fpOut, "%d %d %d\n", current->celula.row, current->celula.col, max_energy);
+        current = current->next;
+    }
+    fprintf(fpOut, "\n");
+    return;
+}
+
+
+
 
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
@@ -294,14 +320,6 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int i;
     
     /* Traverse the diamond and find the cell with the maximum positive energy */
-    
-    
-
-
-
-    
-    
-    
     
     
     
@@ -317,7 +335,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     return;
 }
 
-void t2_solver(FILE *fpOut, ProbInfo **prob_node){
+void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node){
 
     int sum = 0, i;
 

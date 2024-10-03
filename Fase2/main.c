@@ -43,13 +43,10 @@ int main (int argc, char* argv[]){
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->task == 1){
-            t1_solver(fblock->Output, &problem);
+            t2_solver(fblock->Output, &problem);
         }
         else if(problem->task == 2){
             t2_solver(fblock->Output, &problem);
-        }
-        else if(problem->task == 3){
-            t3_solver(fblock->Output, &problem);
         }
         free_prob_node_data(&problem); 
         free(problem);

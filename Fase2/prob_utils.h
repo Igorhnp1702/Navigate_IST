@@ -77,7 +77,11 @@ int path_vect_solver(ProbInfo **prob_node);
  * Retorno: Void
  */
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node);
-void DFS(ProbInfo* prob, int row, int col, int energy, Cel_List** c_list);
+
+void t2_solver(FILE *fpOut, ProbInfo **prob_node);
+
+void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path);
+
 /*
  * t1_solver()
  *
@@ -106,7 +110,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node);
  * 
  * Retorno: void
  */
-void t2_solver(FILE *fpOut, ProbInfo **prob_node);
+void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node);
 
 /*
  * t3_solver()
