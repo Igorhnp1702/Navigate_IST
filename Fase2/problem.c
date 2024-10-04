@@ -131,7 +131,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
             }           
         }
     
-        numbs_2_read_to_diamond--;  // the center of the diamond does not count
+        // numbs_2_read_to_diamond--;  // the center of the diamond does not count
         (*prob)->diamond_size = numbs_2_read_to_diamond; 
 
         if (numbs_2_read_to_diamond > 0){        
@@ -162,11 +162,12 @@ int read_problem(Files *fblock, ProbInfo **prob){
             dist_Ctracker_center = abs(c_1 - column_tracker);
             dist_Ltracker_center = abs(l_1 - line_tracker);
 
-            if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
+            if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center >= 0)){
     
                 (*prob)->diamond_vect[i].energy = aux;
                 (*prob)->diamond_vect[i].row = line_tracker;
                 (*prob)->diamond_vect[i].col = column_tracker;
+                (*prob)->diamond_vect[i].isVisited = 0;
                 i++;
                 numbs_2_read_to_diamond--;
             }
@@ -354,8 +355,8 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     
     for(i = 0; i < (*prob_node)->diamond_size; i++){
                     
-        if((*prob_node)->diamond_vect[i] > max_pos_val){
-            max_pos_val = (*prob_node)->diamond_vect[i];
+        if((*prob_node)->diamond_vect[i].energy > max_pos_val){
+            max_pos_val = (*prob_node)->diamond_vect[i].energy;
         }    
     }
 
@@ -372,7 +373,7 @@ void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node){
 
     for(i = 0; i < (*prob_node)->diamond_size; i++){
         if((*prob_node)->diamond_vect[i] > 0){
-            sum += (*prob_node)->diamond_vect[i];
+            sum += (*prob_node)->diamond_vect[i].energy;
         }
     }
             
@@ -381,12 +382,12 @@ void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node){
     return;
 }
 
-void t3_solver(FILE *fpOut, ProbInfo **prob_node){
+void print_path(FILE *fpOut, ProbInfo **prob_node){
 
     int i;    
     
-    fprintf(fpOut, "%d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, 
-        (*prob_node)->k, (*prob_node)->l_2, (*prob_node)->c_2);
+    fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        (*prob_node)->k, (*prob_node)->inicial_energy, (*prob_node)->minimum_energy);
 
     /* Just read the matrix from start to finish and print the values in each entry */
     

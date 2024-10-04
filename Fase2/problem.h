@@ -113,7 +113,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node);
 void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node);
 
 /*
- * t3_solver()
+ * print_path()
  *
  * Argumentos:
  * 
@@ -125,7 +125,7 @@ void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node);
  * 
  * Retorno: void
  */
-void t3_solver(FILE *fpOut, ProbInfo **prob_node);
+void print_path(FILE *fpOut, ProbInfo **prob_node);
 
 /*
  * free_prob_node()

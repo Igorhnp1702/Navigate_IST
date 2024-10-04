@@ -38,12 +38,14 @@ typedef struct _files {
  * -row: The row in which the cell is located
  * -col: The column in which the cell is located
  * -energy: The energy the cell possesses
+ * -isVisited: integer that tells the program if the cell was analyzed or not
  */
 typedef struct _cell{
     
     int row;
     int col;
-    int energy;    
+    int energy;
+    int isVisited;    
 
 }cell;
 
