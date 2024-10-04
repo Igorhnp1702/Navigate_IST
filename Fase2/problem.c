@@ -372,7 +372,7 @@ void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node){
     /* Traverse the diamond, find cells with positive energy and add them */
 
     for(i = 0; i < (*prob_node)->diamond_size; i++){
-        if((*prob_node)->diamond_vect[i] > 0){
+        if((*prob_node)->diamond_vect[i].energy > 0){
             sum += (*prob_node)->diamond_vect[i].energy;
         }
     }
@@ -401,8 +401,8 @@ void print_path(FILE *fpOut, ProbInfo **prob_node){
 
 int path_vect_solver(ProbInfo **prob_node){
 
-    int line_diff = (*prob_node)->l_2 - (*prob_node)->l_1;   // difference of lines between the starting cell and the target cell
-    int column_diff = (*prob_node)->c_2 - (*prob_node)->c_1; // difference of columns between the starting cell and the target cell
+    int line_diff = (*prob_node)->l_1;   // difference of lines between the starting cell and the target cell
+    int column_diff = (*prob_node)->c_1; // difference of columns between the starting cell and the target cell
     int L_steps = 0, C_steps = 0, new_line = (*prob_node)->l_1, new_column = (*prob_node)->c_1;
     int i, first_cell_line, first_cell_col, numbs_2_first;
 
