@@ -19,7 +19,8 @@ int read_problem(Files *fblock, ProbInfo **prob){
     int L, C, l_1, c_1, k, task, inicial_energy, prob_flag = 0, aux;
 
     (*prob)->bad = 0; /* so far, its a good problem */
-    if (fblock->Input == NULL) {        
+
+    if (fblock->Input == NULL) {   // nós já verificámos isto     
         exit(0);
     }
 
@@ -191,7 +192,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
 
     int remaining_nums = (*prob)->L * (*prob)->C;                 // remaining map cells to read from the file        
     int aux = 0;
-    int exit_signal = 0;
+    int exit_signal = 0;                                          // 1 = read_problem() terminates earlier
 
     if (((*prob)->task) == -2){
         (*prob)->task = 2;
@@ -213,6 +214,34 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         return exit_signal;
     }
 
+    /* if the initial energy is a non-positive number */
+    if((*prob)->inicial_energy <= 0){
+        (*prob)->bad = 1; /* it's a bad problem */
+        exit_signal++;
+        while (remaining_nums != 0) // skip the map
+        {
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
+            remaining_nums--;
+        }  
+        return exit_signal; 
+    }
+
+    
+    /* if the number of steps is not valid */
+    if((*prob)->k < 0 || (*prob)->k >= (*prob)->L * (*prob)->C){
+        (*prob)->bad = 1; /* it's a bad problem */
+        exit_signal++;
+        while (remaining_nums != 0) // skip the map
+        {
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
+            remaining_nums--;
+        }  
+        return exit_signal; 
+    }
 
     /* if the start position is out of bounds */
     if((((*prob)->l_1 > (*prob)->L || (*prob)->l_1 <= 0) || 
