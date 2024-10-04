@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include "structs.h"
 #include "IOmodule.h"
-#include "prob_utils.h"
+#include "problem.h"
 
 int main (int argc, char* argv[]){
 
@@ -27,7 +27,6 @@ int main (int argc, char* argv[]){
         exit(0);
     }
     
-
     /* Resolução de problemas */
     ProbInfo *problem;
     int alert;
@@ -38,8 +37,7 @@ int main (int argc, char* argv[]){
 
     while(alert == 1){        
 
-        if(problem->bad == 1){
-            
+        if(problem->bad == 1){            
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->task == 1){

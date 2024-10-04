@@ -7,7 +7,7 @@
  *  Mónica Ferreira ist1106520
  ******************************************************************************/
 
-#include "prob_utils.h"
+#include "problem.h"
 #include <stdio.h>
 
 // ler coordenadas no read_problem
