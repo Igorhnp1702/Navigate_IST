@@ -45,7 +45,8 @@ typedef struct _cell{
     int row;
     int col;
     int energy;
-    int isVisited;    
+    int isVisited;
+    int isRelevant;    
 
 }cell;
 
@@ -55,8 +56,6 @@ struct _cel_list {
     cell celula;
     Cel_List next; 
 };
-
-
 
 /*
  * ProbInfo datatype
@@ -85,21 +84,25 @@ struct _cel_list {
 
 typedef struct _prob_info{
     
+    // problem parameters
     int L;
     int C;
     int task;
     int l_1;
     int c_1;
     int k;
-    int inicial_energy;
+    int initial_energy;
     int minimum_energy;
-    int max_energy;
-    
+        
+    // problem data
     int bad;
-    cell *diamond_vect;
+    cell ***reduced_map;
     cell **path_vect;
-    int path_size;
-    int diamond_size;    
+    int diamond_size;
+    int path_size; 
+    int max_energy;
+    int reduced_map_lines;
+    int reduced_map_columns;   
 
 }ProbInfo;
 

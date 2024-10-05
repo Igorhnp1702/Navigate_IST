@@ -47,21 +47,7 @@ int read_problem(Files *fblock, ProbInfo **prob);
  */
 int check_prob(ProbInfo **prob, Files *fblock);
 
-/*
- * path_vect_solver()
- *
- * Argumentos:
- * 
- *  -prob_node = prob = apontador para um boco de memória que contém os dados do problema
- * 
- * Descrição: Constrói a matriz das células que pertencem ao caminho pela ordem em que são
- * percorridas e calcula quantas células é preciso saltar até o programa encontrar uma célula
- * que pertence ao caminho
- * 
- * Retorno: Um inteiro com o número de células a ler antes de encontrar uma célula que pertence
- * ao caminho
- */
-int path_vect_solver(ProbInfo **prob_node);
+void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path);
 
 /*
  * bad_prob_ans()
@@ -77,10 +63,6 @@ int path_vect_solver(ProbInfo **prob_node);
  * Retorno: Void
  */
 void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node);
-
-void t2_solver(FILE *fpOut, ProbInfo **prob_node);
-
-void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path);
 
 /*
  * t1_solver()
@@ -110,7 +92,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node);
  * 
  * Retorno: void
  */
-void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node);
+void t2_solver(FILE *fpOut, ProbInfo **prob_node);
 
 /*
  * print_path()
@@ -120,8 +102,7 @@ void t2_solver_1_fase(FILE *fpOut, ProbInfo **prob_node);
  *  -fpOut = apontador para o ficheiro de saída onde deve ser impressa a solução do problema
  *  -prob_node = apontador para um bloco de memória que contém os dados do problema
  * 
- * Descrição: Função que resolve os problemas com a tarefa 3 e imprime a solução no ficheiro
- * de saída
+ * Descrição: Função que imprime a solução no ficheiro de saída
  * 
  * Retorno: void
  */

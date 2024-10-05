@@ -41,7 +41,7 @@ int main (int argc, char* argv[]){
             bad_prob_ans(fblock->Output, &problem);
         }
         else if(problem->task == 1){
-            t2_solver(fblock->Output, &problem);
+            t1_solver(fblock->Output, &problem);
         }
         else if(problem->task == 2){
             t2_solver(fblock->Output, &problem);
