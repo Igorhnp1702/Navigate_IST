@@ -5,6 +5,8 @@ Fase2/TestOutputs/
 *.query
 *.1maps
 *.sol1maps
+*.maps
+*.solmaps
 *.o
 */navigate
 *.json

@@ -52,9 +52,11 @@ int read_problem(Files *fblock, ProbInfo **prob){
         int first_cell_column;                              // column of the first cell that belongs to the diamond
         int dist_Ctracker_center;                           // distance between the column tracker and the column of the diamond center
         int dist_Ltracker_center;                           // distance between the line tracker and the line of the diamond center
-        int numbs_before_diamond_start;                     // number of integers to skip in order to find the first cell that belongs to the diamond
+        int numbs_before_reduced_map_start;                 // number of integers before the first cell of the reduced map
         int numbs_2_read_to_diamond;                        // number of integers to read from the file and save in the diamond's data structure 
-        int numbs_2_read_to_reduced_map;       
+        int numbs_2_read_to_reduced_map;                    // number of integers to store in the reduced map
+        //int reduced_map_range = 2 * radius;                 // range of the reduced map 
+        
         int i, j;                                           // iterators
     
         if(radius >= dist_to_edge_R){
@@ -73,24 +75,14 @@ int read_problem(Files *fblock, ProbInfo **prob){
             lines_missing_T = abs(dist_to_top - radius);
         }else lines_missing_T = 0; 
 
-        if(lines_missing_T == 0){ // top vertice of the diamond
-            first_cell_line = l_1 - radius;
-            first_cell_column = c_1;
-        }
+        //top left corner of the reduced map
+        first_cell_line = l_1 - radius + lines_missing_T;
+        first_cell_column = c_1 - radius + columns_missing_L;
         
-        if(lines_missing_T > 0 && lines_missing_T < c_1){ // lines_missing_T > 0, each line missing on top subtracts 1 to the column
-            first_cell_line = 1;            
-            first_cell_column = c_1 - lines_missing_T;
-        }
-
-        else{
-            first_cell_line = 1;            
-            first_cell_column = 1;
-        }      
-        
-        numbs_before_diamond_start = (first_cell_line-1)*C + first_cell_column - 1;
+        numbs_before_reduced_map_start = (first_cell_line-1)*C + first_cell_column - 1;
         numbs_2_read_to_diamond = 0;
-        numbs_2_read_to_reduced_map = (2*radius + 1) * (2*radius + 1);     
+        numbs_2_read_to_reduced_map = (2*radius + 1 - lines_missing_T - lines_missing_B) * \
+                                       (2*radius + 1 - columns_missing_L - columns_missing_R);     
                                 
         /************************************************************************************************
          * Explanation
@@ -129,7 +121,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         }
 
         (*prob)->reduced_map_columns = 2 * radius + 1 - (columns_missing_L + columns_missing_R);
-        (*prob)->reduced_map_lines = 2* radius + 1 - (lines_missing_B + lines_missing_T);
+        (*prob)->reduced_map_lines = 2 * radius + 1 - (lines_missing_B + lines_missing_T);
         (*prob)->diamond_size = numbs_2_read_to_diamond; 
 
         if (numbs_2_read_to_diamond > 0){        
@@ -145,12 +137,12 @@ int read_problem(Files *fblock, ProbInfo **prob){
         }        
         
 
-        while (numbs_before_diamond_start != 0) //skip the useless numbers
+        while (numbs_before_reduced_map_start != 0) //skip the useless numbers
         {
             if(fscanf(fblock->Input, "%d", &aux)!= 1){
                 exit(0);
             }
-            numbs_before_diamond_start--;
+            numbs_before_reduced_map_start--;
             remaining_nums--;
         }
         column_tracker = first_cell_column;
@@ -165,29 +157,37 @@ int read_problem(Files *fblock, ProbInfo **prob){
                 exit(0);
             }
             
-            remaining_nums--;
-            numbs_2_read_to_reduced_map--;
+            remaining_nums--;            
             dist_Ctracker_center = abs(c_1 - column_tracker);
             dist_Ltracker_center = abs(l_1 - line_tracker);
 
-            (*prob)->reduced_map[i][j]->energy = aux;
-            (*prob)->reduced_map[i][j]->row = line_tracker;
-            (*prob)->reduced_map[i][j]->col = column_tracker;
-            (*prob)->reduced_map[i][j]->isVisited = 0;            
-
-            if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center >= 0)){
+            if((dist_Ctracker_center <= radius) && (dist_Ltracker_center <= radius)){                
+                
+                numbs_2_read_to_reduced_map--;
+                if(i < (*prob)->reduced_map_lines && j < (*prob)->reduced_map_columns){
+                                    
+                    (*prob)->reduced_map[i][j]->energy = aux;
+                    (*prob)->reduced_map[i][j]->row = line_tracker;
+                    (*prob)->reduced_map[i][j]->col = column_tracker;
+                    (*prob)->reduced_map[i][j]->isVisited = 0;            
                     
-                (*prob)->reduced_map[i][j]->isRelevant = 1;                
-                numbs_2_read_to_diamond--;
-            }
-            
-            column_tracker++;
-            j++;  
+                    if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center >= 0)){
+                        
+                        (*prob)->reduced_map[i][j]->isRelevant = 1;                
+                        numbs_2_read_to_diamond--;
+                    }
+                    
+                    j++;
+                    if(j == (*prob)->reduced_map_columns){
+                        j = 0;
+                        i++;
+                    }
+                }
+            }          
+            column_tracker++;            
             if(column_tracker > C){
-                column_tracker = 1;
-                j = 0;
-                line_tracker++;
-                i++;
+                column_tracker = 1;                
+                line_tracker++;            
             }
         }
 
@@ -306,7 +306,7 @@ void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, i
     
     if (row >= 1 && row <= (*prob_node)->L && col >= 1 && col <= (*prob_node)->C) {
         int index = (row - 1) * (*prob_node)->C + col - 1;
-        if (index >= 0 && index < (*prob_node)->diamond_size && (*prob_node)->reduced_map[(*prob_node)->k][(*prob_node)->k].energy == energy) {
+        if (index >= 0 && index < (*prob_node)->diamond_size && (*prob_node)->reduced_map[(*prob_node)->k][(*prob_node)->k]->energy == energy) {
             if (k == 0) {
                 if (energy > *max_energy) {
                     *max_energy = energy;
@@ -327,6 +327,11 @@ void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, i
     }
 }
 
+void t1_solver(FILE *fpOut, ProbInfo **prob_node){
+
+    
+
+}
 
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int max_energy = 0;
@@ -334,7 +339,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     struct _cel_list* max_path = NULL;
     struct _cel_list** max_path_ptr = &max_path;
     
-    DFS_max_energy(prob_node, (*prob_node)->, (*prob_node)->diamond_vect[i].col, (*prob_node)->diamond_vect[i].energy, (*prob_node)->k, &max_energy, &max_path_length, &max_path_ptr);
+   // DFS_max_energy(prob_node, (*prob_node)->, (*prob_node)->diamond_vect[i].col, (*prob_node)->diamond_vect[i].energy, (*prob_node)->k, &max_energy, &max_path_length, &max_path_ptr);
     
     fprintf(fpOut, "%d %d %d %d %d %d\n", (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, max_energy);
     struct _cel_list* current = *max_path_ptr;
@@ -346,9 +351,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     return;
 }
 
-void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
-}
 
 void print_path(FILE *fpOut, ProbInfo **prob_node){
 
@@ -368,6 +371,14 @@ void print_path(FILE *fpOut, ProbInfo **prob_node){
 }
 
 void free_prob_node_data(ProbInfo **prob_node){    
-    
+    int i, j;
+
+    for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
+        for(j = 0; j < (*prob_node)->reduced_map_columns; j++){
+            free((*prob_node)->reduced_map[i][j]);
+        }
+        free((*prob_node)->reduced_map[i]);
+    }
+    free((*prob_node)->reduced_map);
     return;
 }

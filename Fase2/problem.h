@@ -7,13 +7,14 @@
  *  Mónica Ferreira ist1106520
  ******************************************************************************/
 
-#ifndef _prob_utils_
-#define _prob_utils_
+#ifndef _problem_
+#define _problem_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "structs.h"
+#include "IOmodule.h"
 
 /*
  * read_problem()

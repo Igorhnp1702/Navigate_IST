@@ -10,7 +10,22 @@
 #ifndef __IOmodule__
 #define __IOmodule__
 
-#include "structs.h"
+
+
+/*
+ * Files datatype
+ *
+ * Description: Block of memory with two file pointers
+ * 
+ * Members:
+ * 
+ * -Input: File pointer for the input file
+ * -Output: File pointer for the output file
+ */
+typedef struct _files {
+    FILE* Input;
+    FILE* Output;
+} Files;
 
 /*
  * malloc_str()
@@ -39,7 +54,7 @@ char* malloc_str(size_t str_len);
  *           Ficheiro bem invocado => 0
  * 
  */
-int check_ext(char *filename);
+int check_ext(char *filename, char *extension);
 
 /*
  * change_filenames_extension()

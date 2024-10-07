@@ -7,19 +7,19 @@
 # Mónica Ferreira ist1106520
 #############################################
 
-CFLAGS = -Wall -std=c99 -O3 #flags to use
+CFLAGS = -std=c99 -g #flags to use
 
-navigate: main.o IOmodule.o prob_utils.o #program compilation
+navigate: main.o IOmodule.o problem.o #program compilation
 	gcc $(CFLAGS) -o navigate main.o IOmodule.o problem.o
 	
-main.o: main.c structs.h IOmodule.h problem.h 
+main.o: structs.h IOmodule.h problem.h main.c
 	gcc $(CFLAGS) -c main.c	
 		
-IOmodule.o: IOmodule.h structs.h IOmodule.c
-	gcc $(CFLAGS) -c IOmodule.c
-
-problem.o: structs.h problem.h problem.c
+problem.o: structs.h IOmodule.h problem.h problem.c
 	gcc $(CFLAGS) -c problem.c
+
+IOmodule.o: IOmodule.h IOmodule.c
+	gcc $(CFLAGS) -c IOmodule.c
 
 clean: # clean object files	
 	rm *.o

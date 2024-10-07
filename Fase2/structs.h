@@ -13,21 +13,6 @@
 #include <stdio.h>
 
 /*
- * Files datatype
- *
- * Description: Block of memory with two file pointers
- * 
- * Members:
- * 
- * -Input: File pointer for the input file
- * -Output: File pointer for the output file
- */
-typedef struct _files {
-    FILE* Input;
-    FILE* Output;
-} Files;
-
-/*
  * Cell datatype
  *
  * Description: Block of memory that holds information about a cell

@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structs.h"
 #include "IOmodule.h"
 
 const char *extension_in = ".maps";
@@ -26,12 +25,12 @@ char* malloc_str(size_t str_len){
     return string;
 }
 
-int check_ext(char *filename)
+int check_ext(char *filename, char *extension)
 {
     char *aux;
     int argsize = 0, extsize = 0, start = 0, result = 0, i;
     
-    extsize = strlen(extension_in);
+    extsize = strlen(extension);
     argsize = strlen(filename);
     start = argsize - extsize;
 
@@ -43,7 +42,7 @@ int check_ext(char *filename)
         aux[i] = filename[i+start];
     }
 
-    if (strcmp(aux, extension_in) != 0){
+    if (strcmp(aux, extension) != 0){
         free(aux);
         return result + 1;
     }
@@ -87,7 +86,7 @@ Files *open_files(char* Input_Filename, Files **File){
     
     /* If the right extension is found */
     *File = NULL;
-    if(check_ext(Input_Filename) == 0){
+    if(check_ext(Input_Filename, extension_in) == 0){
 
         size_t Input_Filename_len = strlen(Input_Filename);
         size_t extension_in_len = strlen(extension_in);
