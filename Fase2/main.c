@@ -34,7 +34,7 @@ int main (int argc, char* argv[]){
         exit(0);
     }
     alert = read_problem(fblock, &problem);
-/*
+
     while(alert == 1){        
 
         if(problem->bad == 1){            
@@ -53,7 +53,7 @@ int main (int argc, char* argv[]){
         }
         alert = read_problem(fblock, &problem);       
     }
-    */
+    
     /* Prepara para fechar o programa */
     free_prob_node_data(&problem);
     free(problem);

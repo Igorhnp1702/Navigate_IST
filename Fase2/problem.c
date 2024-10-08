@@ -228,9 +228,9 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         return exit_signal;
     }
 
-    /* if the initial energy is a non-positive number */
-    if((*prob)->initial_energy <= 0){
-        (*prob)->bad = 1; /* it's a bad problem */
+    /* if the dimensions of the matrix are negative */
+    if(((*prob)->L <= 0 || (*prob)->C <= 0) && (*prob)->bad == 0){
+        (*prob)->bad = 1; /* it's a bad problem */        
         exit_signal++;
         while (remaining_nums != 0) // skip the map
         {
@@ -242,10 +242,23 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         return exit_signal; 
     }
 
+    /* if the initial energy is a non-positive number */
+    if((*prob)->initial_energy <= 0){
+        (*prob)->bad = 1; /* it's a bad problem */        
+        exit_signal++;
+        while (remaining_nums != 0) // skip the map
+        {
+            if(fscanf(fblock->Input, "%d", &aux)!= 1){
+                exit(0);
+            }
+            remaining_nums--;
+        }  
+        return exit_signal; 
+    }
     
     /* if the number of steps is not valid */
     if((*prob)->k < 0 || (*prob)->k >= (*prob)->L * (*prob)->C){
-        (*prob)->bad = 1; /* it's a bad problem */
+        (*prob)->bad = 1; /* it's a bad problem */        
         exit_signal++;
         while (remaining_nums != 0) // skip the map
         {
@@ -260,7 +273,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
     /* if the start position is out of bounds */
     if((((*prob)->l_1 > (*prob)->L || (*prob)->l_1 <= 0) || 
     ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 <= 0)) && (*prob)->bad == 0){
-        (*prob)->bad = 1; /* it's a bad problem */
+        (*prob)->bad = 1; /* it's a bad problem */        
         exit_signal++;
         while (remaining_nums != 0) // skip the map
         {
@@ -271,20 +284,6 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         }  
         return exit_signal; 
     } 
-     /* if the dimensions of the matrix are negative */
-    if(((*prob)->L <= 0 || (*prob)->C <= 0) && (*prob)->bad == 0){
-        (*prob)->bad = 1; /* it's a bad problem */
-        exit_signal++;
-        while (remaining_nums != 0) // skip the map
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            remaining_nums--;
-        }  
-        return exit_signal; 
-    }
-
     return exit_signal;
 }
 
@@ -350,8 +349,6 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     fprintf(fpOut, "\n");
     return;
 }
-
-
 
 void print_path(FILE *fpOut, ProbInfo **prob_node){
 
