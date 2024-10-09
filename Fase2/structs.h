@@ -11,6 +11,7 @@
 #define __structs__
 
 #include <stdio.h>
+#include "Items.h"
 
 /*
  * Cell datatype
@@ -20,27 +21,32 @@
  * 
  * Members:
  * 
- * -row: The row in which the cell is located
- * -col: The column in which the cell is located
- * -energy: The energy the cell possesses
- * -isVisited: integer that tells the program if the cell was analyzed or not
+ * -row:       The row in which the cell is located
+ * -col:       The column in which the cell is located
+ * -energy:    The energy the cell possesses
+ * -isVisited: Did the program visit this cell or not? 0 = no; 1 = yes
+ * -inDiamond: Is this cell inside the diamond or not? 0 = no; 1 = yes
+ * -inFoV:     Is this cell inside the field of view of the path? 0 = no; 1 = yes
  */
-typedef struct _cell{
+typedef struct _rm_cell{    // reduced map cell 
     
     int row;
     int col;
+    int energy;        
+    int inDiamond;
+
+}rm_cell;
+
+typedef struct _stat_cell{  // statistic cell to measure the sum of positives and the sum of max values within reach
+    
+    int rm_row;
+    int rm_col;
     int energy;
-    int isVisited;
-    int isRelevant;    
+    int inStack;
+    int inFoV;
+    struct _stat_cell *options_head; // options to push to the stack
 
-}cell;
-
-typedef struct _cel_list *Cel_List;
-
-struct _cel_list {
-    cell celula;
-    Cel_List next; 
-};
+}stat_cell;
 
 /*
  * ProbInfo datatype
@@ -65,7 +71,7 @@ struct _cel_list {
  * -path_size = number of cells in path_vect
  * -diamond_size = number of energy values in diamond_vect
  * 
- **/
+ */
 
 typedef struct _prob_info{
     
@@ -81,14 +87,15 @@ typedef struct _prob_info{
         
     // problem data
     int bad;
-    cell ***reduced_map;
-    cell **path_vect;
+    rm_cell ***reduced_map;    
     int diamond_size;
-    int path_size; 
-    int max_energy;
+    int path_size;     
     int reduced_map_lines;
     int reduced_map_columns;   
 
 }ProbInfo;
+
+
+
 
 #endif
