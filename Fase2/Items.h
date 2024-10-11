@@ -10,13 +10,6 @@
 #ifndef Itemheader
 #define Itemheader
 
-typedef struct _Item1{
-    
-    int col;
-    int row;
-    int energy;
-    int isUsed;
-
-}Item_1;
+typedef void* Item;
 
 #endif

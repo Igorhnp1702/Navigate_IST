@@ -8,6 +8,7 @@
  ******************************************************************************/
 
 #include "problem.h"
+#include "Stack.h"
 #include <stdio.h>
 
 int read_problem(Files *fblock, ProbInfo **prob){
@@ -121,13 +122,13 @@ int read_problem(Files *fblock, ProbInfo **prob){
         (*prob)->diamond_size = numbs_2_read_to_diamond; 
 
         if (numbs_2_read_to_diamond > 0){        
-            (*prob)->reduced_map = (cell***)calloc((*prob)->reduced_map_lines, sizeof(cell**));
+            (*prob)->reduced_map = (rm_cell***)calloc((*prob)->reduced_map_lines, sizeof(rm_cell**));
 
             for(i = 0; i < (*prob)->reduced_map_lines; i++){
-                (*prob)->reduced_map[i] = (cell**)calloc((*prob)->reduced_map_columns, sizeof(cell*));
+                (*prob)->reduced_map[i] = (rm_cell**)calloc((*prob)->reduced_map_columns, sizeof(rm_cell*));
 
                 for(j = 0; j < (*prob)->reduced_map_columns; j++){
-                    (*prob)->reduced_map[i][j] = (cell*)calloc(1, sizeof(cell));
+                    (*prob)->reduced_map[i][j] = (rm_cell*)calloc(1, sizeof(rm_cell));
                 }
             }
         }        
@@ -300,14 +301,90 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     return;    
 }
 
-void t1_solver(FILE *fpOut, ProbInfo **prob_node){ //com DFS recursiva
+void t1_solver(FILE *fpOut, ProbInfo **prob_node){      //iterative DFS
 
     int pocket = (*prob_node)->initial_energy;          // energy tracker along the path        
     int step_counter = (*prob_node)->k;                 // remaining steps in the path
-    
-   
-}
+    rm_cell **pathlist;                                 // head of the path(stack)
+    int pocket = (*prob_node)->initial_energy;          // energy tracker along the path
+    int sum_positives = pocket;                         // sum of cells with positive energy in the field of view
+    int sum_maxs_inFov = pocket;                        // sum of energy values of the best cells in the field of view
+    int i, j;                                           // iterators
+    int dist_Ltracker_center;                           // distance in lines between an iterator and the center cell
+    int dist_Ctracker_center;                           // distance in columns between an iterator and the center cell
+    int step_counter = (*prob_node)->k;                 // remaining steps in the path
+    int min_val;                                        // minimum value of energy in the diamond
+    stat_cell **sorted_diamond;                         // array to store the best cells in the field of view
+        
+    /* initialize the sorted diamond */
 
+    // diamond size - 1 => the starting cell does not count
+    // dist_Ctracker_center + dist_Ltracker_center = 0 <=> starting cell
+
+    sorted_diamond = (stat_cell**)calloc((*prob_node)->diamond_size - 1, sizeof(stat_cell*));
+    
+    for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
+        sorted_diamond[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
+        sorted_diamond[i]->rm_col = 0;
+        sorted_diamond[i]->rm_row = 0;
+        sorted_diamond[i]->energy = 0;        
+    }
+
+    /* Extract the diamond from the reduced map */
+
+    for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
+        for (j = 0; j < (*prob_node)->reduced_map_columns; j++){
+
+            dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
+            dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
+
+            if((dist_Ctracker_center + dist_Ltracker_center <= step_counter) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
+    
+                sorted_diamond[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
+                sorted_diamond[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
+                sorted_diamond[i]->energy = (*prob_node)->reduced_map[i][j]->energy;                
+            }
+        }
+    }
+
+    /* Sort the diamond */
+
+    /*With the sorted diamond, add the positive cells of the diamond*/
+
+    for(i = 0; i < (*prob_node)->diamond_size; i++){
+        if(sorted_diamond[i]->energy > 0){
+            
+            sum_positives += sorted_diamond[i]->energy;
+        }
+        else break;
+    }
+
+    /* With the sorted diamond, add the k best cells of the diamond */
+    // everybody's inside the field of view and no one was visited
+
+    j = 0;
+    for(i = 0; i < (*prob_node)->diamond_size; i++){
+
+        sum_maxs_inFov += sorted_diamond[i]->energy;
+        j++;
+        if(j == step_counter)break;
+    }
+
+    /* Should I proceed ? */
+
+    if(sum_positives + pocket < (*prob_node)->target_energy){ // no, no solution with unlimited steps
+        //fprintf and free
+        return;
+    }
+
+    if(sum_maxs_inFov + pocket < (*prob_node)->target_energy){ // no, no solution with the ideal path
+        //fprintf and free
+        return;
+    }
+    
+    /* yes, initialize the stack */
+    
+}
 
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int best_score;

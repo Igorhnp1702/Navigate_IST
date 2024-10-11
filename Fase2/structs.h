@@ -28,15 +28,23 @@
  * -inDiamond: Is this cell inside the diamond or not? 0 = no; 1 = yes
  * -inFoV:     Is this cell inside the field of view of the path? 0 = no; 1 = yes
  */
-typedef struct _cell{    // reduced map cell 
+typedef struct _rm_cell{    // reduced map cell 
     
     int row;
     int col;
     int energy;        
-    int inDiamond;    
-    int inStack;    
+    int inDiamond;
+    int inStack;          
 
-}cell;
+}rm_cell;
+
+typedef struct _stat_cell{
+
+    int rm_row;
+    int rm_col;
+    int energy;    
+            
+}stat_cell;
 
 /*
  * ProbInfo datatype
@@ -54,10 +62,8 @@ typedef struct _cell{    // reduced map cell
  * -task = task to be executed on the map
  * -l_2 = the line of the target cell for task 3
  * -c_2 = the column of the target cell for task 3
- * -bad = flag to identify problems with ivalid values for the parameters
+ * -bad = flag to identify problems with invalid values for the parameters
  * -diamond_vect = array that holds the energy values of the cells inside the diamond
- * -path_vect = array that holds the blocks of memory associated with the cells inside
- * the path that solves problems of  the 3rd task 
  * -path_size = number of cells in path_vect
  * -diamond_size = number of energy values in diamond_vect
  * 
@@ -77,12 +83,14 @@ typedef struct _prob_info{
         
     // problem data
     int bad;
-    cell ***reduced_map;    
+    rm_cell ***reduced_map;
+    int reduced_map_lines;
+    int reduced_map_columns;
+    int reduced_map_l1;
+    int reduced_map_c1;    
     int diamond_size;
     int path_size;     
-    int reduced_map_lines;
-    int reduced_map_columns;   
-
+       
 }ProbInfo;
 
 
