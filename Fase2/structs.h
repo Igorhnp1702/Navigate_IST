@@ -28,25 +28,15 @@
  * -inDiamond: Is this cell inside the diamond or not? 0 = no; 1 = yes
  * -inFoV:     Is this cell inside the field of view of the path? 0 = no; 1 = yes
  */
-typedef struct _rm_cell{    // reduced map cell 
+typedef struct _cell{    // reduced map cell 
     
     int row;
     int col;
     int energy;        
-    int inDiamond;
+    int inDiamond;    
+    int inStack;    
 
-}rm_cell;
-
-typedef struct _stat_cell{  // statistic cell to measure the sum of positives and the sum of max values within reach
-    
-    int rm_row;
-    int rm_col;
-    int energy;
-    int inStack;
-    int inFoV;
-    struct _stat_cell *options_head; // options to push to the stack
-
-}stat_cell;
+}cell;
 
 /*
  * ProbInfo datatype
@@ -83,11 +73,11 @@ typedef struct _prob_info{
     int c_1;
     int k;
     int initial_energy;
-    int minimum_energy;
+    int target_energy;
         
     // problem data
     int bad;
-    rm_cell ***reduced_map;    
+    cell ***reduced_map;    
     int diamond_size;
     int path_size;     
     int reduced_map_lines;

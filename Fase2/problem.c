@@ -164,15 +164,15 @@ int read_problem(Files *fblock, ProbInfo **prob){
                                     
                     (*prob)->reduced_map[i][j]->energy = aux;
                     (*prob)->reduced_map[i][j]->row = line_tracker;
-                    (*prob)->reduced_map[i][j]->col = column_tracker;
-                    (*prob)->reduced_map[i][j]->isVisited = 0;
+                    (*prob)->reduced_map[i][j]->col = column_tracker;                    
                     (*prob)->reduced_map[i][j]->inDiamond = 0;
-                    (*prob)->reduced_map[i][j]->inFoV = 0;            
+                    (*prob)->reduced_map[i][j]->inStack = 0;
+                    
+                                
                     
                     if((dist_Ctracker_center + dist_Ltracker_center <= radius) && (dist_Ctracker_center + dist_Ltracker_center >= 0)){
                         
-                        (*prob)->reduced_map[i][j]->inDiamond = 1;
-                        (*prob)->reduced_map[i][j]->inFoV = 1;
+                        (*prob)->reduced_map[i][j]->inDiamond = 1;                    
                         numbs_2_read_to_diamond--;
                     }
                     
@@ -211,7 +211,7 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         (*prob)->task = 2;
     }
     else if(((*prob)->task) > 0){
-        (*prob)->minimum_energy = (*prob)->task;
+        (*prob)->target_energy = (*prob)->task;
         (*prob)->task = 1;
     }
     else{
@@ -290,180 +290,24 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     
     if((*prob_node)->task == 1){
          fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->minimum_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);
+        (*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);
     }
 
     if((*prob_node)->task == 2){
          fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
-        (*prob_node)->L, (*prob_node)->C, (*prob_node)->minimum_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);
+        (*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);
     }
     return;    
 }
 
-void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path) {
-    
-    if (row >= 1 && row <= (*prob_node)->L && col >= 1 && col <= (*prob_node)->C) {
-        int index = (row - 1) * (*prob_node)->C + col - 1;
-        if (index >= 0 && index < (*prob_node)->diamond_size && (*prob_node)->reduced_map[(*prob_node)->k][(*prob_node)->k]->energy == energy) {
-            if (k == 0) {
-                if (energy > *max_energy) {
-                    *max_energy = energy;
-                    *max_path_length = 0;
-                    struct _cel_list* new_cell = (struct _cel_list*)calloc(1, sizeof(struct _cel_list));
-                    new_cell->celula.row = row;
-                    new_cell->celula.col = col;
-                    new_cell->next = **max_path;
-                    **max_path = new_cell;
-                }
-            } else {
-                DFS_max_energy(prob_node, row - 1, col, energy, k - 1, max_energy, max_path_length, max_path);
-                DFS_max_energy(prob_node, row + 1, col, energy, k - 1, max_energy, max_path_length, max_path);
-                DFS_max_energy(prob_node, row, col - 1, energy, k - 1, max_energy, max_path_length, max_path);
-                DFS_max_energy(prob_node, row, col + 1, energy, k - 1, max_energy, max_path_length, max_path);
-            }
-        }
-    }
-}
+void t1_solver(FILE *fpOut, ProbInfo **prob_node){ //com DFS recursiva
 
-void t1_solver(FILE *fpOut, ProbInfo **prob_node){
-
-    int pocket = (*prob_node)->initial_energy;          // energy tracker along the path
-    int sum_positives = 0;                              // sum of cells with positive energy in the field of view
-    int sum_maxs_inFov = 0;                             // sum of energy values of the best cells in the field of view
-    int i, j;                                           // iterators
-    int dist_Ltracker_center;                           // distance in lines between an iterator and the center cell
-    int dist_Ctracker_center;                           // distance in columns between an iterator and the center cell
+    int pocket = (*prob_node)->initial_energy;          // energy tracker along the path        
     int step_counter = (*prob_node)->k;                 // remaining steps in the path
-    int min_val;                                        // minimum value of energy in the diamond
-    cell **maxs_inFov;                                  // array to store the best cells in the field of view
-    cell **field_of_view;                               // array to store the cells that I can reach with the remaining steps
-    pathNode **current_path;                                // array to store the path 
     
-    /* initialize the field of view */
-
-    // diamond size - 1 => the starting cell does not count
-    // dist_Ctracker_center + dist_Ltracker_center = 0 <=> starting cell
-
-    field_of_view = (cell**)calloc((*prob_node)->diamond_size - 1, sizeof(cell*));
-    
-    for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
-        field_of_view[i] = (cell*)calloc(1, sizeof(cell));
-        field_of_view[i]->col = 0;
-        field_of_view[i]->row = 0;
-        field_of_view[i]->energy = 0;
-        field_of_view[i]->isVisited = 0;
-        field_of_view[i]->inDiamond = 0;
-        field_of_view[i]->inFoV = 0;
-    }
-
-    /* Place the diamond inside the field of view */
-
-    for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
-        for (j = 0; j < (*prob_node)->reduced_map_columns; j++){
-
-            dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
-            dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
-
-            if((dist_Ctracker_center + dist_Ltracker_center <= step_counter) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
-    
-                field_of_view[i]->col = (*prob_node)->reduced_map[i][j]->col;
-                field_of_view[i]->row = (*prob_node)->reduced_map[i][j]->row;
-                field_of_view[i]->energy = (*prob_node)->reduced_map[i][j]->energy;
-                field_of_view[i]->isVisited = (*prob_node)->reduced_map[i][j]->isVisited;
-                field_of_view[i]->inDiamond = (*prob_node)->reduced_map[i][j]->inDiamond;
-                field_of_view[i]->inFoV = (*prob_node)->reduced_map[i][j]->inFoV;
-            }
-        }
-    }
-
-    /* Scan the field of view and add all the cells with positive energy values*/
-
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
-        if(field_of_view[i]->energy > 0){
-            
-            sum_positives += field_of_view[i]->energy;
-        }
-    }
-
-    /* find the smallest energy value in the diamond */
-
-    min_val = field_of_view[0]->energy;         // what if all the values are positive? What if all the values are negative? I dont trust zero
-
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
-        if(field_of_view[i]->energy < min_val){
-            min_val = field_of_view[i]->energy;
-        } 
-    }
-
-    /* Initialize the array of best cells  */
-
-    maxs_inFov = (cell**)calloc(step_counter, sizeof(cell*));
-
-    for(i = 0; i < step_counter; i++){
-        maxs_inFov[i] = (cell*)calloc(1, sizeof(cell));
-        maxs_inFov[i]->col = 0;
-        maxs_inFov[i]->row = 0;
-        maxs_inFov[i]->energy = min_val;
-        maxs_inFov[i]->isVisited = 0;
-        maxs_inFov[i]->inDiamond = 0;
-        maxs_inFov[i]->inFoV = 0;
-    }
-
-    /* Scan the field of view for the best cells and put them in their array */
-
-    j = 0;
-
-    while (j != step_counter)
-    {
-        for(i = 0; i < (*prob_node)->diamond_size; i++){
-                    
-            if((field_of_view[i]->energy > maxs_inFov[j]->energy) && (field_of_view[i]->isVisited == 0)){
-                
-                field_of_view[i]->isVisited = 1;
-                maxs_inFov[j]->col = field_of_view[i]->col;
-                maxs_inFov[j]->row = field_of_view[i]->row;
-                maxs_inFov[j]->energy = field_of_view[i]->energy;
-                maxs_inFov[j]->isVisited = field_of_view[i]->isVisited;
-                maxs_inFov[j]->inDiamond = field_of_view[i]->inDiamond;
-                maxs_inFov[j]->inFoV = field_of_view[i]->inFoV;
-            }    
-        }
-        j++;
-    }
-    
-    /* Add the best cells in the field of view */
-
-    for (j = 0; j < step_counter; j++){
-        sum_maxs_inFov += maxs_inFov[j]->energy;
-    }
-
-    /* Should I proceed ? */
-
-    if(sum_positives + pocket < (*prob_node)->minimum_energy){ // no solution with unlimited steps
-        //fprintf and free
-        return;
-    }
-
-    if(sum_maxs_inFov + pocket < (*prob_node)->minimum_energy){ // no solution with the ideal path
-        //fprintf and free
-        return;
-    }
-
-    /* initialize the data structure for the path */
-
-    initialize_pathlist(current_path);
-
-    /* Prepare the DFS by initializing the stack */
-
-    
-    push(current_path, )
-
-
-
-
-
-
+   
 }
+
 
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int best_score;
@@ -476,8 +320,8 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     fprintf(fpOut, "%d %d %d %d %d %d\n", (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, best_score);
     struct _cel_list* current = *max_path_ptr;
     while (current != NULL) {
-        fprintf(fpOut, "%d %d %d\n", current->celula.row, current->celula.col, best_score);
-        current = current->next;
+        //fprintf(fpOut, "%d %d %d\n", current->celula->row, current->celula.col, best_score);
+        //current = current->next;
     }
     fprintf(fpOut, "\n");
     return;
@@ -488,12 +332,12 @@ void print_path(FILE *fpOut, ProbInfo **prob_node){
     int i;    
     
     fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
-        (*prob_node)->k, (*prob_node)->initial_energy, (*prob_node)->minimum_energy);
+        (*prob_node)->k, (*prob_node)->initial_energy, (*prob_node)->target_energy);
 
     /* Just read the matrix from start to finish and print the values in each entry */
     
     for(i = 0; i < (*prob_node)->path_size; i++){        
-        fprintf(fpOut, "%d %d %d\n", (*prob_node)->path_vect[i]->row, (*prob_node)->path_vect[i]->col, (*prob_node)->path_vect[i]->energy);
+        //fprintf(fpOut, "%d %d %d\n", (*prob_node)->path_vect[i]->row, (*prob_node)->path_vect[i]->col, (*prob_node)->path_vect[i]->energy);
     }        
     
     fprintf(fpOut,"\n");

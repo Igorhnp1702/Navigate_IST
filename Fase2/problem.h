@@ -48,7 +48,7 @@ int read_problem(Files *fblock, ProbInfo **prob);
  */
 int check_prob(ProbInfo **prob, Files *fblock);
 
-void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path);
+//void DFS_max_energy(ProbInfo **prob_node, int row, int col, int energy, int k, int* max_energy, int* max_path_length, struct _cel_list*** max_path);
 
 /*
  * bad_prob_ans()
