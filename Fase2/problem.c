@@ -301,20 +301,24 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
     return;    
 }
 
-void t1_solver(FILE *fpOut, ProbInfo **prob_node){      //iterative DFS
+void t1_solver(FILE *fpOut, ProbInfo **prob_node){      
 
-    int pocket = (*prob_node)->initial_energy;          // energy tracker along the path        
-    int step_counter = (*prob_node)->k;                 // remaining steps in the path
-    rm_cell **pathlist;                                 // head of the path(stack)
-    int pocket = (*prob_node)->initial_energy;          // energy tracker along the path
-    int sum_positives = pocket;                         // sum of cells with positive energy in the field of view
-    int sum_maxs_inFov = pocket;                        // sum of energy values of the best cells in the field of view
-    int i, j;                                           // iterators
-    int dist_Ltracker_center;                           // distance in lines between an iterator and the center cell
-    int dist_Ctracker_center;                           // distance in columns between an iterator and the center cell
-    int step_counter = (*prob_node)->k;                 // remaining steps in the path
-    int min_val;                                        // minimum value of energy in the diamond
-    stat_cell **sorted_diamond;                         // array to store the best cells in the field of view
+    int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
+    int step_counter = (*prob_node)->k;                    // remaining steps in the path
+    rm_cell **pathlist;                                    // head of the path(stack)
+    int pocket = (*prob_node)->initial_energy;             // energy tracker along the path
+    int sum_positives_inFov = 0;                           // sum of cells with positive energy in the field of view
+    int sum_maxs_inFov = 0;                                // sum of energy values of the best cells in the field of view
+    int i, j;                                              // iterators
+    int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
+    int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map
+    int line_tracker = start_line;                         // line coordinate of the path's endpoint
+    int col_tracker = start_col;                           // column coordinate of the path's endpoint
+    int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell
+    int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell    
+    int step_counter = (*prob_node)->k;                    // remaining steps in the path    
+    stat_cell **sorted_diamond;                            // array to store the best cells in the field of view
+    Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
         
     /* initialize the sorted diamond */
 
@@ -354,7 +358,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){      //iterative DFS
     for(i = 0; i < (*prob_node)->diamond_size; i++){
         if(sorted_diamond[i]->energy > 0){
             
-            sum_positives += sorted_diamond[i]->energy;
+            sum_positives_inFov += sorted_diamond[i]->energy;
         }
         else break;
     }
@@ -372,7 +376,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){      //iterative DFS
 
     /* Should I proceed ? */
 
-    if(sum_positives + pocket < (*prob_node)->target_energy){ // no, no solution with unlimited steps
+    if(sum_positives_inFov + pocket < (*prob_node)->target_energy){ // no, no solution with unlimited steps
         //fprintf and free
         return;
     }
@@ -384,6 +388,25 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){      //iterative DFS
     
     /* yes, initialize the stack */
     
+    pathStack = initializeStack(step_counter, 8);
+
+    /* perform the search algorithm while the stack has contents */
+
+    push(&pathStack, (Item)((*prob_node)->reduced_map[start_line - 1][start_col]));
+
+    line_tracker = start_line - 1;
+    col_tracker = start_col;
+
+    while (!isEmpty(pathStack))
+    {
+        /* code */
+    }
+    
+
+
+
+
+
 }
 
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
