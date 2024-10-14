@@ -34,7 +34,7 @@ typedef struct _rm_cell{    // reduced map cell
     int col;
     int energy;        
     int inDiamond;
-    int inStack;          
+    int inStack;              
 
 }rm_cell;
 
@@ -42,8 +42,7 @@ typedef struct _stat_cell{
 
     int rm_row;
     int rm_col;
-    int energy;    
-            
+    int energy;          
 }stat_cell;
 
 /*

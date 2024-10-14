@@ -305,18 +305,15 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
     int step_counter = (*prob_node)->k;                    // remaining steps in the path
-    rm_cell **pathlist;                                    // head of the path(stack)
-    int pocket = (*prob_node)->initial_energy;             // energy tracker along the path
-    int sum_positives_inFov = 0;                           // sum of cells with positive energy in the field of view
-    int sum_maxs_inFov = 0;                                // sum of energy values of the best cells in the field of view
-    int i, j;                                              // iterators
+    int target = (*prob_node)->target_energy;
     int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
-    int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map
+    int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map        
+    int hope;
+    int i, j;                                              // iterators    
     int line_tracker = start_line;                         // line coordinate of the path's endpoint
     int col_tracker = start_col;                           // column coordinate of the path's endpoint
     int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell
-    int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell    
-    int step_counter = (*prob_node)->k;                    // remaining steps in the path    
+    int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell        
     stat_cell **sorted_diamond;                            // array to store the best cells in the field of view
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
         
@@ -353,60 +350,90 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     /* Sort the diamond */
 
-    /*With the sorted diamond, add the positive cells of the diamond*/
+    /* Check for hope */
 
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
-        if(sorted_diamond[i]->energy > 0){
-            
-            sum_positives_inFov += sorted_diamond[i]->energy;
-        }
-        else break;
-    }
+    hope = Thereishope(prob_node, pocket, line_tracker, col_tracker, target, step_counter, &sorted_diamond);
 
-    /* With the sorted diamond, add the k best cells of the diamond */
-    // everybody's inside the field of view and no one was visited
-
-    j = 0;
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
-
-        sum_maxs_inFov += sorted_diamond[i]->energy;
-        j++;
-        if(j == step_counter)break;
-    }
-
-    /* Should I proceed ? */
-
-    if(sum_positives_inFov + pocket < (*prob_node)->target_energy){ // no, no solution with unlimited steps
-        //fprintf and free
-        return;
-    }
-
-    if(sum_maxs_inFov + pocket < (*prob_node)->target_energy){ // no, no solution with the ideal path
+    if(hope != 1){
         //fprintf and free
         return;
     }
     
-    /* yes, initialize the stack */
+    /* There is hope, initialize the stack */
     
     pathStack = initializeStack(step_counter, 8);
 
     /* perform the search algorithm while the stack has contents */
 
-    push(&pathStack, (Item)((*prob_node)->reduced_map[start_line - 1][start_col]));
-
     line_tracker = start_line - 1;
     col_tracker = start_col;
+    push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));
 
-    while (!isEmpty(pathStack))
-    {
-        /* code */
+                            
+    return;
+
+
+
+}
+
+int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int step_counter, stat_cell***sorted_diamond){
+
+    int i, j;
+    int sum_maxs;
+    int sum_positives;
+    int isRelevant;
+
+     for(i = 0; i < (*prob_node)->diamond_size; i++){
+
+        isRelevant = in_Fov((*sorted_diamond[i])->rm_row, (*sorted_diamond[i])->rm_col, line_tracker, column_tracker, step_counter);
+
+        if((*sorted_diamond[i])->energy > 0){
+            
+            if(isRelevant == 1 && 
+            (*prob_node)->reduced_map[(*sorted_diamond[i])->rm_row][(*sorted_diamond[i])->rm_row]->inStack == 0){
+            
+                sum_positives += (*sorted_diamond[i])->energy;    
+            }
+                
+        }
+        else break;
     }
-    
 
+    /* Should I proceed ? */
 
+    if(sum_positives + pocket < target){ // below target, without considering losses of energy
+        return 0;
+    }
 
+    j = 0;
+    for(i = 0; i < (*prob_node)->diamond_size; i++){
 
+        isRelevant = in_Fov((*sorted_diamond[i])->rm_row, (*sorted_diamond[i])->rm_col, line_tracker, column_tracker, step_counter);
 
+        if(isRelevant == 1 &&
+        (*prob_node)->reduced_map[(*sorted_diamond[i])->rm_row][(*sorted_diamond[i])->rm_row]->inStack == 0){  
+
+            sum_maxs += (*sorted_diamond[i])->energy;
+            j++;
+            if(j == step_counter)break;
+        }
+    }
+
+    /* Should I proceed ? */    
+
+    if(sum_maxs + pocket < target){ // below target with the best possible path (highest gains and lowest losses)
+        return 0;
+    }
+    return 1;
+}
+
+int in_Fov(int input_line, int input_column, int line_tracker, int column_tracker, int step_counter){
+
+    int line_dist = abs(input_line - line_tracker);
+    int column_dist = abs(input_column - column_tracker);
+    int steps = line_dist + column_dist;
+
+    return steps <= step_counter ? 1 : 0;
 }
 
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
