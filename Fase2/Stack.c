@@ -72,12 +72,28 @@ void freeStack(Stackblock **stackptr){
 
     int i;
 
+    if((*stackptr)->Itemarray[0] == NULL){
+        free((*stackptr)->Itemarray);
+        free((*stackptr));
+    }
+
     for(i = 0; i < (*stackptr)->freeIndex; i++){
         free((*stackptr)->Itemarray[i]);
     }
     free((*stackptr)->Itemarray);
     free((*stackptr));
     return;
+}
+
+int freeTop(Stackblock **stackptr){
+    
+    int success = 0;
+    if(isEmpty(stackptr) == 1) return success;
+
+    free((*stackptr)->Itemarray[(*stackptr)->freeIndex - 1]);
+    (*stackptr)->Itemarray[(*stackptr)->freeIndex - 1] = NULL;
+    (*stackptr)->freeIndex--;
+    return success++;
 }
 
 int isEmpty(Stackblock **stackptr){

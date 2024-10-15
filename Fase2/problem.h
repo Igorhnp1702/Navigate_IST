@@ -95,6 +95,12 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node);
  */
 void t2_solver(FILE *fpOut, ProbInfo **prob_node);
 
+void sort_diamond(stat_cell***, int);
+
+int Thereishope(ProbInfo**, int, int, int, int, int, stat_cell***);
+
+int in_Fov(int, int, int, int, int);
+
 /*
  * print_path()
  *
@@ -107,7 +113,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node);
  * 
  * Retorno: void
  */
-void print_path(FILE *fpOut, ProbInfo **prob_node);
+void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int stackpos);
 
 /*
  * free_prob_node()
@@ -122,11 +128,5 @@ void print_path(FILE *fpOut, ProbInfo **prob_node);
  * Retorno: void
  */
 void free_prob_node_data(ProbInfo **prob_node);
-
-
-int Thereishope(ProbInfo**, int, int, int, int, int, stat_cell***);
-
-int in_Fov(int, int, int, int, int);
-
 
 #endif

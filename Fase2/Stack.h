@@ -23,6 +23,8 @@ int pop(Stackblock**);
 
 void freeStack(Stackblock**);
 
+int freeTop(Stackblock **);
+
 int isEmpty(Stackblock**);
 
 int isFull(Stackblock**);

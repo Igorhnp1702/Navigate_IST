@@ -314,7 +314,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
     int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell
     int *child_tracker;                                    // to keep track of the child to visit at each step of the path
-    stat_cell **sorted_diamond;                            // array to store the diamond's cells in descending order
+    stat_cell **diamond_vect;                            // array to store the diamond's cells in descending order
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
         
     /* initialize the sorted diamond */
@@ -322,13 +322,13 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     // diamond size - 1 => the starting cell does not count
     // dist_Ctracker_center + dist_Ltracker_center = 0 <=> starting cell
 
-    sorted_diamond = (stat_cell**)calloc((*prob_node)->diamond_size - 1, sizeof(stat_cell*));
+    diamond_vect = (stat_cell**)calloc((*prob_node)->diamond_size - 1, sizeof(stat_cell*));
     
     for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
-        sorted_diamond[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
-        sorted_diamond[i]->rm_col = 0;
-        sorted_diamond[i]->rm_row = 0;
-        sorted_diamond[i]->energy = 0;        
+        diamond_vect[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
+        diamond_vect[i]->rm_col = 0;
+        diamond_vect[i]->rm_row = 0;
+        diamond_vect[i]->energy = 0;        
     }
 
     /* Extract the diamond from the reduced map */
@@ -341,26 +341,26 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
             if((dist_Ctracker_center + dist_Ltracker_center <= step_counter) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
     
-                sorted_diamond[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
-                sorted_diamond[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
-                sorted_diamond[i]->energy = (*prob_node)->reduced_map[i][j]->energy;                
+                diamond_vect[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
+                diamond_vect[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
+                diamond_vect[i]->energy = (*prob_node)->reduced_map[i][j]->energy;                
             }
         }
     }
 
     /* Sort the diamond */
-
+    sort_diamond(&diamond_vect, (*prob_node)->diamond_size);
 
     /* Check for hope */
 
-    if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, step_counter, &sorted_diamond) != 1){
+    if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, step_counter, &diamond_vect) != 1){
         //fprintf and free
         return;
     }
     
     /* There is hope, initialize the stack */
     
-    pathStack = initializeStack((*prob_node)->k + 1, 8);
+    pathStack = initializeStack((*prob_node)->k + 1, sizeof(rm_cell));
 
     // the starting cell is always in the stack
     push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker])); 
@@ -402,7 +402,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                             
                             // check for hope
                             if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy, 
-                                           line_tracker - 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
+                                           line_tracker - 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
                                 
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker - 1][col_tracker]));
                                 (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack = 1;
@@ -435,7 +435,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                             // check for hope
                             if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy,
-                                           line_tracker, col_tracker + 1, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
+                                           line_tracker, col_tracker + 1, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
                                 
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker + 1]));
                                 (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack = 1;
@@ -468,7 +468,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                             // check for hope
                             if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy, 
-                                           line_tracker + 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
+                                           line_tracker + 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
                                             
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker + 1][col_tracker]));
                                 (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack = 1;
@@ -501,7 +501,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                             // check for hope
                             if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy, 
-                                           line_tracker, col_tracker - 1, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
+                                           line_tracker, col_tracker - 1, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
                                                                                         
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker - 1]));
                                 (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack = 1;
@@ -518,9 +518,10 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
             }            
         }
-        else if(pocket < target){ // No. What if I didn't reach the target? step_counter == k, avoid segfault  with step_counter--
+        else if(pocket < target){ // No. What if I didn't reach the target? 
 
-            //go back
+            //go back. step_counter == k, avoid segfault  with step_counter--
+
             if(child_tracker[step_counter - 1] == 1){ // went up, now Im suppoused to go right
 
                 pop(&pathStack);
@@ -557,12 +558,319 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 step_counter--;
             }
         }
+        else break; // target was reached and the path has k steps
     }
 
+    if(pocket >= target){ // problem with solution, print stack from 2nd base to top, with recursion
+
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        (*prob_node)->k, (*prob_node)->initial_energy, pocket);
+
+        print_path(fpOut, prob_node, &pathStack, step_counter);
+        freeTop(&pathStack);
+        freeStack(&pathStack);        
+    }
+    else{
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        (*prob_node)->k, (*prob_node)->initial_energy, -1);
+        freeStack(&pathStack);
+    }
+    for(i = 0; i < (*prob_node)->diamond_size; i++){
+        free(diamond_vect[i]);
+    }
+    free(diamond_vect);
+    fprintf(fpOut,"\n");
     return;
 }
 
-int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int steps2take, stat_cell***sorted_diamond){
+void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
+
+    int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
+    int step_counter = 0;                                  // steps taken
+    int target = (*prob_node)->target_energy;              // target enegry to achieve
+    int best_path_score;                                   // score of the ideal path with the best k cells
+    int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
+    int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map            
+    int i, j;                                              // iterator
+    int line_tracker = start_line;                         // line coordinate of the path's current endpoint
+    int col_tracker = start_col;                           // column coordinate of the path's current endpoint
+    int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
+    int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell
+    int *child_tracker;                                    // to keep track of the child to visit at each step of the path
+    stat_cell **diamond_vect;                              // array to store the diamond's cells in descending order
+    Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
+        
+    /* initialize the sorted diamond */
+
+    // diamond size - 1 => the starting cell does not count
+    // dist_Ctracker_center + dist_Ltracker_center = 0 <=> starting cell
+
+    diamond_vect = (stat_cell**)calloc((*prob_node)->diamond_size - 1, sizeof(stat_cell*));
+    
+    for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
+        diamond_vect[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
+        diamond_vect[i]->rm_col = 0;
+        diamond_vect[i]->rm_row = 0;
+        diamond_vect[i]->energy = 0;        
+    }
+
+    /* Extract the diamond from the reduced map */
+
+    for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
+        for (j = 0; j < (*prob_node)->reduced_map_columns; j++){
+
+            dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
+            dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
+
+            if((dist_Ctracker_center + dist_Ltracker_center <= step_counter) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
+    
+                diamond_vect[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
+                diamond_vect[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
+                diamond_vect[i]->energy = (*prob_node)->reduced_map[i][j]->energy;                
+            }
+        }
+    }
+
+    /* Sort the diamond */
+    sort_diamond(&diamond_vect, (*prob_node)->diamond_size);
+
+    /* Check for hope */
+
+    if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, step_counter, &diamond_vect) != 1){
+        //fprintf and free
+        return;
+    }
+    
+    /* There is hope, initialize the stack */
+    
+    pathStack = initializeStack((*prob_node)->k + 1, sizeof(rm_cell));
+
+    // the starting cell is always in the stack
+    push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker])); 
+    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
+
+    // initialize the child_tracker
+    
+    child_tracker = (int*)calloc((*prob_node)->k, sizeof(int));
+
+    for(i = 0; i < (*prob_node)->k; i++){
+        child_tracker[i] = 0;
+    }
+
+    while(child_tracker[0] != 4){
+
+        /* Do I have steps to take ? */
+
+        if(step_counter < (*prob_node)->k){
+            
+            /* if so, pick a node to visist */
+
+            if(child_tracker[step_counter] == 0){ // above me
+
+                // indicate the next child to visit
+                child_tracker[step_counter]++;
+
+                // check map bounds
+                if((0 <= line_tracker - 1 && line_tracker - 1 < (*prob_node)->reduced_map_lines) &&
+                (0 <= col_tracker && col_tracker < (*prob_node)->reduced_map_columns)){
+
+                    // check diamond bounds
+                    dist_Ltracker_center = abs(line_tracker - 1 - (*prob_node)->reduced_map_l1);
+                    dist_Ctracker_center = abs(col_tracker - (*prob_node)->reduced_map_l1);
+
+                    if((0 < dist_Ctracker_center + dist_Ltracker_center ) && (dist_Ctracker_center + dist_Ltracker_center <= step_counter)){
+                        
+                        //check presence in stack
+                        if((*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack == 0){ 
+                            
+                            // check for hope
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy, 
+                                           line_tracker - 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
+                                
+                                push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker - 1][col_tracker]));
+                                (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy;
+                                line_tracker--;
+                                step_counter++;
+                            }            
+                        }
+                    }
+                }
+            }
+
+            else if(child_tracker[step_counter] == 1){ // to my right
+
+                // indicate the next child to visit
+                child_tracker[step_counter]++;
+
+                // check map bounds
+                if((0 <= line_tracker && line_tracker < (*prob_node)->reduced_map_lines) &&
+                (0 <= col_tracker + 1 && col_tracker + 1 < (*prob_node)->reduced_map_columns)){
+                    
+                    // check diamond bounds
+                    dist_Ltracker_center = abs(line_tracker - (*prob_node)->reduced_map_l1);
+                    dist_Ctracker_center = abs(col_tracker + 1 - (*prob_node)->reduced_map_l1);
+
+                    if((0 < dist_Ctracker_center + dist_Ltracker_center ) && (dist_Ctracker_center + dist_Ltracker_center <= step_counter)){
+                    
+                        //check presence in stack
+                        if((*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack == 0){
+
+                            // check for hope
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy,
+                                           line_tracker, col_tracker + 1, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
+                                
+                                push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker + 1]));
+                                (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy;            
+                                col_tracker ++;
+                                step_counter++;       
+                            }
+                        }
+                    }
+                }
+            }
+
+            else if(child_tracker[step_counter] == 2){ // below me
+
+                // indicate the next child to visit
+                child_tracker[step_counter]++;
+
+                // check map bounds            
+                if((0 <= line_tracker + 1 && line_tracker + 1 < (*prob_node)->reduced_map_lines) &&
+                (0 <= col_tracker && col_tracker < (*prob_node)->reduced_map_columns)){
+                    
+                    // check diamond bounds
+                    dist_Ltracker_center = abs(line_tracker + 1 - (*prob_node)->reduced_map_l1);
+                    dist_Ctracker_center = abs(col_tracker - (*prob_node)->reduced_map_l1);
+
+                    if((0 < dist_Ctracker_center + dist_Ltracker_center ) && (dist_Ctracker_center + dist_Ltracker_center <= step_counter)){
+
+                        //check presence in stack
+                        if((*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack == 0){
+
+                            // check for hope
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy, 
+                                           line_tracker + 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
+                                            
+                                push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker + 1][col_tracker]));
+                                (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy;
+                                line_tracker ++;
+                                step_counter++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            else if(child_tracker[step_counter] == 3){ // to my left
+
+                // indicate the next child to visit
+                child_tracker[step_counter]++;
+
+                // check map bounds
+                if((0 <= line_tracker && line_tracker < (*prob_node)->reduced_map_lines) &&
+                (0 <= col_tracker - 1 && col_tracker - 1 < (*prob_node)->reduced_map_columns)){
+                    
+                    // check diamond bounds
+                    dist_Ltracker_center = abs(line_tracker - (*prob_node)->reduced_map_l1);
+                    dist_Ctracker_center = abs(col_tracker - 1 - (*prob_node)->reduced_map_l1);
+
+                    if((0 < dist_Ctracker_center + dist_Ltracker_center ) && (dist_Ctracker_center + dist_Ltracker_center <= step_counter)){
+
+                        //check presence in stack
+                        if((*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack == 0){
+
+                            // check for hope
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy, 
+                                           line_tracker, col_tracker - 1, target, (*prob_node)->k - step_counter + 1, &diamond_vect) == 1){
+                                                                                        
+                                push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker - 1]));
+                                (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy;
+                                col_tracker --;
+                                step_counter++;
+                            }
+                        }
+                    }
+                }                
+            }
+
+            else if(child_tracker[step_counter] == 4){ // no more options, go back
+
+            }            
+        }
+        else if(pocket < target){ // No. What if I didn't reach the target? 
+
+            //go back. step_counter == k, avoid segfault  with step_counter--
+
+            if(child_tracker[step_counter - 1] == 1){ // went up, now Im suppoused to go right
+
+                pop(&pathStack);
+                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                line_tracker++;
+                step_counter--;
+            }
+
+            else if(child_tracker[step_counter - 1] == 2){ // went right, now Im suppoused to go down
+
+                pop(&pathStack);
+                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                col_tracker--;
+                step_counter--;
+            }
+
+            else if(child_tracker[step_counter - 1] == 3){ // went down, now Im suppoused to go left
+
+                pop(&pathStack);
+                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                line_tracker--;
+                step_counter--;
+            }
+
+            else if(child_tracker[step_counter - 1] == 4){ // went left, no more options available
+
+                pop(&pathStack);
+                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                col_tracker++;
+                step_counter--;
+            }
+        }
+        else break; // target was reached and the path has k steps
+    }
+
+    if(pocket >= target){ // problem with solution, print stack from 2nd base to top, with recursion
+
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        (*prob_node)->k, (*prob_node)->initial_energy, pocket);
+
+        print_path(fpOut, prob_node, &pathStack, step_counter);
+        freeTop(&pathStack);
+        freeStack(&pathStack);        
+    }
+    else{
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        (*prob_node)->k, (*prob_node)->initial_energy, -1);
+        freeStack(&pathStack);
+    }
+    for(i = 0; i < (*prob_node)->diamond_size; i++){
+        free(diamond_vect[i]);
+    }
+    free(diamond_vect);
+    fprintf(fpOut,"\n");
+    return;
+}
+
+void sort_diamond(stat_cell ***diamond_vect, int diamond_size){ // insertion, quick, shell, bubble, selection, merge, radix, counting, heapsort, bogo, 
+
+}
+
+int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int steps2take, stat_cell***diamond_vect){
 
     int i, j;
     int sum_maxs;
@@ -571,14 +879,14 @@ int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_t
 
      for(i = 0; i < (*prob_node)->diamond_size; i++){
 
-        isRelevant = in_Fov((*sorted_diamond[i])->rm_row, (*sorted_diamond[i])->rm_col, line_tracker, column_tracker, steps2take);
+        isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
 
-        if((*sorted_diamond[i])->energy > 0){
+        if((*diamond_vect[i])->energy > 0){
             
             if(isRelevant == 1 && 
-            (*prob_node)->reduced_map[(*sorted_diamond[i])->rm_row][(*sorted_diamond[i])->rm_row]->inStack == 0){
+            (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){
             
-                sum_positives += (*sorted_diamond[i])->energy;    
+                sum_positives += (*diamond_vect[i])->energy;    
             }
                 
         }
@@ -594,12 +902,12 @@ int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_t
     j = 0;
     for(i = 0; i < (*prob_node)->diamond_size; i++){
 
-        isRelevant = in_Fov((*sorted_diamond[i])->rm_row, (*sorted_diamond[i])->rm_col, line_tracker, column_tracker, steps2take);
+        isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
 
         if(isRelevant == 1 &&
-        (*prob_node)->reduced_map[(*sorted_diamond[i])->rm_row][(*sorted_diamond[i])->rm_row]->inStack == 0){  
+        (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){  
 
-            sum_maxs += (*sorted_diamond[i])->energy;
+            sum_maxs += (*diamond_vect[i])->energy;
             j++;
             if(j == steps2take)break;
         }
@@ -622,38 +930,18 @@ int in_Fov(int input_line, int input_column, int line_tracker, int column_tracke
     return steps <= steps2take ? 1 : 0;
 }
 
-void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
-    int best_score;
-    int max_path_length = 0;
-    struct _cel_list* max_path = NULL;
-    struct _cel_list** max_path_ptr = &max_path;
-    
-   // DFS_max_energy(prob_node, (*prob_node)->, (*prob_node)->diamond_vect[i].col, (*prob_node)->diamond_vect[i].energy, (*prob_node)->k, &max_energy, &max_path_length, &max_path_ptr);
-    
-    fprintf(fpOut, "%d %d %d %d %d %d\n", (*prob_node)->L, (*prob_node)->C, (*prob_node)->l_1, (*prob_node)->c_1, (*prob_node)->k, best_score);
-    struct _cel_list* current = *max_path_ptr;
-    while (current != NULL) {
-        //fprintf(fpOut, "%d %d %d\n", current->celula->row, current->celula.col, best_score);
-        //current = current->next;
+void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int stackpos){
+
+    rm_cell *aux;
+    aux = (rm_cell*)peekTop(&pathstack);
+    freeTop(&pathstack);
+
+    if(stackpos == 2){        
+        fprintf(fpOut, "%d %d %d\n", aux->row, aux->col, aux->energy);        
+        return;
     }
-    fprintf(fpOut, "\n");
-    return;
-}
-
-void print_path(FILE *fpOut, ProbInfo **prob_node){
-
-    int i;    
-    
-    fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
-        (*prob_node)->k, (*prob_node)->initial_energy, (*prob_node)->target_energy);
-
-    /* Just read the matrix from start to finish and print the values in each entry */
-    
-    for(i = 0; i < (*prob_node)->path_size; i++){        
-        //fprintf(fpOut, "%d %d %d\n", (*prob_node)->path_vect[i]->row, (*prob_node)->path_vect[i]->col, (*prob_node)->path_vect[i]->energy);
-    }        
-    
-    fprintf(fpOut,"\n");
+    print_path(fpOut, prob_node, pathstack, stackpos - 1);
+    fprintf(fpOut, "%d %d %d\n", aux->row, aux->col, aux->energy);    
     return;    
 }
 
