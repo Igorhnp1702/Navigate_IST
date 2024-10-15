@@ -304,17 +304,17 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){      
 
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
-    int step_counter = 0;                                   // steps taken
+    int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target enegry to achieve
     int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
     int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map            
-    int i, j;                                              // iterators    
-    int line_tracker = start_line;                         // line coordinate of the path's endpoint
-    int col_tracker = start_col;                           // column coordinate of the path's endpoint
+    int i, j;                                              // iterator
+    int line_tracker = start_line;                         // line coordinate of the path's current endpoint
+    int col_tracker = start_col;                           // column coordinate of the path's current endpoint
     int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
     int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell
     int *child_tracker;                                    // to keep track of the child to visit at each step of the path
-    stat_cell **sorted_diamond;                            // array to store the best cells in the field of view
+    stat_cell **sorted_diamond;                            // array to store the diamond's cells in descending order
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
         
     /* initialize the sorted diamond */
@@ -413,7 +413,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 }
             }
 
-            if(child_tracker[step_counter] == 1){ // to my right
+            else if(child_tracker[step_counter] == 1){ // to my right
 
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
@@ -444,7 +444,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 }
             }
 
-            if(child_tracker[step_counter] == 2){ // below me
+            else if(child_tracker[step_counter] == 2){ // below me
 
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
@@ -475,7 +475,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 }
             }
 
-            if(child_tracker[step_counter] == 3){ // to my left
+            else if(child_tracker[step_counter] == 3){ // to my left
 
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
@@ -503,13 +503,17 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                             }
                         }
                     }
-                }
+                }                
+            }
+
+            if(child_tracker[step_counter] == 4){ // no more options, go back
+
             }            
         }
-        else if(pocket < target){ // No. What if I didn't reach the target?
+        else if(pocket < target){ // No. What if I didn't reach the target? step_counter == k, avoid segfault  with step_counter--
 
             //go back
-            if(child_tracker[step_counter] == 1){ // went up, now Im suppoused to go right
+            if(child_tracker[step_counter - 1] == 1){ // went up, now Im suppoused to go right
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
@@ -517,7 +521,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 step_counter--;
             }
 
-            if(child_tracker[step_counter] == 2){ // went right, now Im suppoused to go down
+            else if(child_tracker[step_counter - 1] == 2){ // went right, now Im suppoused to go down
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
@@ -525,7 +529,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 step_counter--;
             }
 
-            if(child_tracker[step_counter] == 3){ // went down, now Im suppoused to go left
+            else if(child_tracker[step_counter - 1] == 3){ // went down, now Im suppoused to go left
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
@@ -533,14 +537,13 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 step_counter--;
             }
 
-            if(child_tracker[step_counter] == 4){ // went left, no more options available
+            else if(child_tracker[step_counter - 1] == 4){ // went left, no more options available
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 col_tracker++;
                 step_counter--;
             }
-
         }
     }
 
