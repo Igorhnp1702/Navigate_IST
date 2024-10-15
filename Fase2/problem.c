@@ -401,10 +401,12 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                         if((*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack == 0){ 
                             
                             // check for hope
-                            if(Thereishope(prob_node, pocket, line_tracker - 1, col_tracker, target, (*prob_node)->k - step_counter, &sorted_diamond) == 1){
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy, 
+                                           line_tracker - 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
                                 
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker - 1][col_tracker]));
                                 (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy;
                                 line_tracker--;
                                 step_counter++;
                             }            
@@ -432,10 +434,12 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                         if((*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack == 0){
 
                             // check for hope
-                            if(Thereishope(prob_node, pocket, line_tracker, col_tracker + 1, target, (*prob_node)->k - step_counter, &sorted_diamond) == 1){
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy,
+                                           line_tracker, col_tracker + 1, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
                                 
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker + 1]));
-                                (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack = 1;            
+                                (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy;            
                                 col_tracker ++;
                                 step_counter++;       
                             }
@@ -463,10 +467,12 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                         if((*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack == 0){
 
                             // check for hope
-                            if(Thereishope(prob_node, pocket, line_tracker + 1, col_tracker, target, (*prob_node)->k - step_counter, &sorted_diamond) == 1){
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy, 
+                                           line_tracker + 1, col_tracker, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
                                             
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker + 1][col_tracker]));
                                 (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy;
                                 line_tracker ++;
                                 step_counter++;
                             }
@@ -494,10 +500,12 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                         if((*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack == 0){
 
                             // check for hope
-                            if(Thereishope(prob_node, pocket, line_tracker, col_tracker - 1, target, (*prob_node)->k - step_counter, &sorted_diamond) == 1){
+                            if(Thereishope(prob_node, pocket + (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy, 
+                                           line_tracker, col_tracker - 1, target, (*prob_node)->k - step_counter + 1, &sorted_diamond) == 1){
                                                                                         
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker - 1]));
                                 (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack = 1;
+                                pocket += (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy;
                                 col_tracker --;
                                 step_counter++;
                             }
@@ -506,7 +514,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 }                
             }
 
-            if(child_tracker[step_counter] == 4){ // no more options, go back
+            else if(child_tracker[step_counter] == 4){ // no more options, go back
 
             }            
         }
@@ -517,6 +525,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
                 line_tracker++;
                 step_counter--;
             }
@@ -525,6 +534,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
                 col_tracker--;
                 step_counter--;
             }
@@ -533,6 +543,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
                 line_tracker--;
                 step_counter--;
             }
@@ -541,6 +552,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
                 col_tracker++;
                 step_counter--;
             }
