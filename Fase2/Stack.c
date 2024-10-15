@@ -31,6 +31,7 @@ Stackblock* initializeStack(int Stacksize, size_t Itemsize){
     if((Stack = (Stackblock*)calloc(1, sizeof(Stackblock))) == NULL){
         exit(0);
     }
+    
 
     if((Stack->Itemarray = (Item*)calloc(Stacksize, sizeof(Item))) == NULL){
         exit(0);
@@ -41,9 +42,8 @@ Stackblock* initializeStack(int Stacksize, size_t Itemsize){
     
     Stack->arraysize = Stacksize;
     Stack->Itemlen = Itemsize;
-    Stack->freeIndex = 0;
-
-    return Stack;
+    Stack->freeIndex = 0;    
+    return Stack;    
 }
 
 int push(Stackblock** stackptr, Item newItem){
@@ -68,16 +68,16 @@ int pop(Stackblock**stackptr){
     return success++;
 }
 
-int freeStack(Stackblock **stackptr){
+void freeStack(Stackblock **stackptr){
 
-    int success = 0, i;
-    if(isEmpty(stackptr) == 1) return success;
+    int i;
 
     for(i = 0; i < (*stackptr)->freeIndex; i++){
         free((*stackptr)->Itemarray[i]);
     }
     free((*stackptr)->Itemarray);
     free((*stackptr));
+    return;
 }
 
 int isEmpty(Stackblock **stackptr){
