@@ -148,8 +148,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         i = 0, j = 0;
         /* Then, pass the information from the file to memory */
         while (numbs_2_read_to_reduced_map != 0)
-        {
-            
+        {            
             if(fscanf(fblock->Input, "%d", &aux)!= 1){
                 exit(0);
             }
@@ -314,7 +313,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
     int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell
     int *child_tracker;                                    // to keep track of the child to visit at each step of the path
-    stat_cell **diamond_vect;                            // array to store the diamond's cells in descending order
+    stat_cell **diamond_vect;                              // array to store the diamond's cells in descending order
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
         
     /* initialize the sorted diamond */
@@ -349,7 +348,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     }
 
     /* Sort the diamond */
-    sort_diamond(&diamond_vect, (*prob_node)->diamond_size);
+    sort_diamond(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
 
     /* Check for hope */
 
@@ -376,9 +375,9 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     while(child_tracker[0] != 4){
 
-        /* Do I have steps to take ? */
+        /* Do I have steps to take ? Do I have energy to take a step? */
 
-        if(step_counter < (*prob_node)->k){
+        if(step_counter < (*prob_node)->k && pocket > 0){
             
             /* if so, pick a node to visist */
 
@@ -516,7 +515,44 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
             else if(child_tracker[step_counter] == 4){ // no more options, go back
 
-            }            
+                child_tracker[step_counter] = 0;
+
+                if(child_tracker[step_counter - 1] == 1){ // went up, now Im suppoused to go right
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    line_tracker++;
+                    step_counter--;
+                }
+
+                else if(child_tracker[step_counter - 1] == 2){ // went right, now Im suppoused to go down
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    col_tracker--;
+                    step_counter--;
+                }
+
+                else if(child_tracker[step_counter - 1] == 3){ // went down, now Im suppoused to go left
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    line_tracker--;
+                    step_counter--;
+                }
+
+                else if(child_tracker[step_counter - 1] == 4){ // went left, no more options available
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    col_tracker++;
+                    step_counter--;
+                }
+            }                        
         }
         else if(pocket < target){ // No. What if I didn't reach the target? 
 
@@ -588,7 +624,6 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
     int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target enegry to achieve
-    int best_path_score;                                   // score of the ideal path with the best k cells
     int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
     int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map            
     int i, j;                                              // iterator
@@ -632,7 +667,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     }
 
     /* Sort the diamond */
-    sort_diamond(&diamond_vect, (*prob_node)->diamond_size);
+    sort_diamond(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
 
     /* Check for hope */
 
@@ -659,9 +694,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     while(child_tracker[0] != 4){
 
-        /* Do I have steps to take ? */
+        /* Do I have steps to take ? Do I have energy to take a step? */
 
-        if(step_counter < (*prob_node)->k){
+        if(step_counter < (*prob_node)->k && pocket > 0){
             
             /* if so, pick a node to visist */
 
@@ -799,7 +834,44 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
             else if(child_tracker[step_counter] == 4){ // no more options, go back
 
-            }            
+                child_tracker[step_counter] = 0;
+
+                if(child_tracker[step_counter - 1] == 1){ // went up, now Im suppoused to go right
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    line_tracker++;
+                    step_counter--;
+                }
+
+                else if(child_tracker[step_counter - 1] == 2){ // went right, now Im suppoused to go down
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    col_tracker--;
+                    step_counter--;
+                }
+
+                else if(child_tracker[step_counter - 1] == 3){ // went down, now Im suppoused to go left
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    line_tracker--;
+                    step_counter--;
+                }
+
+                else if(child_tracker[step_counter - 1] == 4){ // went left, no more options available
+
+                    pop(&pathStack);
+                    (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
+                    pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                    col_tracker++;
+                    step_counter--;
+                }
+            }                        
         }
         else if(pocket < target){ // No. What if I didn't reach the target? 
 
@@ -870,18 +942,22 @@ void sort_diamond(stat_cell ***diamond_vect, int diamond_size){ // insertion, qu
 
 }
 
+void swap_cells(stat_cell **a, stat_cell **b){
+
+}
+
 int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int steps2take, stat_cell***diamond_vect){
 
     int i, j;
     int sum_maxs;
-    int sum_positives;
-    int isRelevant;
+    int sum_positives = 0;
+    int isRelevant = 0;
 
      for(i = 0; i < (*prob_node)->diamond_size; i++){
-
-        isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
-
+        
         if((*diamond_vect[i])->energy > 0){
+            
+            isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
             
             if(isRelevant == 1 && 
             (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){

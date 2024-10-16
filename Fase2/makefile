@@ -7,7 +7,7 @@
 # Mónica Ferreira ist1106520
 #############################################
 
-CFLAGS = -std=c99 -g #flags to use
+CFLAGS = -Wall -std=c99 -g #flags to use
 
 navigate: main.o IOmodule.o problem.o #program compilation
 	gcc $(CFLAGS) -o navigate main.o IOmodule.o problem.o
@@ -27,12 +27,7 @@ clean: # clean object files
 valtest: # test a specific file for memory leaks
 	valgrind --leak-check=full ./navigate ./TestInputs/$(ARG).maps 
 		
-difftest: # test a specific file for differences in the solution
-	./navigate ./TestInputs/$(ARG).maps ;	diff -s ./TestInputs/$(ARG).solmaps ./TestOutputs/Corretos/$(ARG).query
-
 valall: val move # test all files for memory leaks 
-
-diffall: run diffs move # test all files for differences in the solution
 
 val:
 	
@@ -96,18 +91,6 @@ move:
 	
 	mv ./TestInputs/Girinos01/t4*.sol1maps -t ./TestOutputs/Nossos/Girinos01/ 
 
-diffs:
-	
-	diff -s ./TestInputs/Girinos01/t4001.sol1maps ./TestOutputs/Corretos/t4001.query ; \
-	diff -s ./TestInputs/Girinos01/t4002.sol1maps ./TestOutputs/Corretos/t4002.query ; \
-	diff -s ./TestInputs/Girinos01/t4003.sol1maps ./TestOutputs/Corretos/t4003.query ; \
-	diff -s ./TestInputs/Girinos01/t4004.sol1maps ./TestOutputs/Corretos/t4004.query ; \
-	diff -s ./TestInputs/Girinos01/t4005.sol1maps ./TestOutputs/Corretos/t4005.query ; \
-	diff -s ./TestInputs/Girinos01/t4006.sol1maps ./TestOutputs/Corretos/t4006.query ; \
-	diff -s ./TestInputs/Girinos01/t4007.sol1maps ./TestOutputs/Corretos/t4007.query ; \
-	diff -s ./TestInputs/Girinos01/t4008.sol1maps ./TestOutputs/Corretos/t4008.query ; \
-	diff -s ./TestInputs/Girinos01/t4009.sol1maps ./TestOutputs/Corretos/t4009.query ; \
-	diff -s ./TestInputs/Girinos01/t4010.sol1maps ./TestOutputs/Corretos/t4010.query ; \
 	
 
 	

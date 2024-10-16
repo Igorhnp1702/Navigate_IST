@@ -7,8 +7,8 @@
  *  Mónica Ferreira ist1106520
  ******************************************************************************/
 
-#ifndef Itemheader
-#define Itemheader
+#ifndef _Items_
+#define _Items_
 
 typedef void* Item;
 

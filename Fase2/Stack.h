@@ -7,8 +7,8 @@
  *  Mónica Ferreira ist1106520
  ******************************************************************************/
 
-#ifndef Stackheader
-#define Stackheader
+#ifndef _Stack_
+#define _Stack_
 
 #include "Items.h"
 #include <stdlib.h>

@@ -10,9 +10,6 @@
 #ifndef __structs__
 #define __structs__
 
-#include <stdio.h>
-#include "Items.h"
-
 /*
  * Cell datatype
  *
@@ -62,8 +59,7 @@ typedef struct _stat_cell{
  * -l_2 = the line of the target cell for task 3
  * -c_2 = the column of the target cell for task 3
  * -bad = flag to identify problems with invalid values for the parameters
- * -diamond_vect = array that holds the energy values of the cells inside the diamond
- * -path_size = number of cells in path_vect
+ * -diamond_vect = array that holds the energy values of the cells inside the diamond 
  * -diamond_size = number of energy values in diamond_vect
  * 
  */
@@ -87,8 +83,7 @@ typedef struct _prob_info{
     int reduced_map_columns;
     int reduced_map_l1;
     int reduced_map_c1;    
-    int diamond_size;
-    int path_size;     
+    int diamond_size;     
        
 }ProbInfo;
 

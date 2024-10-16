@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "Stack.h"
-#include "Items.h"
+
 
 struct _stackbox{
     Item* Itemarray;
