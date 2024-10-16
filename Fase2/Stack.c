@@ -116,7 +116,8 @@ int Stacklen(Stackblock **stackptr){
 
 Item peekTop(Stackblock **stackptr){
 
-    if((*stackptr)->freeIndex == 0) return 1;
+    if((*stackptr)->freeIndex == 0) return NULL;    
+
     else return (*stackptr)->Itemarray[(*stackptr)->freeIndex - 1];
 }
 
