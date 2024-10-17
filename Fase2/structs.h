@@ -87,7 +87,4 @@ typedef struct _prob_info{
        
 }ProbInfo;
 
-
-
-
 #endif

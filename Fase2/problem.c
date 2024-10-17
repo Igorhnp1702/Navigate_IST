@@ -343,7 +343,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     }
 
     /* Sort the diamond */
-    sort_diamond(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
+    timsort(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
 
     /* Check for hope */
 
@@ -623,10 +623,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
         free(diamond_vect[i]);
     }
     free(diamond_vect);
-
-    for(i = 0; i < (*prob_node)->k; i++){ // free the child_tracker
-        free(child_tracker[i]);
-    }
+    
     free(child_tracker);
 
     fprintf(fpOut,"\n");
@@ -651,7 +648,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int **best_path_copy;                                  // copy of the best path so far
     stat_cell **diamond_vect;                              // array to store the diamond's cells in descending order
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
-    rm_cell* aux;
+
     
         
     if((*prob_node)->k >= (*prob_node)->L * (*prob_node)->C){ // not allowed to have repeated cells in the path, therefore no solution
@@ -706,7 +703,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     }
 
     /* Sort the diamond */
-    sort_diamond(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
+    timsort(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
 
     /* Compute the final energy of the ideal path */
     
@@ -939,10 +936,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
             }
             free(diamond_vect);
 
-            // free the child_tracker
-            for(i = 0; i < (*prob_node)->k; i++){ 
-                free(child_tracker[i]);
-            }
+            // free the child_tracker                        
             free(child_tracker);
 
             // free best_path_copy
@@ -1069,9 +1063,6 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     free(diamond_vect);
 
     // free the child_tracker
-    for(i = 0; i < (*prob_node)->k; i++){ 
-        free(child_tracker[i]);
-    }
     free(child_tracker);
 
     // free best_path_copy
@@ -1094,7 +1085,7 @@ void copy_path(Stackblock **pathstack, int ***dest_vect, int position){
     (*dest_vect)[position][1] = aux->col;
     (*dest_vect)[position][2] = aux->energy;
 
-    if(position == 2){
+    if(position == 0){
 
         push(pathstack, (Item)aux);
         return;
@@ -1105,12 +1096,113 @@ void copy_path(Stackblock **pathstack, int ***dest_vect, int position){
 
 }
 
-void sort_diamond(stat_cell ***diamond_vect, int diamond_size){ 
-
+// Insertion sort for small arrays
+void insertionSort(stat_cell***arr, int left, int right) {
+    for (int i = left + 1; i <= right; i++) {
+        stat_cell* temp = (*arr)[i];
+        int j = i - 1;
+        while (j >= left && (*arr)[j]->energy > temp->energy) {
+            (*arr)[j + 1]->rm_row = (*arr)[j]->rm_row;
+            (*arr)[j + 1]->rm_row = (*arr)[j]->rm_col;
+            (*arr)[j + 1]->rm_row = (*arr)[j]->energy;
+            j--;
+        }
+        (*arr)[j + 1]->rm_row = temp->rm_row;
+        (*arr)[j + 1]->rm_row = temp->rm_col;
+        (*arr)[j + 1]->rm_row = temp->energy;
+    }
 }
 
-void swap_cells(stat_cell **a, stat_cell **b){
+// Merge function to merge two sorted halves
+void merge(stat_cell***arr, int left, int mid, int right) {
+    
+    int i, j, k;
+    int len1 = mid - left + 1, len2 = right - mid;
+    
+    stat_cell** leftArr = (stat_cell**)calloc(len1, sizeof(stat_cell*));
+    for(i = 0; i < len1; i++){
+        leftArr[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
+    }
+    
+    stat_cell** rightArr = (stat_cell**)calloc(len2, sizeof(stat_cell*));
+    for(i = 0; i < len2; i++){
+        rightArr[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
+    }
+    
+    for (i = 0; i < len1; i++){
+     
+        leftArr[i]->rm_row = (*arr)[left + i]->rm_row;
+        leftArr[i]->rm_col = (*arr)[left + i]->rm_col;
+        leftArr[i]->energy = (*arr)[left + i]->energy;
+    }    
+    
+    for (i = 0; i < len2; i++){
+        rightArr[i]->rm_row = (*arr)[mid + 1 + i]->rm_row;
+        rightArr[i]->rm_col = (*arr)[mid + 1 + i]->rm_col;
+        rightArr[i]->energy = (*arr)[mid + 1 + i]->energy;
+    }
+    i = 0, j = 0, k = left;
+    
+    while (i < len1 && j < len2) {
+        if (leftArr[i]->energy <= rightArr[j]->energy) {
+            (*arr)[k]->rm_row = leftArr[i]->rm_row;
+            (*arr)[k]->rm_col = leftArr[i]->rm_col;
+            (*arr)[k]->energy = leftArr[i]->energy;
+            i++;
+        } else {
+            (*arr)[k]->rm_row = rightArr[j]->rm_row;
+            (*arr)[k]->rm_col = rightArr[j]->rm_col;
+            (*arr)[k]->energy = rightArr[j]->energy;
+            j++;
+        }
+        k++;
+    }
 
+    while (i < len1) {
+        
+        (*arr)[k]->rm_row = leftArr[i]->rm_row;
+        (*arr)[k]->rm_col = leftArr[i]->rm_col;
+        (*arr)[k]->energy = leftArr[i]->energy;
+        i++;
+        k++;
+    }
+
+    while (j < len2) {
+        
+        (*arr)[k]->rm_row = rightArr[j]->rm_row;
+        (*arr)[k]->rm_col = rightArr[j]->rm_col;
+        (*arr)[k]->energy = rightArr[j]->energy;
+        j++;
+        k++;
+    }
+    
+    free(leftArr);
+    free(rightArr);
+}
+
+// Iterative Timsort function
+void timsort(stat_cell ***arr, int arrSize) {
+
+    int unitSize = 32; // size of the unit block of the array where insertion sort can be used. Chosen empirically
+
+    // Sort individual subarrays of size "unitSize" using insertion sort
+    for (int i = 0; i < arrSize; i += unitSize) {
+        int right = (i + unitSize - 1 < arrSize - 1) ? i + unitSize - 1 : arrSize - 1;
+        insertionSort(arr, i, right);
+    }
+
+    // Start merging from size "unitSize" (32). After each merge, the size of merged subarrays is doubled.
+    for (int size = unitSize; size < arrSize; size = 2 * size) {
+        for (int left = 0; left < arrSize; left += 2 * size) {
+            int mid = left + size - 1;
+            int right = (left + 2 * size - 1 < arrSize - 1) ? left + 2 * size - 1 : arrSize - 1;
+
+            // Merge subarrays [left...mid] and [mid+1...right]
+            if (mid < right) {
+                merge(arr, left, mid, right);
+            }
+        }
+    }
 }
 
 int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int steps2take, stat_cell***diamond_vect){
@@ -1179,7 +1271,7 @@ void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int s
     aux = (rm_cell*)peekTop(pathstack);
     freeTop(pathstack);
 
-    if(stackpos == 2){        
+    if(stackpos == 1){        
         fprintf(fpOut, "%d %d %d\n", aux->row, aux->col, aux->energy);        
         return;
     }

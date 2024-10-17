@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "structs.h"
+#include "Stack.h"
 #include "IOmodule.h"
 
 /*
@@ -95,11 +96,17 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node);
  */
 void t2_solver(FILE *fpOut, ProbInfo **prob_node);
 
-void sort_diamond(stat_cell***, int);
+void insertionSort(stat_cell***arr, int left, int right);
+
+void merge(stat_cell***arr, int left, int mid, int right);
+
+void timsort(stat_cell ***arr, int arrSize);
 
 int Thereishope(ProbInfo**, int, int, int, int, int, stat_cell***);
 
 int in_Fov(int, int, int, int, int);
+
+void copy_path(Stackblock **pathstack, int ***dest_vect, int position);
 
 /*
  * print_path()

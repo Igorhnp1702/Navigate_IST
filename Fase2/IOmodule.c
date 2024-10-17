@@ -12,8 +12,8 @@
 #include <string.h>
 #include "IOmodule.h"
 
-const char *extension_in = ".maps";
-const char *extension_out = ".solmaps";
+char *extension_in = ".maps";
+char *extension_out = ".solmaps";
 
 char* malloc_str(size_t str_len){
 
