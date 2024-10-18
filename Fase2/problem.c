@@ -7,9 +7,12 @@
  *  Mónica Ferreira ist1106520
  ******************************************************************************/
 
-#include "problem.h"
-#include "Stack.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include "Items.h"
+#include "Stack.h"
+#include "problem.h"
+
 
 int read_problem(Files *fblock, ProbInfo **prob){
     

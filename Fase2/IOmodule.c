@@ -12,6 +12,7 @@
 #include <string.h>
 #include "IOmodule.h"
 
+
 char *extension_in = ".maps";
 char *extension_out = ".solmaps";
 

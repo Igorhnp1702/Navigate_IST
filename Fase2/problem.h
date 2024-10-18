@@ -11,11 +11,12 @@
 #define _problem_
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "structs.h"
-#include "Stack.h"
 #include "IOmodule.h"
+#include "Items.h"
+#include "Stack.h"
+#include "structs.h"
+
+
 
 /*
  * read_problem()

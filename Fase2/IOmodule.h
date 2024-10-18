@@ -10,6 +10,8 @@
 #ifndef __IOmodule__
 #define __IOmodule__
 
+#include <stdio.h>
+
 /*
  * Files datatype
  *

@@ -9,20 +9,22 @@
 
 CFLAGS = -Wall -std=c99 -g #flags to use
 
-navigate: main.o IOmodule.o problem.o Stack.o #program compilation
-	gcc $(CFLAGS) -o navigate main.o IOmodule.o problem.o
-	
-main.o: structs.h IOmodule.h problem.h main.c
-	gcc $(CFLAGS) -c main.c	
-		
-problem.o: Stack.h problem.h problem.c 
-	gcc $(CFLAGS) -c problem.c
-
-Stack.o: Items.h Stack.h Stack.c
-	gcc $(CFLAGS) -c Stack.c
+navigate: IOmodule.o Stack.o problem.o main.o    #program compilation
+	gcc $(CFLAGS) -o navigate main.o IOmodule.o problem.o Stack.o
 
 IOmodule.o: IOmodule.h IOmodule.c
 	gcc $(CFLAGS) -c IOmodule.c
+
+Stack.o: Items.h Stack.h Stack.c
+	gcc $(CFLAGS) -c Stack.c
+		
+problem.o: Items.h Stack.h problem.h problem.c 
+	gcc $(CFLAGS) -c problem.c
+
+main.o: structs.h IOmodule.h problem.h main.c
+	gcc $(CFLAGS) -c main.c
+
+
 
 clean: # clean object files	
 	rm *.o

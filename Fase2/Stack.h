@@ -10,8 +10,8 @@
 #ifndef _Stack_
 #define _Stack_
 
+#include <stddef.h>
 #include "Items.h"
-#include <stdlib.h>
 
 typedef struct _stackbox Stackblock;
 

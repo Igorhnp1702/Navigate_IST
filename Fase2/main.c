@@ -9,8 +9,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "structs.h"
 #include "IOmodule.h"
+#include "structs.h"
 #include "problem.h"
 
 int main (int argc, char* argv[]){
