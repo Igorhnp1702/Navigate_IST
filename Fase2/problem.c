@@ -296,7 +296,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int target = (*prob_node)->target_energy;              // target energy to achieve
     int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
     int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map            
-    int i, j;                                              // iterator
+    int i, j, m;                                          // iterators
     int line_tracker = start_line;                         // line coordinate of the path's current endpoint
     int col_tracker = start_col;                           // column coordinate of the path's current endpoint
     int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
@@ -329,28 +329,29 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     }
 
     /* Extract the diamond from the reduced map */
-
+    m = 0;
     for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
         for (j = 0; j < (*prob_node)->reduced_map_columns; j++){
 
             dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
             dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
 
-            if((dist_Ctracker_center + dist_Ltracker_center <= step_counter) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
+            if((dist_Ctracker_center + dist_Ltracker_center <= (*prob_node)->k) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
     
-                diamond_vect[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
-                diamond_vect[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
-                diamond_vect[i]->energy = (*prob_node)->reduced_map[i][j]->energy;                
+                diamond_vect[m]->rm_col = (*prob_node)->reduced_map[i][j]->col;
+                diamond_vect[m]->rm_row = (*prob_node)->reduced_map[i][j]->row;
+                diamond_vect[m]->energy = (*prob_node)->reduced_map[i][j]->energy;
+                m++;                
             }
         }
     }
 
     /* Sort the diamond */
-    timsort(&diamond_vect, (*prob_node)->diamond_size); //shell sort with tokuda's sequence    
+    timsort(&diamond_vect, (*prob_node)->diamond_size - 1);    
 
     /* Check for hope */
 
-    if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, step_counter, &diamond_vect) != 1){
+    if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, (*prob_node)->k, &diamond_vect) != 1){
         
         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
                                                    (*prob_node)->k, (*prob_node)->initial_energy, -1);
@@ -696,7 +697,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
             dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
             dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
 
-            if((dist_Ctracker_center + dist_Ltracker_center <= step_counter) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
+            if((dist_Ctracker_center + dist_Ltracker_center <= (*prob_node)->k) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
     
                 diamond_vect[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
                 diamond_vect[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
@@ -715,10 +716,12 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     j = 0;
     for(i = 0; i < (*prob_node)->diamond_size; i++){
  
-        sum_maxs += diamond_vect[i]->energy;
-        j++;
-        if(j == (*prob_node)->k)break;
+        if(atDist_of(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker, (*prob_node)->k - j)){
         
+            sum_maxs += diamond_vect[i]->energy;
+            j++;
+            if(j == (*prob_node)->k)break;
+        }        
     }
 
     max_pocket = sum_maxs + pocket;
@@ -1101,19 +1104,26 @@ void copy_path(Stackblock **pathstack, int ***dest_vect, int position){
 
 // Insertion sort for small arrays
 void insertionSort(stat_cell***arr, int left, int right) {
+    
+    stat_cell* temp = (stat_cell*)calloc(1, sizeof(stat_cell));
+
     for (int i = left + 1; i <= right; i++) {
-        stat_cell* temp = (*arr)[i];
+        temp->rm_row = (*arr)[i]->rm_row;
+        temp->rm_col = (*arr)[i]->rm_col;
+        temp->energy = (*arr)[i]->energy;
         int j = i - 1;
         while (j >= left && (*arr)[j]->energy < temp->energy) {
             (*arr)[j + 1]->rm_row = (*arr)[j]->rm_row;
-            (*arr)[j + 1]->rm_row = (*arr)[j]->rm_col;
-            (*arr)[j + 1]->rm_row = (*arr)[j]->energy;
+            (*arr)[j + 1]->rm_col = (*arr)[j]->rm_col;
+            (*arr)[j + 1]->energy = (*arr)[j]->energy;
             j--;
         }
         (*arr)[j + 1]->rm_row = temp->rm_row;
-        (*arr)[j + 1]->rm_row = temp->rm_col;
-        (*arr)[j + 1]->rm_row = temp->energy;
+        (*arr)[j + 1]->rm_col = temp->rm_col;
+        (*arr)[j + 1]->energy = temp->energy;
     }
+    free(temp);
+    return;
 }
 
 // Merge function to merge two sorted halves
@@ -1147,7 +1157,8 @@ void merge(stat_cell***arr, int left, int mid, int right) {
     i = 0, j = 0, k = left;
     
     while (i < len1 && j < len2) {
-        if (leftArr[i]->energy >= rightArr[j]->energy) {
+        if (leftArr[i]->energy >= rightArr[j]->energy){
+
             (*arr)[k]->rm_row = leftArr[i]->rm_row;
             (*arr)[k]->rm_col = leftArr[i]->rm_col;
             (*arr)[k]->energy = leftArr[i]->energy;
@@ -1178,8 +1189,15 @@ void merge(stat_cell***arr, int left, int mid, int right) {
         j++;
         k++;
     }
-    
+        
+    for(i = 0; i < len1; i++){
+        free(leftArr[i]);
+    }
     free(leftArr);
+    
+    for(i = 0; i < len2; i++){
+        free(rightArr[i]);
+    }
     free(rightArr);
 }
 
@@ -1211,20 +1229,20 @@ void timsort(stat_cell ***arr, int arrSize) {
 int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int steps2take, stat_cell***diamond_vect){
 
     int i, j = 0;
-    int sum_maxs;
+    int sum_maxs = 0;
     int sum_positives = 0;
     int isRelevant = 0;
 
      for(i = 0; i < (*prob_node)->diamond_size; i++){
         
-        if((*diamond_vect[i])->energy <= 0) break; // ran out of positives
+        if((*diamond_vect)[i]->energy <= 0) break; // ran out of positives
             
-        isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
+        isRelevant = atDist_of((*diamond_vect)[i]->rm_row, (*diamond_vect)[i]->rm_col, line_tracker, column_tracker, steps2take - j);
         
         if(isRelevant == 1 && 
-        (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){
+        (*prob_node)->reduced_map[(*diamond_vect)[i]->rm_row][(*diamond_vect)[i]->rm_row]->inStack == 0){
         
-            sum_positives += (*diamond_vect[i])->energy;
+            sum_positives += (*diamond_vect)[i]->energy;
             j++;
             if(j == steps2take)break; 
             // number of positives in the ideal path is smaller than the number of remaining steps
@@ -1242,12 +1260,12 @@ int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_t
     j = 0;
     for(i = 0; i < (*prob_node)->diamond_size; i++){
 
-        isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
+        isRelevant = atDist_of((*diamond_vect)[i]->rm_row, (*diamond_vect)[i]->rm_col, line_tracker, column_tracker, steps2take - j);
 
         if(isRelevant == 1 &&
-        (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){  
+        (*prob_node)->reduced_map[(*diamond_vect)[i]->rm_row][(*diamond_vect)[i]->rm_row]->inStack == 0){  
 
-            sum_maxs += (*diamond_vect[i])->energy;
+            sum_maxs += (*diamond_vect)[i]->energy;
             j++;
             if(j == steps2take)break;
         }
@@ -1262,13 +1280,13 @@ int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_t
     return 1;
 }
 
-int in_Fov(int input_line, int input_column, int line_tracker, int column_tracker, int steps2take){
+int atDist_of(int input_line, int input_column, int line_tracker, int column_tracker, int steps2take){
 
     int line_dist = abs(input_line - line_tracker);
     int column_dist = abs(input_column - column_tracker);
     int steps = line_dist + column_dist;
 
-    return steps <= steps2take ? 1 : 0;
+    return steps == steps2take ? 1 : 0;
 }
 
 void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int stackpos){

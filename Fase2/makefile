@@ -24,8 +24,6 @@ problem.o: Items.h Stack.h problem.h problem.c
 main.o: structs.h IOmodule.h problem.h main.c
 	gcc $(CFLAGS) -c main.c
 
-
-
 clean: # clean object files	
 	rm *.o
 

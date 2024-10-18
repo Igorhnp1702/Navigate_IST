@@ -105,7 +105,7 @@ void timsort(stat_cell ***arr, int arrSize);
 
 int Thereishope(ProbInfo**, int, int, int, int, int, stat_cell***);
 
-int in_Fov(int, int, int, int, int);
+int atDist_of(int, int, int, int, int);
 
 void copy_path(Stackblock **pathstack, int ***dest_vect, int position);
 
