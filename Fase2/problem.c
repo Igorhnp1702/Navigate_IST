@@ -1104,7 +1104,7 @@ void insertionSort(stat_cell***arr, int left, int right) {
     for (int i = left + 1; i <= right; i++) {
         stat_cell* temp = (*arr)[i];
         int j = i - 1;
-        while (j >= left && (*arr)[j]->energy > temp->energy) {
+        while (j >= left && (*arr)[j]->energy < temp->energy) {
             (*arr)[j + 1]->rm_row = (*arr)[j]->rm_row;
             (*arr)[j + 1]->rm_row = (*arr)[j]->rm_col;
             (*arr)[j + 1]->rm_row = (*arr)[j]->energy;
@@ -1147,7 +1147,7 @@ void merge(stat_cell***arr, int left, int mid, int right) {
     i = 0, j = 0, k = left;
     
     while (i < len1 && j < len2) {
-        if (leftArr[i]->energy <= rightArr[j]->energy) {
+        if (leftArr[i]->energy >= rightArr[j]->energy) {
             (*arr)[k]->rm_row = leftArr[i]->rm_row;
             (*arr)[k]->rm_col = leftArr[i]->rm_col;
             (*arr)[k]->energy = leftArr[i]->energy;
@@ -1210,31 +1210,33 @@ void timsort(stat_cell ***arr, int arrSize) {
 
 int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_tracker, int target, int steps2take, stat_cell***diamond_vect){
 
-    int i, j;
+    int i, j = 0;
     int sum_maxs;
     int sum_positives = 0;
     int isRelevant = 0;
 
      for(i = 0; i < (*prob_node)->diamond_size; i++){
         
-        if((*diamond_vect[i])->energy > 0){
+        if((*diamond_vect[i])->energy <= 0) break; // ran out of positives
             
-            isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
-            
-            if(isRelevant == 1 && 
-            (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){
-            
-                sum_positives += (*diamond_vect[i])->energy;    
-            }
+        isRelevant = in_Fov((*diamond_vect[i])->rm_row, (*diamond_vect[i])->rm_col, line_tracker, column_tracker, steps2take);
+        
+        if(isRelevant == 1 && 
+        (*prob_node)->reduced_map[(*diamond_vect[i])->rm_row][(*diamond_vect[i])->rm_row]->inStack == 0){
+        
+            sum_positives += (*diamond_vect[i])->energy;
+            j++;
+            if(j == steps2take)break; 
+            // number of positives in the ideal path is smaller than the number of remaining steps
+            // assume that the remaining cells of the same ideal path have an energy value of zero
                 
-        }
-        else break;
+        }            
     }
 
     /* Should I proceed ? */
 
-    if(sum_positives + pocket < target){ // below target, without considering losses of energy
-        return 0;
+    if(sum_positives + pocket < target){ // ideal path's energy doesn't hit the target,
+        return 0;                        // without considering losses of energy   
     }
 
     j = 0;
@@ -1253,7 +1255,8 @@ int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_t
 
     /* Should I proceed ? */    
 
-    if(sum_maxs + pocket < target){ // below target with the best possible path (highest gains and lowest losses)
+    if(sum_maxs + pocket < target){ // ideal path's energy doesn't hit the target,
+                                    // without considering losses of energy   
         return 0;
     }
     return 1;

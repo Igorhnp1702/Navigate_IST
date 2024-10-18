@@ -60,7 +60,73 @@ val:
 	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos01/t4022.maps ; \
 	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos01/t4023.maps ; \
 	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos01/t4024.maps ; \
-	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos01/t4025.maps ; 
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos01/t4025.maps ; \
+	\
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5001.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5002.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5003.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5004.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5005.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5006.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5007.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5008.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5009.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5010.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5011.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5012.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5013.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5014.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5015.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5016.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5017.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5018.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5019.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5020.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5021.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5022.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5023.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5024.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5025.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5026.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5027.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5028.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Girinos02/5029.maps ; \		
+	\
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-01.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-02.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-03.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-04.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-05.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-06.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-07.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-08.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-09.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-10.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-11.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-12.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-13.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-14.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas01/41-53-16-15.maps ; \
+	\
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-16.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-17.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-18.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-19.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-20.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-21.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-22.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-23.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-24.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-25.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-26.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-27.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-28.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-29.maps ; \
+	valgrind --leak-check=full ./navigate  ./TestInputs/Crisalidas02/41-53-16-30.maps ; \	
+	\
+
+
+			
 	
 	
 	
@@ -95,7 +161,12 @@ run:
 move:
 	
 	mv ./TestInputs/Girinos01/t4*.sol1maps -t ./TestOutputs/Nossos/Girinos01/ 
-
+	mv ./TestInputs/Girinos01/t5*.sol1maps -t ./TestOutputs/Nossos/Girinos02/ 
+	mv ./TestInputs/Girinos01/t4*.sol1maps -t ./TestOutputs/Nossos/Crisalidas01/ 
+	mv ./TestInputs/Girinos01/t4*.sol1maps -t ./TestOutputs/Nossos/Crisalidas02/ 
+	mv ./TestInputs/Girinos01/t4*.sol1maps -t ./TestOutputs/Nossos/Girinos01/ 
+	mv ./TestInputs/Girinos01/t4*.sol1maps -t ./TestOutputs/Nossos/Girinos01/ 
+	
 	
 
 	
