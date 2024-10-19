@@ -627,7 +627,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
         freeStack(&pathStack);
     }
 
-    for(i = 0; i < (*prob_node)->diamond_size; i++){ // free the diamond
+    for(i = 0; i < (*prob_node)->diamond_size - 1; i++){ // free the diamond
         free(diamond_vect[i]);
     }
     free(diamond_vect);

@@ -76,6 +76,7 @@ void freeStack(Stackblock **stackptr){
     if((*stackptr)->Itemarray[0] == NULL){
         free((*stackptr)->Itemarray);
         free((*stackptr));
+        return;
     }
 
     for(i = 0; i < (*stackptr)->freeIndex; i++){
