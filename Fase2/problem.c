@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "Items.h"
 #include "Stack.h"
 #include "problem.h"
@@ -177,6 +178,11 @@ int read_problem(Files *fblock, ProbInfo **prob){
                         
                         (*prob)->reduced_map[i][j]->inDiamond = 1;                    
                         numbs_2_read_to_diamond--;
+
+                        if(dist_Ctracker_center + dist_Ltracker_center == 0){
+                            (*prob)->reduced_map_l1 = i;
+                            (*prob)->reduced_map_c1 = j;
+                        }
                     }
                     
                     j++;
@@ -293,21 +299,19 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
     int step_counter = 0;                                  // steps taken
-    int target = (*prob_node)->target_energy;              // target energy to achieve
-    int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
-    int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map            
+    int target = (*prob_node)->target_energy;              // target energy to achieve               
     int i, j, m;                                          // iterators
-    int line_tracker = start_line;                         // line coordinate of the path's current endpoint
-    int col_tracker = start_col;                           // column coordinate of the path's current endpoint
-    int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
-    int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell
+    int line_tracker = (*prob_node)->reduced_map_l1;                        // line coordinate of the path's current endpoint
+    int col_tracker = (*prob_node)->reduced_map_c1;                          // column coordinate of the path's current endpoint
+    int dist_Ltracker_center;  // distance in lines between an iterator and the center cell    
+    int dist_Ctracker_center;    // distance in columns between an iterator and the center cell
     int *child_tracker;                                    // to keep track of the child to visit at each step of the path
     stat_cell **diamond_vect;                              // array to store the diamond's cells in descending order
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
 
     if((*prob_node)->k >= (*prob_node)->L * (*prob_node)->C){ // not allowed to have repeated cells in the path, therefore no solution
         
-        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
         (*prob_node)->k, (*prob_node)->initial_energy, -1);
         fprintf(fpOut,"\n");
         return;
@@ -333,13 +337,13 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
         for (j = 0; j < (*prob_node)->reduced_map_columns; j++){
 
-            dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
-            dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
+            dist_Ltracker_center = abs(i - (*prob_node)->reduced_map_l1);
+            dist_Ctracker_center = abs(j - (*prob_node)->reduced_map_c1);
 
             if((dist_Ctracker_center + dist_Ltracker_center <= (*prob_node)->k) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
-    
-                diamond_vect[m]->rm_col = (*prob_node)->reduced_map[i][j]->col;
-                diamond_vect[m]->rm_row = (*prob_node)->reduced_map[i][j]->row;
+                    
+                diamond_vect[m]->rm_row = i;
+                diamond_vect[m]->rm_col = j;
                 diamond_vect[m]->energy = (*prob_node)->reduced_map[i][j]->energy;
                 m++;                
             }
@@ -353,7 +357,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, (*prob_node)->k, &diamond_vect) != 1){
         
-        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
                                                    (*prob_node)->k, (*prob_node)->initial_energy, -1);
         fprintf(fpOut,"\n");
 
@@ -639,16 +643,15 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path    
     int max_pocket = 0;                                    // final energy of the ideal path
     int step_counter = 0;                                  // steps taken
-    int target = 0;                                        // target energy to achieve (final energy of the best path so far)
-    int start_line = (*prob_node)->reduced_map_l1;         // line of the starting cell in the reduced map
-    int start_col = (*prob_node)->reduced_map_c1;          // column of the starting cell in the reduced map            
-    int i, j;                                              // iterator
-    int line_tracker = start_line;                         // line coordinate of the path's current endpoint
-    int col_tracker = start_col;                           // column coordinate of the path's current endpoint
-    int dist_Ltracker_center = line_tracker - start_line;  // distance in lines between an iterator and the center cell    
-    int dist_Ctracker_center = col_tracker - start_col;    // distance in columns between an iterator and the center cell
+    int target = 0;                                        // target energy to achieve (final energy of the best path so far)        
+    int i, j, m;                                              // iterator
+    int line_tracker = (*prob_node)->reduced_map_l1;                         // line coordinate of the path's current endpoint
+    int col_tracker = (*prob_node)->reduced_map_c1;                           // column coordinate of the path's current endpoint
+    int dist_Ltracker_center;  // distance in lines between an iterator and the center cell    
+    int dist_Ctracker_center; // distance in columns between an iterator and the center cell
     int path_found = 0;
     int *child_tracker;                                    // to keep track of the child to visit at each step of the path
+    int *max_tracker; 
     int **best_path_copy;                                  // copy of the best path so far
     stat_cell **diamond_vect;                              // array to store the diamond's cells in descending order
     Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
@@ -690,19 +693,21 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     }
 
     /* Extract the diamond from the reduced map */
-
+    m = 0;
     for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
         for (j = 0; j < (*prob_node)->reduced_map_columns; j++){
 
-            dist_Ltracker_center = abs((*prob_node)->reduced_map[i][j]->row - (*prob_node)->l_1);
-            dist_Ctracker_center = abs((*prob_node)->reduced_map[i][j]->col - (*prob_node)->c_1);
+            dist_Ltracker_center = abs(i - (*prob_node)->reduced_map_l1);
+            dist_Ctracker_center = abs(j - (*prob_node)->reduced_map_c1);
 
             if((dist_Ctracker_center + dist_Ltracker_center <= (*prob_node)->k) && (dist_Ctracker_center + dist_Ltracker_center > 0)){
-    
-                diamond_vect[i]->rm_col = (*prob_node)->reduced_map[i][j]->col;
-                diamond_vect[i]->rm_row = (*prob_node)->reduced_map[i][j]->row;
-                diamond_vect[i]->energy = (*prob_node)->reduced_map[i][j]->energy;                
+                    
+                diamond_vect[m]->rm_row = i;
+                diamond_vect[m]->rm_col = j;
+                diamond_vect[m]->energy = (*prob_node)->reduced_map[i][j]->energy;
+                m++;
             }
+            
         }
     }
 
@@ -711,18 +716,22 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     /* Compute the final energy of the ideal path */
     
-    int sum_maxs = 0;
+    int sum_maxs = 0, distance = 0;
+    max_tracker = (int*)calloc((*prob_node)->k, sizeof(int));
 
-    j = 0;
+    j = 0, i = 0;
     for(i = 0; i < (*prob_node)->diamond_size; i++){
  
-        if(atDist_of(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker, (*prob_node)->k - j)){
-        
+        distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker);
+
+        if(max_tracker[distance - 1] < ((*prob_node)->k - distance)/2 + 1 ){
             sum_maxs += diamond_vect[i]->energy;
+            max_tracker[distance]++;
             j++;
             if(j == (*prob_node)->k)break;
         }        
     }
+    free(max_tracker);
 
     max_pocket = sum_maxs + pocket;
 
@@ -1230,63 +1239,56 @@ int Thereishope(ProbInfo **prob_node, int pocket, int line_tracker, int column_t
 
     int i, j = 0;
     int sum_maxs = 0;
-    int sum_positives = 0;
-    int isRelevant = 0;
+    int sum_positives = 0;    
+    int distance = 0;
+
+    int *max_tracker = (int*)calloc(steps2take, sizeof(int));
 
      for(i = 0; i < (*prob_node)->diamond_size; i++){
+                            
+        if((*diamond_vect)[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is enough
+
+            sum_positives = sum_maxs + pocket;
+            if(sum_positives < target){ // else, add the negatives 
+                free(max_tracker);
+                return 0;
+            }
+        } 
         
-        if((*diamond_vect)[i]->energy <= 0) break; // ran out of positives
-            
-        isRelevant = atDist_of((*diamond_vect)[i]->rm_row, (*diamond_vect)[i]->rm_col, line_tracker, column_tracker, steps2take - j);
+        distance = dist((*diamond_vect)[i]->rm_row, (*diamond_vect)[i]->rm_col, line_tracker, column_tracker);
         
-        if(isRelevant == 1 && 
-        (*prob_node)->reduced_map[(*diamond_vect)[i]->rm_row][(*diamond_vect)[i]->rm_row]->inStack == 0){
+        if(distance <= steps2take && 
+        (*prob_node)->reduced_map[(*diamond_vect)[i]->rm_row][(*diamond_vect)[i]->rm_row]->inStack == 0 &&
+        max_tracker[distance - 1] < (steps2take - distance)/2 + 1){
         
-            sum_positives += (*diamond_vect)[i]->energy;
+            sum_maxs += (*diamond_vect)[i]->energy;            
+            max_tracker[distance - 1]++;
             j++;
             if(j == steps2take)break; 
             // number of positives in the ideal path is smaller than the number of remaining steps
-            // assume that the remaining cells of the same ideal path have an energy value of zero
-                
-        }            
-    }
-
-    /* Should I proceed ? */
-
-    if(sum_positives + pocket < target){ // ideal path's energy doesn't hit the target,
-        return 0;                        // without considering losses of energy   
-    }
-
-    j = 0;
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
-
-        isRelevant = atDist_of((*diamond_vect)[i]->rm_row, (*diamond_vect)[i]->rm_col, line_tracker, column_tracker, steps2take - j);
-
-        if(isRelevant == 1 &&
-        (*prob_node)->reduced_map[(*diamond_vect)[i]->rm_row][(*diamond_vect)[i]->rm_row]->inStack == 0){  
-
-            sum_maxs += (*diamond_vect)[i]->energy;
-            j++;
-            if(j == steps2take)break;
-        }
+            // assume that the remaining cells of the same ideal path have an energy value of zero            
+             
+        }                
     }
 
     /* Should I proceed ? */    
 
     if(sum_maxs + pocket < target){ // ideal path's energy doesn't hit the target,
-                                    // without considering losses of energy   
+                                    // without considering losses of energy
+        free(max_tracker);                               
         return 0;
     }
-    return 1;
+    free(max_tracker);
+    return 1;        
 }
 
-int atDist_of(int input_line, int input_column, int line_tracker, int column_tracker, int steps2take){
+int dist(int input_line, int input_column, int line_tracker, int column_tracker){
 
     int line_dist = abs(input_line - line_tracker);
     int column_dist = abs(input_column - column_tracker);
     int steps = line_dist + column_dist;
 
-    return steps == steps2take ? 1 : 0;
+    return steps;
 }
 
 void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int stackpos){

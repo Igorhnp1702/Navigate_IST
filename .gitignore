@@ -13,3 +13,4 @@ Fase2/TestOutputs/
 .vscode/
 *.txt
 *.out
+*.check
