@@ -21,7 +21,8 @@ int main (int argc, char* argv[]){
     }
 
     /* Tenta abrir os ficheiros de entrada e de saída */
-    Files *fblock = open_files(argv[1], &fblock);
+    Files *fblock; 
+    fblock = open_files(argv[1]);
 
     if(fblock == NULL){
         exit(0);
@@ -58,6 +59,7 @@ int main (int argc, char* argv[]){
     free_prob_node_data(&problem);
     free(problem);
     close_files(&fblock);
+    free(fblock->outfile_str);
     free(fblock);
 
     return 0;

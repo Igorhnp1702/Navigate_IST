@@ -359,18 +359,18 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     /* Check for hope */
 
-    if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, (*prob_node)->k, &diamond_vect) != 1){
+    // if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, (*prob_node)->k, &diamond_vect) != 1){
         
-        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
-                                                   (*prob_node)->k, (*prob_node)->initial_energy, -1);
-        fprintf(fpOut,"\n");
+    //     fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
+    //                                                (*prob_node)->k, (*prob_node)->initial_energy, -1);
+    //     fprintf(fpOut,"\n");
 
-        for(i = 0; i < (*prob_node)->diamond_size - 1; i++){ // free the diamond
-            free(diamond_vect[i]);
-        }
-        free(diamond_vect);
-        return;
-    }
+    //     for(i = 0; i < (*prob_node)->diamond_size - 1; i++){ // free the diamond
+    //         free(diamond_vect[i]);
+    //     }
+    //     free(diamond_vect);
+    //     return;
+    // }
     
     /* There is hope, initialize the stack */
     
@@ -700,22 +700,22 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     /* Compute the final energy of the ideal path */
     
-    int sum_maxs = 0, distance = 0;
+    int sum_maxs = 0; // distance = 0;
     max_tracker = (int*)calloc((*prob_node)->k, sizeof(int));
 
     j = 0, i = 0;
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
+    // for(i = 0; i < (*prob_node)->diamond_size; i++){
  
-        distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker);
+    //     distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker);
        
-        if(max_tracker[distance - 1] < ((*prob_node)->k - distance)/2 + 1 ){
-            sum_maxs += diamond_vect[i]->energy;
-            max_tracker[distance - 1]++;
-            j++;
-            if(j == (*prob_node)->k)break;
-        }
+    //     if(max_tracker[distance - 1] < ((*prob_node)->k - distance)/2 + 1 ){
+    //         sum_maxs += diamond_vect[i]->energy;
+    //         max_tracker[distance - 1]++;
+    //         j++;
+    //         if(j == (*prob_node)->k)break;
+    //     }
                 
-    }
+    // }
     free(max_tracker);
 
     (*prob_node)->max_pocket = sum_maxs + pocket;
@@ -975,8 +975,11 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
         }
         else if(step_counter == (*prob_node)->k && pocket > target){ // a better path was found 
 
+            //update the flag
+            path_found = 1;
+            
             // update the target
-            target = pocket;
+            target = pocket;            
 
             // copy the stack to the temporary array            
             copy_path(&pathStack, &best_path_copy, step_counter - 1);
@@ -1031,12 +1034,13 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     else{
         
         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, -(*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
-                                                    (*prob_node)->k, (*prob_node)->initial_energy, pocket);
+                                                    (*prob_node)->k, (*prob_node)->initial_energy, target);
         
         for(i = 0; i < (*prob_node)->k; i++){
             
             fprintf(fpOut, "%d %d %d\n", best_path_copy[i][0], best_path_copy[i][1], best_path_copy[i][2]);   
         }
+        freeStack(&pathStack);
     }
     
     // free the diamond_vect

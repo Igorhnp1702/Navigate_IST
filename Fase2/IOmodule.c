@@ -54,13 +54,13 @@ int check_ext(char *filename, char *extension)
     }    
 }
 
-char* change_filenames_extension(const char* FileName, char* New_FileName, size_t FileName_len, size_t Extension_len){
+void change_filenames_extension(const char* FileName, char** New_FileName, size_t FileName_len, size_t Extension_len){
 
-    strcpy(New_FileName, FileName);                    // Move into the new block of memory
-    New_FileName[FileName_len - Extension_len] = '\0'; // Remove Old Extension
-    strcat(New_FileName, extension_out);               // Add New Extension
+    strcpy(*New_FileName, FileName);                    // Move into the new block of memory
+    (*New_FileName)[FileName_len - Extension_len] = '\0'; // Remove Old Extension
+    strcat(*New_FileName, extension_out);               // Add New Extension
    
-    return New_FileName;
+    return;
 }
 
 FILE* Open_Read_File(char* filename){
@@ -83,32 +83,31 @@ FILE* Open_Write_File(char* filename){
 }
 
 
-Files *open_files(char* Input_Filename, Files **File){
+Files* open_files(char* Input_Filename){    
     
+    Files *Fileblock = NULL;
+
     /* If the right extension is found */
-    *File = NULL;
     if(check_ext(Input_Filename, extension_in) == 0){
 
         size_t Input_Filename_len = strlen(Input_Filename);
         size_t extension_in_len = strlen(extension_in);
         size_t Output_Filename_len = Input_Filename_len - extension_in_len + strlen(extension_out) + 1;
 
-        if(((*File )= (Files*)calloc(1,sizeof(Files))) == NULL){
+        if((Fileblock = (Files*)calloc(1, sizeof(Files))) == NULL){
             exit(0);
         }
-        (*File)->Input = Open_Read_File(Input_Filename);
+        Fileblock->Input = Open_Read_File(Input_Filename);
 
-        char* Output_Filename = malloc_str(Output_Filename_len);
+        Fileblock->outfile_str = malloc_str(Output_Filename_len);
 
-        Output_Filename = change_filenames_extension(Input_Filename, Output_Filename, Input_Filename_len, extension_in_len);
+        change_filenames_extension(Input_Filename, &(Fileblock->outfile_str), Input_Filename_len, extension_in_len);
                 
-        (*File)->Output = Open_Write_File(Output_Filename);
-        
-        free(Output_Filename);
+        Fileblock->Output = Open_Write_File(Fileblock->outfile_str);                
     }
 
     /* Else the pointer will be null (wrong extension) and the program should terminate */
-    return *File;    
+    return Fileblock;    
 }
 
 void close_files(Files **fblock){

@@ -68,21 +68,17 @@ int pop(Stackblock**stackptr){
 }
 
 void freeStack(Stackblock **stackptr){
-
+    
     int i;
 
-    if((*stackptr)->Itemarray[0] == NULL){
-        free((*stackptr)->Itemarray);
-        free((*stackptr));
-        return;
-    }
-
-    for(i = 0; i < (*stackptr)->freeIndex; i++){
-        free((*stackptr)->Itemarray[i]);
+    for(i = (*stackptr)->arraysize - 1; i >= 0; i--){
+        
+        if((*stackptr)->Itemarray[i] != NULL) free((*stackptr)->Itemarray[i]);
     }
     free((*stackptr)->Itemarray);
-    free((*stackptr));
+    free((*stackptr));    
     return;
+    
 }
 
 int freeTop(Stackblock **stackptr){

@@ -25,6 +25,7 @@
 typedef struct _files {
     FILE* Input;
     FILE* Output;
+    char *outfile_str;    
 } Files;
 
 /*
@@ -70,7 +71,7 @@ int check_ext(char *filename, char *extension);
  * 
  * Retorno: Apontador de caracteres come do ficheiro em questão, com uma extensão diferente
  */
-char* change_filenames_extension(const char* FileName, char* New_FileName, size_t FileName_len, size_t Extension_len);
+void change_filenames_extension(const char* FileName, char** New_FileName, size_t FileName_len, size_t Extension_len);
 
 /*
  * Open_Read_File()
@@ -109,7 +110,7 @@ FILE* Open_Write_File(char* filename);
  * um para o de saída. Esta função faz questão de verificar se a extensão do ficheiro de entrada
  * está correta ou não
  */
-Files *open_files(char* Input_Filename, Files **File);
+Files *open_files(char* Input_Filename);
 
 /*
  * close_files()
