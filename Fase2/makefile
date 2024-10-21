@@ -578,6 +578,7 @@ valall:
 	navigateChecker ./BigPool/250-250-401_02.maps ;
 	 					
 checkall:
+#\
 	./navigate  ./SmallPool/t4001.maps ; \
 	navigateChecker ./SmallPool/t4001.maps ; \
 	\
@@ -829,7 +830,7 @@ checkall:
 	\
 	./navigate  ./SmallPool/41-53-16-30.maps ; \
 	navigateChecker ./SmallPool/41-53-16-30.maps ; 
-#ddd\
+
 	./navigate  ./MediumPool/41-53-00.maps ; \
 	navigateChecker ./MediumPool/41-53-00.maps ; \
 	\
@@ -1002,8 +1003,8 @@ checkall:
 	navigateChecker ./MediumPool/41-53-73.maps ; \
 	\
 	./navigate  ./MediumPool/41-53-xx.maps ; \
-	navigateChecker ./MediumPool/41-53-xx.maps ; \
-	\
+	navigateChecker ./MediumPool/41-53-xx.maps ; 
+#\
 	./navigate ./BigPool/250-250-30_01.maps ; \
 	navigateChecker ./BigPool/250-250-30_01.maps ; \
 	\

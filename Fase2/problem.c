@@ -293,7 +293,7 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
 
     if((*prob_node)->task == 2){
          fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
-                (*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, 
+                (*prob_node)->L, (*prob_node)->C, -(*prob_node)->task, (*prob_node)->l_1, 
                 (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);
     }
     return;    
