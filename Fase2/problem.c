@@ -305,6 +305,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target energy to achieve               
     int i, j, m;                                           // iterators
+    int path_found = 0;
     int line_tracker = (*prob_node)->reduced_map_l1;       // line coordinate of the path's current endpoint
     int col_tracker = (*prob_node)->reduced_map_c1;        // column coordinate of the path's current endpoint
     int dist_Ltracker_center;                              // distance in lines between an iterator and the center cell    
@@ -388,7 +389,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
         child_tracker[i] = 0;
     }
 
-    while(child_tracker[0] != 4){
+    while(child_tracker[0] <= 4){
 
         /* Do I have steps to take ? Do I have energy to take a step? */
 
@@ -513,7 +514,8 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 }                
             }
 
-            else if(child_tracker[step_counter] == 4){ // no more options, go back
+            // no more options, go back, (it's not the first cell)
+            else if(child_tracker[step_counter] == 4 && step_counter != 0){ 
 
                 child_tracker[step_counter] = 0;
 
@@ -552,9 +554,11 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                     col_tracker++;
                     step_counter--;
                 }
-            }                        
+            }
+            else if(child_tracker[step_counter] == 4 && step_counter == 0) break; // tree search is over                        
         }
-        else if(pocket < target){ // No. What if I didn't reach the target? 
+        else if((step_counter == (*prob_node)->k && pocket < target) ||
+                (step_counter < (*prob_node)->k && pocket <= 0)){ // k steps, but below target, or less than k steps and negative energy
 
             //go back. step_counter == k, avoid segfault  with step_counter--            
 
@@ -594,19 +598,21 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 step_counter--;
             }
         }
-        else break; // target was reached and the path has k steps
+        else if(step_counter == (*prob_node)->k && pocket >= target){ // solution was found, print stack from 2nd base to top, with recursion
+
+            fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
+            (*prob_node)->k, (*prob_node)->initial_energy, pocket);
+
+            print_path(fpOut, prob_node, &pathStack, step_counter);
+            freeTop(&pathStack);
+            freeStack(&pathStack);
+            path_found = 1;
+            break; // target was reached and the path has k steps        
+        }
     }
 
-    if(pocket >= target){ // solution was found, print stack from 2nd base to top, with recursion
-
-        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
-        (*prob_node)->k, (*prob_node)->initial_energy, pocket);
-
-        print_path(fpOut, prob_node, &pathStack, step_counter);
-        freeTop(&pathStack);
-        freeStack(&pathStack);        
-    }
-    else{
+    
+    if(path_found == 0){
         fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
         (*prob_node)->k, (*prob_node)->initial_energy, -1);
         freeStack(&pathStack);
@@ -700,22 +706,22 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     /* Compute the final energy of the ideal path */
     
-    int sum_maxs = 0; // distance = 0;
+    int sum_maxs = 0, distance = 0;
     max_tracker = (int*)calloc((*prob_node)->k, sizeof(int));
 
     j = 0, i = 0;
-    // for(i = 0; i < (*prob_node)->diamond_size; i++){
+    for(i = 0; i < (*prob_node)->diamond_size; i++){
  
-    //     distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker);
+        distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, line_tracker, col_tracker);
        
-    //     if(max_tracker[distance - 1] < ((*prob_node)->k - distance)/2 + 1 ){
-    //         sum_maxs += diamond_vect[i]->energy;
-    //         max_tracker[distance - 1]++;
-    //         j++;
-    //         if(j == (*prob_node)->k)break;
-    //     }
+        if(max_tracker[distance - 1] < ((*prob_node)->k - distance)/2 + 1 ){
+            sum_maxs += diamond_vect[i]->energy;
+            max_tracker[distance - 1]++;
+            j++;
+            if(j == (*prob_node)->k)break;
+        }
                 
-    // }
+    }
     free(max_tracker);
 
     (*prob_node)->max_pocket = sum_maxs + pocket;
@@ -736,11 +742,11 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
         child_tracker[i] = 0;
     }
 
-    while(child_tracker[0] != 4){
+    while(child_tracker[0] <= 4){
 
         /* Do I have steps to take ? Do I have energy to take a step? */
 
-        if(step_counter < (*prob_node)->k && pocket > 0){
+        if(step_counter < (*prob_node)->k && pocket > 0){ // positive pocket with steps to take
             
             /* if so, pick a node to visist */
 
@@ -863,7 +869,8 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 }                
             }
 
-            else if(child_tracker[step_counter] == 4){ // no more options, go back
+           // no more options, go back, (it's not the first cell)
+            else if(child_tracker[step_counter] == 4 && step_counter != 0){ 
 
                 child_tracker[step_counter] = 0;
 
@@ -902,9 +909,13 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                     col_tracker++;
                     step_counter--;
                 }
-            }                        
+            }
+            // no more options, tree search is over
+            else if(child_tracker[step_counter] == 4 && step_counter == 0) break;                         
+        
         }
-        else if(step_counter == (*prob_node)->k && pocket == (*prob_node)->max_pocket){ // ideal path was found, print stack from 2nd base to top, with recursion
+        // ideal path was found, print stack from 2nd base to top, with recursion
+        else if(step_counter == (*prob_node)->k && pocket == (*prob_node)->max_pocket){         
 
             fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, -(*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
                                                         (*prob_node)->k, (*prob_node)->initial_energy, pocket);
@@ -932,7 +943,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
             return;
             
         }
-        else if(step_counter <= (*prob_node)->k && pocket <= target){ // What if I didn't reach the score of the previous path? 
+        // What if I didn't reach the score of the previous path? 
+        else if(step_counter <= (*prob_node)->k && pocket <= target){ 
+        // worse or equal path was found
 
             //go back and keep looking until the maximum energy is reached or until you run out of options in the diamond
             //step_counter == k, avoid segfault with step_counter--
@@ -973,7 +986,8 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 step_counter--;
             }
         }
-        else if(step_counter == (*prob_node)->k && pocket > target){ // a better path was found 
+        else if(step_counter == (*prob_node)->k && pocket > target){ 
+        // a better path was found 
 
             //update the flag
             path_found = 1;
