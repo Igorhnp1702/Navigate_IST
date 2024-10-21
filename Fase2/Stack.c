@@ -50,11 +50,9 @@ Stackblock* initializeStack(int Stacksize, size_t Itemsize){
 int push(Stackblock** stackptr, Item newItem){
     
     int success = 0;
-    if(isFull(stackptr) == 1) return success;
-
-    size_t newItem_len = sizeof(newItem);
+    if(isFull(stackptr) == 1) return success;    
     
-    memcpy((*stackptr)->Itemarray[(*stackptr)->freeIndex], newItem, newItem_len);
+    memcpy((*stackptr)->Itemarray[(*stackptr)->freeIndex], newItem, (*stackptr)->Itemlen);
     (*stackptr)->freeIndex++;
     return success++;
 }

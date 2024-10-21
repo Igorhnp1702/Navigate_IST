@@ -83,7 +83,8 @@ typedef struct _prob_info{
     int reduced_map_columns;
     int reduced_map_l1;
     int reduced_map_c1;    
-    int diamond_size;     
+    int diamond_size;
+    int max_pocket;     
        
 }ProbInfo;
 
