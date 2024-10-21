@@ -24,7 +24,7 @@ int main (int argc, char* argv[]){
     Files *fblock; 
     fblock = open_files(argv[1]);
 
-    if(fblock == NULL){
+    if(fblock == NULL){        
         exit(0);
     }
     
@@ -32,6 +32,9 @@ int main (int argc, char* argv[]){
     ProbInfo *problem;
     int alert;
     if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
+        close_files(&fblock);
+        free(fblock->outfile_str);
+        free(fblock);
         exit(0);
     }
     alert = read_problem(fblock, &problem);
@@ -50,6 +53,9 @@ int main (int argc, char* argv[]){
         free_prob_node_data(&problem); 
         free(problem);
         if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
+            close_files(&fblock);
+            free(fblock->outfile_str);
+            free(fblock);
             exit(0);
         }
         alert = read_problem(fblock, &problem);       

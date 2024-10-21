@@ -56,29 +56,21 @@ int check_ext(char *filename, char *extension)
 
 void change_filenames_extension(const char* FileName, char** New_FileName, size_t FileName_len, size_t Extension_len){
 
-    strcpy(*New_FileName, FileName);                    // Move into the new block of memory
+    strcpy(*New_FileName, FileName);                      // Move into the new block of memory
     (*New_FileName)[FileName_len - Extension_len] = '\0'; // Remove Old Extension
-    strcat(*New_FileName, extension_out);               // Add New Extension
+    strcat(*New_FileName, extension_out);                 // Add New Extension
    
     return;
 }
 
 FILE* Open_Read_File(char* filename){
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {        
-        exit(0);
-    }
+    FILE* file = fopen(filename, "r");    
     return file;
 }
 
 FILE* Open_Write_File(char* filename){
 
-    FILE* file = fopen(filename, "w");
-    if (file == NULL) {
-        free(filename);
-        filename = NULL;
-        exit(0);
-    }
+    FILE* file = fopen(filename, "w");            
     return file;
 }
 
@@ -97,13 +89,29 @@ Files* open_files(char* Input_Filename){
         if((Fileblock = (Files*)calloc(1, sizeof(Files))) == NULL){
             exit(0);
         }
-        Fileblock->Input = Open_Read_File(Input_Filename);
+        
+        if((Fileblock->Input = Open_Read_File(Input_Filename)) == NULL){
+        
+            free(Fileblock);
+            exit(0);
+        }
 
-        Fileblock->outfile_str = malloc_str(Output_Filename_len);
+        if((Fileblock->outfile_str = malloc_str(Output_Filename_len)) == NULL){
+
+            fclose(Fileblock->Input);
+            free(Fileblock);
+            exit(0);
+        }
 
         change_filenames_extension(Input_Filename, &(Fileblock->outfile_str), Input_Filename_len, extension_in_len);
                 
-        Fileblock->Output = Open_Write_File(Fileblock->outfile_str);                
+        if((Fileblock->Output = Open_Write_File(Fileblock->outfile_str)) == NULL){
+
+            fclose(Fileblock->Input);
+            free(Fileblock->outfile_str);
+            free(Fileblock);
+            exit(0);
+        }
     }
 
     /* Else the pointer will be null (wrong extension) and the program should terminate */
