@@ -1,7 +1,7 @@
-Fase1/TestInputs/
-Fase2/TestInputs/
-Fase1/TestOutputs/
-Fase2/TestOutputs/
+./Fase1/TestInputs/
+./Fase2/TestInputs/
+./Fase1/TestOutputs/
+./Fase2/TestOutputs/
 *.query
 *.1maps
 *.sol1maps
