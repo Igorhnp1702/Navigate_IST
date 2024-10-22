@@ -43,6 +43,7 @@ typedef struct _stat_cell{
     int rm_row;
     int rm_col;
     int energy;
+    int block;
 
 }stat_cell;
 
