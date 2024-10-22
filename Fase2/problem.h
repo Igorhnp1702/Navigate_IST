@@ -103,7 +103,7 @@ void merge(stat_cell***arr, int left, int mid, int right);
 
 void timsort(stat_cell ***arr, int arrSize);
 
-int Thereishope(ProbInfo**, int, int, int, int, int, stat_cell***);
+int Thereishope(ProbInfo**, stat_cell***,int, int);
 
 int dist(int, int, int, int);
 

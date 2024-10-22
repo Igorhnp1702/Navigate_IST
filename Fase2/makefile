@@ -830,7 +830,7 @@ checkall:
 	\
 	./navigate  ./SmallPool/41-53-16-30.maps ; \
 	navigateChecker ./SmallPool/41-53-16-30.maps ; 
-#\
+
 	./navigate  ./MediumPool/41-53-00.maps ; \
 	navigateChecker ./MediumPool/41-53-00.maps ; \
 	\
@@ -1004,7 +1004,7 @@ checkall:
 	\
 	./navigate  ./MediumPool/41-53-xx.maps ; \
 	navigateChecker ./MediumPool/41-53-xx.maps ; 
-
+#\
 	./navigate ./BigPool/250-250-30_01.maps ; \
 	navigateChecker ./BigPool/250-250-30_01.maps ; \
 	\
