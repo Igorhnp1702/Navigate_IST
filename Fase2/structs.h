@@ -32,9 +32,6 @@ typedef struct _rm_cell{    // reduced map cell
     int energy;        
     int inDiamond;
     int inStack;
-    int inSum;
-    int max_Order;
-    int dist2center;
 
 }rm_cell;
 
@@ -81,8 +78,7 @@ typedef struct _prob_info{
     int target_energy;
         
     // problem data
-    rm_cell ***reduced_map;
-    //stat_cell ***maxtracker;
+    rm_cell ***reduced_map;    
     int *max_counter;    
     int reduced_map_lines;
     int reduced_map_columns;
@@ -90,8 +86,6 @@ typedef struct _prob_info{
     int reduced_map_c1;    
     int diamond_size;
     int max_pocket;
-   // int sum_maxs;
-   // int sum_positives;
     int bad;     
        
 }ProbInfo;
