@@ -109,6 +109,8 @@ int dist(int, int, int, int);
 
 void copy_path(Stackblock **pathstack, int ***dest_vect, int position);
 
+int min(int, int);
+
 /*
  * print_path()
  *

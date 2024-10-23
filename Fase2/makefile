@@ -7,7 +7,7 @@
 # Mónica Ferreira ist1106520
 #############################################
 
-CFLAGS = -Wall -std=c99 -g #flags to use
+CFLAGS = -Wall -std=c99 -O3 -pg #flags to use
 
 navigate: IOmodule.o Stack.o problem.o main.o    #program compilation
 	gcc $(CFLAGS) -o navigate main.o IOmodule.o problem.o Stack.o
@@ -829,8 +829,8 @@ checkall:
 	navigateChecker ./SmallPool/41-53-16-29.maps ; \
 	\
 	./navigate  ./SmallPool/41-53-16-30.maps ; \
-	navigateChecker ./SmallPool/41-53-16-30.maps ; 
-
+	navigateChecker ./SmallPool/41-53-16-30.maps ;  \
+	\
 	./navigate  ./MediumPool/41-53-00.maps ; \
 	navigateChecker ./MediumPool/41-53-00.maps ; \
 	\
@@ -1003,8 +1003,8 @@ checkall:
 	navigateChecker ./MediumPool/41-53-73.maps ; \
 	\
 	./navigate  ./MediumPool/41-53-xx.maps ; \
-	navigateChecker ./MediumPool/41-53-xx.maps ; 
-#\
+	navigateChecker ./MediumPool/41-53-xx.maps ; \
+	\
 	./navigate ./BigPool/250-250-30_01.maps ; \
 	navigateChecker ./BigPool/250-250-30_01.maps ; \
 	\
