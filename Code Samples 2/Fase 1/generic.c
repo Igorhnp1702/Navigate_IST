@@ -1,7 +1,7 @@
 /******************************************************************************
  * Ficheiro com o código-fonte das funções genéricas utilizadas no projeto
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Gonçalo Pires ist199947

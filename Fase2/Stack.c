@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro com a implementação das operações sobre pilhas
+ * File to implement the functions for stack manipulation
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

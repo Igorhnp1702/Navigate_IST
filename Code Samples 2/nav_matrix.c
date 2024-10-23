@@ -1,7 +1,7 @@
 /******************************************************************************
  * Ficheiro com o código-fonte das funções para o tratamento de matrizes
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

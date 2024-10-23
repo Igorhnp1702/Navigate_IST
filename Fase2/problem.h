@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro header das funções de análise e resolução dos problemas
+ * Interface for the problem solving functions and utilities
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

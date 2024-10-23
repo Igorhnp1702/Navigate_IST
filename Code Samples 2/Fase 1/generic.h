@@ -1,7 +1,7 @@
 /******************************************************************************
  * Header do ficheiro generic.c
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Gonçalo Pires ist199947

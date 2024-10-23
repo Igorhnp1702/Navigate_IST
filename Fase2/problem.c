@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro *.c com as funções de análise e resolução dos problemas 
+ *File to implement the problem solving functions and utilities
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520
@@ -315,7 +315,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path    
     int distance = 0;        
     int *max_counter;
-    int sum_maxs = 0, sum_positives = 0;
+    int sum_positives = 0;
     int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target energy to achieve               
     int i, j, m;                                           // iterators
@@ -428,7 +428,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     // initialize the child_tracker
     
-    child_tracker = (int*)calloc((*prob_node)->k, sizeof(int));
+    child_tracker = (int*)calloc((*prob_node)->k + 1, sizeof(int));
 
     for(i = 0; i < (*prob_node)->k; i++){
         child_tracker[i] = 0;
@@ -694,7 +694,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
     int *max_counter;
     int distance = 0;
-    int sum_maxs = 0, sum_positives = 0;
+    int sum_positives = 0;
     int step_counter = 0;                                  // steps taken
     int target = 0;                                        // target energy to achieve (final energy of the best path so far)        
     int i, j, m;                                           // iterator
@@ -763,7 +763,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     /* Compute the final energy of the ideal path */
 
-    max_counter = (int*)calloc((*prob_node)->k, sizeof(int));
+    max_counter = (int*)calloc((*prob_node)->k + 1, sizeof(int));
 
     j = 0;
     for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
@@ -820,11 +820,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     // initialize the child_tracker
     
-    child_tracker = (int*)calloc((*prob_node)->k, sizeof(int));
-
-    for(i = 0; i < (*prob_node)->k; i++){
-        child_tracker[i] = 0;
-    }
+    child_tracker = (int*)calloc((*prob_node)->k + 1, sizeof(int));  
 
     while(child_tracker[0] <= 4){
 

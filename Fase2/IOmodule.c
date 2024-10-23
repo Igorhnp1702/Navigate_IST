@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro *.c do módulo genérico de interação com ficheiros 
+ * Implementation of the input/output interface
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

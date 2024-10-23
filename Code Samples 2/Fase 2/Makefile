@@ -1,7 +1,7 @@
 ############################################# 
 # Ficheiro makefile do grupo 137
 #
-# Autores:
+# Authors:
 #
 # Igor Paruque ist1102901
 # Gonçalo Pires ist199947

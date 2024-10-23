@@ -1,7 +1,7 @@
 /******************************************************************************
  * Ficheiro h onde está definida a interface da stack de lances
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Gonçalo Pires ist199947

@@ -1,7 +1,7 @@
 /******************************************************************************
- * Interface do tipo abstrato para pilhas 
+ * Interface for the stack of items 
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520
@@ -13,10 +13,35 @@
 #include <stddef.h>
 #include "Items.h"
 
+
 typedef struct _stackbox Stackblock;
 
+
+
+/*
+ * initializeStack()
+ *
+ * Arguments:
+ * 
+ * -the intended maximum size of the stack
+ * -the size of each element to be sotred in the stack
+ * 
+ * Return: An empty stack of items
+ */
 Stackblock* initializeStack(int, size_t);
 
+
+/*
+ *
+ * push()
+ * 
+ * Arguments:
+ * 
+ * -The adress of the stack;
+ * -The item to be pushed
+ * 
+ * Return: 1 if successfull, 0 if not
+ */
 int push(Stackblock**, Item);
 
 int pop(Stackblock**);

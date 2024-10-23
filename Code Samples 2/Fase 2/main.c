@@ -1,7 +1,7 @@
 /******************************************************************************
  * Ficheiro da função principal do projeto dISTiling
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Gonçalo Pires ist199947

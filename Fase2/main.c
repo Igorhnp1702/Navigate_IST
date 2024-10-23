@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro da função principal do projeto Navigate_IST
+ * File to implement the main funtion of the program
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

@@ -1,7 +1,7 @@
 /******************************************************************************
  * Ficheiro *.c com as funções de análise e resolução dos problemas 
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

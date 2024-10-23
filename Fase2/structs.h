@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro das structs utilizadas no projeto Navigate_IST
+ * File to define the structs of the project
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

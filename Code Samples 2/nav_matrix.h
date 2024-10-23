@@ -1,7 +1,7 @@
 /******************************************************************************
  * Header do ficheiro nav_matrix.h
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

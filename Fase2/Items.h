@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro da função principal do projeto Navigate_IST
+ * File to define the abstract data type for the Navigate_IST project
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520
@@ -9,6 +9,13 @@
 
 #ifndef _Items_
 #define _Items_
+
+/*
+ * Item
+ *
+ * Abstract data type where the client can specify what the stack is going to hold
+ *
+ * */
 
 typedef void* Item;
 

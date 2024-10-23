@@ -1,7 +1,7 @@
 ############################################# 
 # Ficheiro makefile do grupo 51
 #
-# Autores:
+# Authors:
 #
 # Igor Paruque ist1102901
 # Mónica Ferreira ist1106520

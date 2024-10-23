@@ -1,7 +1,7 @@
 /******************************************************************************
- * Ficheiro header do módulo genérico de interação com ficheiros
+ * Interface for the input/output operations
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

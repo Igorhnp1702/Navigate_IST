@@ -1,7 +1,7 @@
 /******************************************************************************
  * Interface do tipo abstrato para pilhas 
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Mónica Ferreira ist1106520

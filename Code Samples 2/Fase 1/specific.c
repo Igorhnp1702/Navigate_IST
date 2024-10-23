@@ -1,7 +1,7 @@
 /******************************************************************************
  * Ficheiro com o código-fonte das funções e structs específicas deste projeto
  * 
- * Autores:
+ * Authors:
  * 
  *  Igor Paruque ist1102901
  *  Gonçalo Pires ist199947
