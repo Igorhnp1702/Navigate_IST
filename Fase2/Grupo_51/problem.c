@@ -366,19 +366,6 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     timsort(&diamond_vect, (*prob_node)->diamond_size - 1);    
 
     /* Check for hope */
-
-    // if(Thereishope(prob_node, pocket, line_tracker, col_tracker, target, (*prob_node)->k, &diamond_vect) != 1){
-        
-    //     fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
-    //                                                (*prob_node)->k, (*prob_node)->initial_energy, -1);
-    //     fprintf(fpOut,"\n");
-
-    //     for(i = 0; i < (*prob_node)->diamond_size - 1; i++){ // free the diamond
-    //         free(diamond_vect[i]);
-    //     }
-    //     free(diamond_vect);
-    //     return;
-    // }
     
     /* There is hope, initialize the stack */
     

@@ -82,7 +82,7 @@ typedef struct _prob_info{
         
     // problem data
     rm_cell ***reduced_map;
-    stat_cell ***maxtracker;
+    //stat_cell ***maxtracker;
     int *max_counter;    
     int reduced_map_lines;
     int reduced_map_columns;
@@ -90,8 +90,8 @@ typedef struct _prob_info{
     int reduced_map_c1;    
     int diamond_size;
     int max_pocket;
-    int sum_maxs;
-    int sum_positives;
+   // int sum_maxs;
+   // int sum_positives;
     int bad;     
        
 }ProbInfo;

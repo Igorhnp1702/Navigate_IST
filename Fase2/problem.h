@@ -103,11 +103,9 @@ void merge(stat_cell***arr, int left, int mid, int right);
 
 void timsort(stat_cell ***arr, int arrSize);
 
-int Thereishope(ProbInfo**, stat_cell***,int, int);
+int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int l_position, int c_position, int steps2take);
 
 int dist(int, int, int, int);
-
-int max(int, int);
 
 void copy_path(Stackblock **pathstack, int ***dest_vect, int position);
 

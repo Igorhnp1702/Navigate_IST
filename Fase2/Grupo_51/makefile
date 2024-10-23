@@ -7,7 +7,7 @@
 # Mónica Ferreira ist1106520
 #############################################
 
-CFLAGS = -Wall -std=c99 -g #flags to use
+CFLAGS = -Wall -std=c99 -O3 #flags to use
 
 navigate: IOmodule.o Stack.o problem.o main.o    #program compilation
 	gcc $(CFLAGS) -o navigate main.o IOmodule.o problem.o Stack.o
