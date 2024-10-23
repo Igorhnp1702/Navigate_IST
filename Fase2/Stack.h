@@ -13,6 +13,11 @@
 #include <stddef.h>
 #include "Items.h"
 
+/*
+ * Stackblock data type
+ * 
+ * Description: Data type to abstract the fields of the stackbox data type
+ */
 
 typedef struct _stackbox Stackblock;
 
@@ -26,13 +31,12 @@ typedef struct _stackbox Stackblock;
  * -the intended maximum size of the stack
  * -the size of each element to be sotred in the stack
  * 
- * Return: An empty stack of items
+ * Return: An empty stack of items, implemented as an array
  */
 Stackblock* initializeStack(int, size_t);
 
 
 /*
- *
  * push()
  * 
  * Arguments:
@@ -44,18 +48,85 @@ Stackblock* initializeStack(int, size_t);
  */
 int push(Stackblock**, Item);
 
+
+/*
+ * pop()
+ * 
+ * Arguments:
+ * 
+ * -The memory adress of the stack
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int pop(Stackblock**);
 
+
+/*
+ * freeStack()
+ * 
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 void freeStack(Stackblock**);
 
+/*
+ * freeStack()
+ * 
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int freeTop(Stackblock **);
 
+/*
+ * freeStack()
+ * 
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int isEmpty(Stackblock**);
 
+/*
+ * freeStack()
+ * 
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int isFull(Stackblock**);
 
+/*
+ * freeStack()
+ * 
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int Stacklen(Stackblock**);
 
+/*
+ * freeStack()
+ * 
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 Item peekTop(Stackblock**);
 
 #endif

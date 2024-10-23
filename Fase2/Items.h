@@ -13,9 +13,8 @@
 /*
  * Item
  *
- * Abstract data type where the client can specify what the stack is going to hold
- *
- * */
+ * Description: Abstract data type where the client can specify what the stack is going to hold
+ */
 
 typedef void* Item;
 

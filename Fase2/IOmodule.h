@@ -31,20 +31,20 @@ typedef struct _files {
 /*
  * malloc_str()
  *
- * Argumentos:
+ * Arguments:
  * 
- *  -str_len = comprimento em bytes da string que se pretende alocar
+ *  -str_len = length in bytes of the memory block to allocate
  * 
- * Descrição: aloca dinamicamente uma string com str_len bytes
+ * Description: Allocates a block of dynamic memory for a sequence of chars
  * 
- * Retorno: Um apontador para um bloco de caracteres com str_len bytes
+ * Return: A pointer to a block of memory of str_len bytes to store a string of chars
  */
 char* malloc_str(size_t str_len);
 
 /*
  * check_ext()
  *
- * Argumentos:
+ * Arguments:
  * 
  *  -argv = vetor de argumentos passados ao programa
  *  -ext = extensão dos ficheiros de entrada

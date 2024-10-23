@@ -315,7 +315,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path    
     int distance = 0;        
     int *max_counter;
-    int sum_positives = 0;
+    int sum_positives = 0, sum_maxs = 0;
     int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target energy to achieve               
     int i, j, m;                                           // iterators
@@ -378,7 +378,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                             
         if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is enough
 
-            sum_positives = (*prob_node)->sum_maxs + pocket;
+            sum_positives = sum_maxs + pocket;
             if(sum_positives < target){ // else, add the negatives                 
                 break;
             }
@@ -389,7 +389,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
         if(max_counter[distance - 1] < min(((*prob_node)->k - distance)/2 + 1, 4 * distance)){
                    
-            (*prob_node)->sum_maxs += diamond_vect[i]->energy;                                            
+            sum_maxs += diamond_vect[i]->energy;                                            
             max_counter[distance - 1]++;
             j++;
             if(j == (*prob_node)->k)break; 
@@ -400,7 +400,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     free(max_counter);
 
-    (*prob_node)->max_pocket = (*prob_node)->sum_maxs + pocket;
+    (*prob_node)->max_pocket = sum_maxs + pocket;
     
     // if max pocket is smaller or equal to zero, problem has no solution
 
@@ -694,7 +694,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
     int *max_counter;
     int distance = 0;
-    int sum_positives = 0;
+    int sum_positives = 0, sum_maxs = 0;
     int step_counter = 0;                                  // steps taken
     int target = 0;                                        // target energy to achieve (final energy of the best path so far)        
     int i, j, m;                                           // iterator
@@ -770,7 +770,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                             
         if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is enough
 
-            sum_positives = (*prob_node)->sum_maxs + pocket;
+            sum_positives = sum_maxs + pocket;
             if(sum_positives < target){ // else, add the negatives                 
                 break;
             }
@@ -781,7 +781,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
         if(max_counter[distance - 1] < min(((*prob_node)->k - distance)/2 + 1, 4 * distance)){
                    
-            (*prob_node)->sum_maxs += diamond_vect[i]->energy;
+            sum_maxs += diamond_vect[i]->energy;
             (*prob_node)->reduced_map[diamond_vect[i]->rm_row][diamond_vect[i]->rm_col]->inSum = 1;                            
             max_counter[distance - 1]++;
             j++;
@@ -793,7 +793,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     
     free(max_counter);
     
-    (*prob_node)->max_pocket = (*prob_node)->sum_maxs + pocket;
+    (*prob_node)->max_pocket = sum_maxs + pocket;
     
     // if max pocket is smaller or equal to zero, problem has no solution
 
@@ -1372,7 +1372,7 @@ int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int 
         free(max_counter);  
     }   
 
-    if(pocket + (*prob_node)->sum_maxs < target)return 0;
+    if(pocket + sum_maxs < target)return 0;
     return 1;    
 }
 

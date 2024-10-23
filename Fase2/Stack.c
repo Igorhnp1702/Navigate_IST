@@ -14,6 +14,15 @@
 #include "Stack.h"
 
 
+/*
+ * struct stackbox
+ *
+ * Description = 
+ * 
+ * Members:
+ * 
+ */
+
 struct _stackbox{
     Item* Itemarray;
     size_t Itemlen;

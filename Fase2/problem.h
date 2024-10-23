@@ -21,9 +21,9 @@
 /*
  * read_problem()
  *
- * Argumentos:
+ * Arguments:
  * 
- *  -fblock = bloco de memória com os apontadores dos ficheiros de entrada e de saída
+ *  -fblock = Block of memory with the
  *  -prob = apontador para um bloco de memória com a informação de um problema
  *  
  * Descrição: Lê e carrega para memória a informação de um problema a resolver
@@ -97,18 +97,82 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node);
  */
 void t2_solver(FILE *fpOut, ProbInfo **prob_node);
 
+
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 void insertionSort(stat_cell***arr, int left, int right);
 
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 void merge(stat_cell***arr, int left, int mid, int right);
 
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 void timsort(stat_cell ***arr, int arrSize);
 
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int l_position, int c_position, int steps2take);
 
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int dist(int, int, int, int);
 
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 void copy_path(Stackblock **pathstack, int ***dest_vect, int position);
 
+/*
+ * insertionSort()
+ *
+ * Arguments:
+ * 
+ * Description:
+ * 
+ * Return:
+ */
 int min(int, int);
 
 /*
