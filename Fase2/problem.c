@@ -61,7 +61,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         int distance;
         
         (*prob)->max_pocket = 0;
-        (*prob)->sum_maxs = 0;
+        (*prob)->last_max = 0;
       
         if(radius >= dist_to_edge_R){
             columns_missing_R = abs(dist_to_edge_R - radius);
@@ -175,7 +175,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
                     (*prob)->reduced_map[i][j]->col = column_tracker;                    
                     (*prob)->reduced_map[i][j]->inDiamond = 0;
                     (*prob)->reduced_map[i][j]->inStack = 0;
-                    (*prob)->reduced_map[i][j]->inSum = 0;
+                    (*prob)->reduced_map[i][j]->inSum_maxs = 1;
                     
                     
                     distance = dist(l_1, c_1, line_tracker, column_tracker);
@@ -313,9 +313,8 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){      
 
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path    
-    int distance = 0;        
-    int *max_counter;
-    int sum_positives = 0, sum_maxs = 0;
+    int distance = 0;            
+    int sum_positives = 0;
     int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target energy to achieve               
     int i, j, m;                                           // iterators
@@ -370,43 +369,28 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
     /* Sort the diamond */
     timsort(&diamond_vect, (*prob_node)->diamond_size - 1);    
 
-    /* Check for hope */
+    /* add the first k cells of the diamond */
 
-    max_counter = (int*)calloc((*prob_node)->k, sizeof(int));
-    j = 0;
-    for(i = 0; i < (*prob_node)->diamond_size; i++){
+    for(i = 0; i < (*prob_node)->k; i++){
                             
-        if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is enough
+        if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is already smaller
 
-            sum_positives = sum_maxs + pocket;
+            sum_positives = (*prob_node)->sum_maxs + pocket;
             if(sum_positives < target){ // else, add the negatives                 
                 break;
             }
         } 
-        
-        distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, 
-                        (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
-        if(max_counter[distance - 1] < min(((*prob_node)->k - distance)/2 + 1, 4 * distance)){
-                   
-            sum_maxs += diamond_vect[i]->energy;                                            
-            max_counter[distance - 1]++;
-            j++;
-            if(j == (*prob_node)->k)break; 
-            // number of positives in the ideal path is smaller than the number of remaining steps
-            // assume that the remaining cells of the same ideal path have an energy value of zero                         
-        }
+        (*prob_node)->sum_maxs += diamond_vect[i]->energy;                                                                                                                 
     }
 
-    free(max_counter);
-
-    (*prob_node)->max_pocket = sum_maxs + pocket;
+    (*prob_node)->max_pocket = (*prob_node)->sum_maxs + pocket; // upper bound is computed
     
-    // if max pocket is smaller or equal to zero, problem has no solution
+    // if max pocket is smaller or equal to zero, OR smaller than target, problem has no solution, there's no need to search
 
-    if((*prob_node)->max_pocket <= 0){
+    if(((*prob_node)->max_pocket <= 0) || ((*prob_node)->max_pocket < target) ){
         
-        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, -(*prob_node)->task, (*prob_node)->l_1, (*prob_node)->c_1, 
+        fprintf(fpOut, "%d %d %d %d %d %d %d %d\n",(*prob_node)->L, (*prob_node)->C, (*prob_node)->target_energy, (*prob_node)->l_1, (*prob_node)->c_1, 
                                                    (*prob_node)->k, (*prob_node)->initial_energy, -1);
         fprintf(fpOut,"\n");
 
@@ -462,7 +446,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy,
-                                           target, line_tracker - 1, col_tracker, (*prob_node)->k - step_counter - 1) == 1){
+                                           target, (*prob_node)->k - step_counter - 1) == 1){
                                                                         // push to stack and update variables
                                 line_tracker--;
                                 step_counter++;
@@ -495,7 +479,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy, target,
-                                           line_tracker, col_tracker + 1, (*prob_node)->k - step_counter - 1) == 1){
+                                           (*prob_node)->k - step_counter - 1) == 1){
                                 // push to stack and update variables
                                 col_tracker ++;
                                 step_counter++;
@@ -528,7 +512,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy, target,
-                                           line_tracker + 1, col_tracker, (*prob_node)->k - step_counter - 1) == 1){
+                                           (*prob_node)->k - step_counter - 1) == 1){
                                 // push to stack and update variables            
                                 line_tracker++;
                                 step_counter++;                                
@@ -561,7 +545,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy, target,
-                                           line_tracker, col_tracker - 1, (*prob_node)->k - step_counter - 1) == 1){
+                                           (*prob_node)->k - step_counter - 1) == 1){
 
                                 // push to stack and update variables                                                        
                                 col_tracker--;
@@ -585,6 +569,11 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                    (*prob_node)->sum_maxs += 
+                    (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                             [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
+                                                           
                     line_tracker++;
                     step_counter--;
                 }
@@ -594,6 +583,11 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                    (*prob_node)->sum_maxs += 
+                    (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                             [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
+
                     col_tracker--;
                     step_counter--;
                 }
@@ -603,6 +597,10 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                    (*prob_node)->sum_maxs += 
+                    (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                             [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                     line_tracker--;
                     step_counter--;
                 }
@@ -612,6 +610,10 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                    (*prob_node)->sum_maxs += 
+                    (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                             [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                     col_tracker++;
                     step_counter--;
                 }
@@ -628,6 +630,10 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                         [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 line_tracker++;
                 step_counter--;
             }
@@ -637,6 +643,12 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                         [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
+
+                
                 col_tracker--;
                 step_counter--;
             }
@@ -646,6 +658,11 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                         [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
+
                 line_tracker--;
                 step_counter--;
             }
@@ -655,6 +672,10 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                         [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 col_tracker++;
                 step_counter--;
             }
@@ -691,10 +712,9 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
-    int pocket = (*prob_node)->initial_energy;             // energy tracker along the path        
-    int *max_counter;
+    int pocket = (*prob_node)->initial_energy;             // energy tracker along the path            
     int distance = 0;
-    int sum_positives = 0, sum_maxs = 0;
+    int sum_positives = 0;
     int step_counter = 0;                                  // steps taken
     int target = 0;                                        // target energy to achieve (final energy of the best path so far)        
     int i, j, m;                                           // iterator
@@ -761,39 +781,20 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     /* Sort the diamond */
     timsort(&diamond_vect, (*prob_node)->diamond_size - 1); //shell sort with tokuda's sequence    
 
-    /* Compute the final energy of the ideal path */
+    /* Compute the upper bound*/
 
-    max_counter = (int*)calloc((*prob_node)->k + 1, sizeof(int));
-
-    j = 0;
-    for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
+    for(i = 0; i < (*prob_node)->k; i++){
                             
-        if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is enough
+        if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is already smaller
 
-            sum_positives = sum_maxs + pocket;
+            sum_positives = (*prob_node)->sum_maxs + pocket;
             if(sum_positives < target){ // else, add the negatives                 
                 break;
             }
         } 
-        
-        distance = dist(diamond_vect[i]->rm_row, diamond_vect[i]->rm_col, 
-                        (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
-
-        if(max_counter[distance - 1] < min(((*prob_node)->k - distance)/2 + 1, 4 * distance)){
-                   
-            sum_maxs += diamond_vect[i]->energy;
-            (*prob_node)->reduced_map[diamond_vect[i]->rm_row][diamond_vect[i]->rm_col]->inSum = 1;                            
-            max_counter[distance - 1]++;
-            j++;
-            if(j == (*prob_node)->k)break; 
-            // number of positives in the ideal path is smaller than the number of remaining steps
-            // assume that the remaining cells of the same ideal path have an energy value of zero                         
-        }
+        (*prob_node)->sum_maxs += diamond_vect[i]->energy;                                                                                                                      
     }
-    
-    free(max_counter);
-    
-    (*prob_node)->max_pocket = sum_maxs + pocket;
+    (*prob_node)->max_pocket = (*prob_node)->sum_maxs + pocket;
     
     // if max pocket is smaller or equal to zero, problem has no solution
 
@@ -850,7 +851,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy,
-                                           target, line_tracker - 1, col_tracker, (*prob_node)->k - step_counter - 1) == 1){
+                                          target, (*prob_node)->k - step_counter - 1) == 1){
                                 
                                 // push to stack and update variables
                                 line_tracker--;
@@ -884,7 +885,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker][col_tracker + 1]->energy, target,
-                                           line_tracker, col_tracker + 1, (*prob_node)->k - step_counter - 1) == 1){
+                                           (*prob_node)->k - step_counter - 1) == 1){
                                 
                                 // push to stack and update variables
                                 col_tracker ++;
@@ -918,7 +919,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker + 1][col_tracker]->energy, target,
-                                           line_tracker + 1, col_tracker, (*prob_node)->k - step_counter - 1) == 1){
+                                           (*prob_node)->k - step_counter - 1) == 1){
                                 
                                 // push to stack and update variables            
                                 line_tracker++;
@@ -952,7 +953,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker][col_tracker - 1]->energy, target,
-                                           line_tracker, col_tracker - 1, (*prob_node)->k - step_counter - 1) == 1){
+                                           (*prob_node)->k - step_counter - 1) == 1){
 
                             
                                 // push to stack and update variables
@@ -977,6 +978,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                     line_tracker++;
                     step_counter--;
                 }
@@ -986,6 +991,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                     col_tracker--;
                     step_counter--;
                 }
@@ -995,6 +1004,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                     line_tracker--;
                     step_counter--;
                 }
@@ -1004,6 +1017,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                     pop(&pathStack);
                     (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                     pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                     col_tracker++;
                     step_counter--;
                 }
@@ -1053,6 +1070,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 line_tracker++;
                 step_counter--;
             }
@@ -1062,6 +1083,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 col_tracker--;
                 step_counter--;
             }
@@ -1071,6 +1096,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 line_tracker--;
                 step_counter--;
             }
@@ -1080,6 +1109,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 col_tracker++;
                 step_counter--;
             }
@@ -1103,6 +1136,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 line_tracker++;
                 step_counter--;
             }
@@ -1112,6 +1149,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 col_tracker--;
                 step_counter--;
             }
@@ -1121,6 +1162,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 line_tracker--;
                 step_counter--;
             }
@@ -1130,6 +1175,10 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 pop(&pathStack);
                 (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 0;
                 pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+
+                (*prob_node)->sum_maxs += 
+                (*prob_node)->reduced_map[diamond_vect[(*prob_node)->k - step_counter]->rm_row]
+                                            [diamond_vect[(*prob_node)->k - step_counter]->rm_col]->energy;
                 col_tracker++;
                 step_counter--;
             }
@@ -1326,54 +1375,13 @@ void timsort(stat_cell ***arr, int arrSize) {
 }
 
 
-int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int l_position, int c_position, int steps2take){
+int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int steps2take){
  
-    int sum_maxs = 0;
-    if(steps2take > 0){
-        int i, j = 0;
-        int distance = 0;
-        int sum_positives = 0;
-        
-        int *max_counter;
+    if((*prob_node)->sum_maxs - (*diamond_vect)[steps2take]->energy + pocket < target) return 0;
 
-        max_counter = (int*)calloc(steps2take, sizeof(int));
-
-        for(i = 0; i < steps2take; i++){
-            max_counter[i] = 0;
-        }
-
-        for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
-
-            if((*prob_node)->reduced_map[(*diamond_vect)[i]->rm_row][(*diamond_vect)[i]->rm_col]->inStack == 1) continue;
-                                
-            if((*diamond_vect)[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is enough
-
-                sum_positives = sum_maxs + pocket;
-                if(sum_positives < target){ // else, add the negatives
-                    free(max_counter);                
-                    return 0;
-                }
-            } 
-            
-            distance = dist((*diamond_vect)[i]->rm_row, (*diamond_vect)[i]->rm_col, l_position, c_position);
-
-            if(0 < distance && distance <= steps2take && max_counter[distance - 1] < (steps2take - distance)/2 + 1){
-                    
-                if(sum_maxs + (*diamond_vect)[i]->energy <= (*prob_node)->max_pocket){
-                    sum_maxs += (*diamond_vect)[i]->energy;                                                
-                    max_counter[distance - 1]++;
-                    j++;
-                    if(j == steps2take)break; 
-                    // number of positives in the ideal path is smaller than the number of remaining steps
-                    // assume that the remaining cells of the same ideal path have an energy value of zero    
-                }            
-            }
-        } 
-        free(max_counter);  
-    }   
-
-    if(pocket + sum_maxs < target)return 0;
-    return 1;    
+    (*prob_node)->sum_maxs -= (*diamond_vect)[steps2take]->energy;    
+    return 1;
+    
 }
 
 int dist(int a_line, int a_column, int b_line, int b_column){

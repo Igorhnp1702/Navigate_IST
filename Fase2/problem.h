@@ -140,7 +140,7 @@ void timsort(stat_cell ***arr, int arrSize);
  * 
  * Return:
  */
-int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int l_position, int c_position, int steps2take);
+int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int steps2take);
 
 /*
  * insertionSort()
