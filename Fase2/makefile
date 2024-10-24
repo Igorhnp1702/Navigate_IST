@@ -11,7 +11,7 @@ DEBUGFLAGS = -Wall -std=c99 -g
 BESTFLAGS = -Wall -std=c99 -O3 
 PROFFLAGS = -Wall -std=c99 -O3 -pg 
 
-FILES = $(shell ls ./MediumPool/*.maps)
+FILES = $(shell ls ./*/*.maps)
 VALG = valgrind --leak-check=full -s
 
 navigate: IOmodule.o Stack.o problem.o main.o    # default compilation
@@ -93,7 +93,7 @@ runall:
 	$(foreach F,$(FILES), ./navigate $(F);)
 
 timeall:
-	$(foreach F,$(FILES), echo $(F) ; time  -p ./navigate $(F);)
+	$(foreach F,$(FILES), echo $(F) ; time  -p ./navigate $(F) ; sleep 2 ;)
 
 clean: # clean object files	
 	rm *.o

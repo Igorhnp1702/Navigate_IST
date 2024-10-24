@@ -46,13 +46,13 @@ char* malloc_str(size_t str_len);
  *
  * Arguments:
  * 
- *  -argv = vetor de argumentos passados ao programa
- *  -ext = extensão dos ficheiros de entrada
+ *  -filename = string with the file name to be verified
+ *  -extension = file extension to be searched in the "filename" string
  *
- *  Descrição: Verifica se o ficheiro que contém os problemas foi bem invocado pelo utilizador.
+ *  Description: Check if the string <filename> contains <extension> at the end of it
  * 
- *  Retorno: Ficheiro mal invocado => 1
- *           Ficheiro bem invocado => 0
+ *  Return: <filename> string contains <extension> => 1
+ *           <filename> string does not contain <extension> => 0
  * 
  */
 int check_ext(char *filename, char *extension);
@@ -60,53 +60,53 @@ int check_ext(char *filename, char *extension);
 /*
  * change_filenames_extension()
  *
- * Argumentos:
+ * Arguments:
  * 
  *  -FileName = Apontador de caracteres que contém o nome do ficheiro que se pretende modificar
  *  -New_FileName = Bloco de memória vazio onde se pretende colocar o nome modificado do ficheiro
  *  -FileName_len = Tamanho em bytes da string "FileName"
  *  -Extension_len = Tamanho em bytes da extensão que se pretende substituir
  * 
- * Descrição: Substitui a extensão de FileName por outra
+ * Description: Substitui a extensão de FileName por outra
  * 
- * Retorno: Apontador de caracteres come do ficheiro em questão, com uma extensão diferente
+ * Return: Apontador de caracteres come do ficheiro em questão, com uma extensão diferente
  */
 void change_filenames_extension(const char* FileName, char** New_FileName, size_t FileName_len, size_t Extension_len);
 
 /*
  * Open_Read_File()
  *
- * Argumentos:
+ * Arguments:
  * 
  * -filename = Apontador de caracteres que contém o nome de um ficheiro
  * 
- * Descrição: Abre o ficheiro "filename" em modo de leitura
+ * Description: Abre o ficheiro "filename" em modo de leitura
  * 
- * Retorno: Um apontador para o início do ficheiro "filename" onde só é possível ler informação
+ * Return: Um apontador para o início do ficheiro "filename" onde só é possível ler informação
  */
 FILE* Open_Read_File(char* filename);
 
 /*
  * Open_Write_File()
  *
- * Argumentos:
+ * Arguments:
  * 
  * -filename = Apontador de caracteres que contém o nome de um ficheiro
  * 
- * Descrição: Abre o ficheiro "filename" em modo de escrita
+ * Description: Abre o ficheiro "filename" em modo de escrita
  * 
- * Retorno: Um apontador para o início do ficheiro "filename" onde só é possível escrever informação
+ * Return: Um apontador para o início do ficheiro "filename" onde só é possível escrever informação
  */
 FILE* Open_Write_File(char* filename);
 
 /*
  *open_files()
  *
- * Argumentos:
+ * Arguments:
  * 
  * -Input_Filename = Nome de um ficheiro de entrada
  * 
- * Descrição/retorno: Cria um bloco de memória com um apontador para o ficheiro de entrada e 
+ * Description/Return: Cria um bloco de memória com um apontador para o ficheiro de entrada e 
  * um para o de saída. Esta função faz questão de verificar se a extensão do ficheiro de entrada
  * está correta ou não
  */
@@ -115,14 +115,14 @@ Files *open_files(char* Input_Filename);
 /*
  * close_files()
  *
- * Argumentos:
+ * Arguments:
  * 
  *  -fblock = apontador para um bloco de memória que contém o apontador do 
  * ficheiro de entrada e o ficheiro de saída
  * 
- * Descrição: Fecha os ficheiros presentes no bloco e liberta a sua memória
+ * Description: Fecha os ficheiros presentes no bloco e liberta a sua memória
  * 
- * Retorno: void
+ * Return: void
  */
 void close_files(Files **fblock);
 

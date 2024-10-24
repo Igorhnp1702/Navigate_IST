@@ -1375,9 +1375,9 @@ void timsort(stat_cell ***arr, int arrSize) {
 }
 
 
-int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int pocket, int target, int steps2take){
+int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int possible_pocket, int target, int steps2take){
  
-    if((*prob_node)->sum_maxs - (*diamond_vect)[steps2take]->energy + pocket < target) return 0;
+    if((*prob_node)->sum_maxs - (*diamond_vect)[steps2take]->energy + possible_pocket < target) return 0;
 
     (*prob_node)->sum_maxs -= (*diamond_vect)[steps2take]->energy;    
     return 1;
@@ -1414,7 +1414,7 @@ void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int s
     return;    
 }
 
-void free_prob_node_data(ProbInfo **prob_node){
+void free_reduced_map(ProbInfo **prob_node){
     int i, j;
 
     for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
@@ -1428,7 +1428,3 @@ void free_prob_node_data(ProbInfo **prob_node){
     return;
 }
 
-int min(int a, int b){
-
-    return a < b ? a : b;
-}

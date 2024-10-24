@@ -75,7 +75,7 @@ int pop(Stackblock**);
 void freeStack(Stackblock**);
 
 /*
- * freeStack()
+ * freeTop()
  * 
  * Arguments:
  * 
@@ -86,7 +86,7 @@ void freeStack(Stackblock**);
 int freeTop(Stackblock **);
 
 /*
- * freeStack()
+ * isEmpty()
  * 
  * Arguments:
  * 
@@ -97,7 +97,7 @@ int freeTop(Stackblock **);
 int isEmpty(Stackblock**);
 
 /*
- * freeStack()
+ * isFull()
  * 
  * Arguments:
  * 
@@ -108,7 +108,7 @@ int isEmpty(Stackblock**);
 int isFull(Stackblock**);
 
 /*
- * freeStack()
+ * Stacklen()
  * 
  * Arguments:
  * 
@@ -119,7 +119,7 @@ int isFull(Stackblock**);
 int Stacklen(Stackblock**);
 
 /*
- * freeStack()
+ * peekTop()
  * 
  * Arguments:
  * 
