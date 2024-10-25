@@ -18,11 +18,8 @@ char *extension_out = ".solmaps";
 
 char* malloc_str(size_t str_len){
 
-    char* string = (char*)malloc(str_len);
+    char* string = (char*)malloc(str_len); // NULL will be checked outside of the function
 
-    if (string == NULL) {
-        exit(0);      
-    }
     return string;
 }
 
@@ -64,13 +61,13 @@ void change_filenames_extension(const char* FileName, char** New_FileName, size_
 }
 
 FILE* Open_Read_File(char* filename){
-    FILE* file = fopen(filename, "r");    
+    FILE* file = fopen(filename, "r");    // NULL will be checked outside of the function
     return file;
 }
 
 FILE* Open_Write_File(char* filename){
 
-    FILE* file = fopen(filename, "w");            
+    FILE* file = fopen(filename, "w");    // NULL will be checked outside of the function           
     return file;
 }
 
@@ -84,6 +81,8 @@ Files* open_files(char* Input_Filename){
 
         size_t Input_Filename_len = strlen(Input_Filename);
         size_t extension_in_len = strlen(extension_in);
+
+        // the "+ 1" is for the null character
         size_t Output_Filename_len = Input_Filename_len - extension_in_len + strlen(extension_out) + 1;
 
         if((Fileblock = (Files*)calloc(1, sizeof(Files))) == NULL){

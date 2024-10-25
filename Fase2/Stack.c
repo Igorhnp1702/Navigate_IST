@@ -17,10 +17,17 @@
 /*
  * struct stackbox
  *
- * Description = 
+ * Description = Block of memory to store the stack and some of
+ * its information
  * 
  * Members:
  * 
+ * -Itemarray = array of Items
+ * -Itemlen = size in bytes of each item
+ * -arraysize = maximum number of elements the array can have
+ * -freeIndex = index of the next available entry
+ * 
+ * Note: freeIndex also tells the number of elements in the stack
  */
 
 struct _stackbox{
@@ -37,15 +44,17 @@ Stackblock* initializeStack(int Stacksize, size_t Itemsize){
 
     Stackblock *Stack;
     int i;
+
+    // pre allocate all the memory and initialize the data
     
     if((Stack = (Stackblock*)calloc(1, sizeof(Stackblock))) == NULL){
         exit(0);
     }
     
-
     if((Stack->Itemarray = (Item*)calloc(Stacksize, sizeof(Item))) == NULL){
         exit(0);
     }
+
     for(i = 0; i < Stacksize; i++){
         Stack->Itemarray[i] = (Item)calloc(1, Itemsize);
     }
@@ -59,8 +68,11 @@ Stackblock* initializeStack(int Stacksize, size_t Itemsize){
 int push(Stackblock** stackptr, Item newItem){
     
     int success = 0;
+
+    // sanity check
     if(isFull(stackptr) == 1) return success;    
     
+    // copy the bytes
     memcpy((*stackptr)->Itemarray[(*stackptr)->freeIndex], newItem, (*stackptr)->Itemlen);
     (*stackptr)->freeIndex++;
     return success++;
@@ -69,8 +81,11 @@ int push(Stackblock** stackptr, Item newItem){
 int pop(Stackblock**stackptr){
 
     int success = 0;
+
+    // sanity check
     if(isEmpty(stackptr) == 1) return success;
 
+    // reset the bytes to zero
     memset((*stackptr)->Itemarray[(*stackptr)->freeIndex - 1], 0, (*stackptr)->Itemlen);
     (*stackptr)->freeIndex--;
     return success++;
@@ -93,6 +108,8 @@ void freeStack(Stackblock **stackptr){
 int freeTop(Stackblock **stackptr){
     
     int success = 0;
+    
+    //sanity check
     if(isEmpty(stackptr) == 1) return success;
 
     free((*stackptr)->Itemarray[(*stackptr)->freeIndex - 1]);
