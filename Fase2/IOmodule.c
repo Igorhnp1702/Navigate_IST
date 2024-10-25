@@ -28,19 +28,19 @@ int check_ext(char *filename, char *extension)
     char *aux;
     int argsize = 0, extsize = 0, start = 0, result = 0, i;
     
-    extsize = strlen(extension);
-    argsize = strlen(filename);
-    start = argsize - extsize;
+    extsize = strlen(extension); // size of extension in letters
+    argsize = strlen(filename);  // size of  argsize in letters
+    start = argsize - extsize;   // index where the last dot should be
 
-    if((aux = (char*)calloc(extsize+1, sizeof(char))) == NULL){
+    if((aux = (char*)calloc(extsize+1, sizeof(char))) == NULL){ // "+1" => null character
         exit(0);
     }
 
     for(i = 0; i < extsize; i++){
-        aux[i] = filename[i+start];
+        aux[i] = filename[i+start]; // extract the last letters of filename
     }
 
-    if (strcmp(aux, extension) != 0){
+    if (strcmp(aux, extension) != 0){ // compare with the extension that should be there
         free(aux);
         return result + 1;
     }
@@ -84,7 +84,7 @@ Files* open_files(char* Input_Filename){
 
         // the "+ 1" is for the null character
         size_t Output_Filename_len = Input_Filename_len - extension_in_len + strlen(extension_out) + 1;
-
+        
         if((Fileblock = (Files*)calloc(1, sizeof(Files))) == NULL){
             exit(0);
         }
