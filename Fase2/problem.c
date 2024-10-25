@@ -766,7 +766,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
     }
 
     /* Sort the diamond */
-    timsort(&diamond_vect, (*prob_node)->diamond_size - 1); //shell sort with tokuda's sequence    
+    timsort(&diamond_vect, (*prob_node)->diamond_size - 1);     
 
     /* Compute the upper bound*/
 
@@ -1212,9 +1212,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
 void copy_path(Stackblock **pathstack, int ***dest_vect, int position){
 
-    rm_cell *aux1, *aux2;
-
     // copy the top to an auxiliary block of memory
+    
+    rm_cell *aux1, *aux2;    
     aux1 = (rm_cell*)calloc(1, sizeof(rm_cell));
     aux2 = (rm_cell*)peekTop(pathstack);    
     aux1->row = aux2->row;
@@ -1309,7 +1309,7 @@ void merge(stat_cell***arr, int left, int mid, int right) {
         rightArr[i]->energy = (*arr)[mid + 1 + i]->energy;
     }
 
-    // merge the two halves
+    // merge the two partitions
 
     i = 0, j = 0, k = left;    
     while (i < len1 && j < len2) {
@@ -1391,8 +1391,11 @@ void timsort(stat_cell ***arr, int arrSize) {
 
 int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int possible_pocket, int target, int steps2take){
  
+    // check if the new upper bound goes below the target
     if((*prob_node)->sum_maxs - (*diamond_vect)[steps2take]->energy + possible_pocket < target) return 0;
 
+    // if the new upper bound is still above the target,
+    // compute it and let the program push the next cell
     (*prob_node)->sum_maxs -= (*diamond_vect)[steps2take]->energy;    
     return 1;
     
@@ -1409,15 +1412,23 @@ int dist(int a_line, int a_column, int b_line, int b_column){
 
 void print_path(FILE *fpOut, ProbInfo **prob_node, Stackblock **pathstack, int stackpos){
 
+    // copy the top to an auxiliary block of memory
+    
     rm_cell *aux1, *aux2;
     aux1 = (rm_cell*)calloc(1, sizeof(rm_cell));
     aux2 = (rm_cell*)peekTop(pathstack);
     aux1->row = aux2->row;
     aux1->col = aux2->col;
     aux1->energy = aux2->energy;
+
+    // pop it from the stack by freeing its memory
     freeTop(pathstack);
 
+    // check the recursion's stop condition
     if(stackpos == 1){        
+        
+        // when the first cell of the path is reached, print the cell
+        // free the auxiliary variable and return to the previous call
         fprintf(fpOut, "%d %d %d\n", aux1->row, aux1->col, aux1->energy);
         free(aux1);
         return;
@@ -1433,11 +1444,14 @@ void free_reduced_map(ProbInfo **prob_node){
 
     for(i = 0; i < (*prob_node)->reduced_map_lines; i++){
         for(j = 0; j < (*prob_node)->reduced_map_columns; j++){
+
+            //free each cell of the current line
             free((*prob_node)->reduced_map[i][j]);
         }
+        // free the entire line
         free((*prob_node)->reduced_map[i]);
     }
-    free((*prob_node)->reduced_map);
+    free((*prob_node)->reduced_map); // free the entire thing
     
     return;
 }
