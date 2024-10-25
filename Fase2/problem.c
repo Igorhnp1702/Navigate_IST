@@ -394,6 +394,8 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
             free(diamond_vect[i]);
         }
         free(diamond_vect);
+
+        free((*prob_node)->smaller_bests);
         
         return;
     }
@@ -1245,6 +1247,8 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 free(best_path_copy[i]);
             }
             free(best_path_copy);
+
+            free((*prob_node)->smaller_bests);
 
             fprintf(fpOut,"\n");
             return;
