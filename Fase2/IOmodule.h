@@ -19,8 +19,9 @@
  * 
  * Members:
  * 
- * -Input: File pointer for the input file
- * -Output: File pointer for the output file
+ * -Input:       File pointer for the input file
+ * -Output:      File pointer for the output file
+ * -outfile_str: Dynamicaly allocated string to store the name of the output file
  */
 typedef struct _files {
     FILE* Input;
@@ -52,7 +53,7 @@ char* malloc_str(size_t str_len);
  *  Description: Check if the string <filename> contains <extension> at the end of it
  * 
  *  Return: <filename> string contains <extension> => 1
- *           <filename> string does not contain <extension> => 0
+ *          <filename> string does not contain <extension> => 0
  * 
  */
 int check_ext(char *filename, char *extension);
@@ -62,14 +63,14 @@ int check_ext(char *filename, char *extension);
  *
  * Arguments:
  * 
- *  -FileName = Apontador de caracteres que contém o nome do ficheiro que se pretende modificar
- *  -New_FileName = Bloco de memória vazio onde se pretende colocar o nome modificado do ficheiro
- *  -FileName_len = Tamanho em bytes da string "FileName"
- *  -Extension_len = Tamanho em bytes da extensão que se pretende substituir
+ *  -FileName = Name of the file to modify
+ *  -New_FileName = Block of memory to place the modified name
+ *  -FileName_len = Size in bytes of the string "FileName"
+ *  -Extension_len = Size in bytes of the extension we want to replace
  * 
- * Description: Substitui a extensão de FileName por outra
+ * Description: Replaces the file's extension
  * 
- * Return: Apontador de caracteres come do ficheiro em questão, com uma extensão diferente
+ * Return: A string that contains the same file name, with a different extension
  */
 void change_filenames_extension(const char* FileName, char** New_FileName, size_t FileName_len, size_t Extension_len);
 
@@ -78,11 +79,11 @@ void change_filenames_extension(const char* FileName, char** New_FileName, size_
  *
  * Arguments:
  * 
- * -filename = Apontador de caracteres que contém o nome de um ficheiro
+ * -filename = name of the file to open
  * 
- * Description: Abre o ficheiro "filename" em modo de leitura
+ * Description: Opens "filename" in read mode
  * 
- * Return: Um apontador para o início do ficheiro "filename" onde só é possível ler informação
+ * Return: Pointer to a file in read mode
  */
 FILE* Open_Read_File(char* filename);
 
@@ -91,11 +92,11 @@ FILE* Open_Read_File(char* filename);
  *
  * Arguments:
  * 
- * -filename = Apontador de caracteres que contém o nome de um ficheiro
+ * -filename = name of teh file to open
  * 
- * Description: Abre o ficheiro "filename" em modo de escrita
+ * Description: Opens "filename" in write mode
  * 
- * Return: Um apontador para o início do ficheiro "filename" onde só é possível escrever informação
+ * Return: Pointer to a file in write mode
  */
 FILE* Open_Write_File(char* filename);
 
@@ -104,11 +105,11 @@ FILE* Open_Write_File(char* filename);
  *
  * Arguments:
  * 
- * -Input_Filename = Nome de um ficheiro de entrada
+ * -Input_Filename = Name of an input file
  * 
- * Description/Return: Cria um bloco de memória com um apontador para o ficheiro de entrada e 
- * um para o de saída. Esta função faz questão de verificar se a extensão do ficheiro de entrada
- * está correta ou não
+ * Description/Return: Creates and returns a block of memory
+ * with the file pointer to the input file and the file pointer
+ * to the output file
  */
 Files *open_files(char* Input_Filename);
 
@@ -117,10 +118,11 @@ Files *open_files(char* Input_Filename);
  *
  * Arguments:
  * 
- *  -fblock = apontador para um bloco de memória que contém o apontador do 
- * ficheiro de entrada e o ficheiro de saída
+ *  -fblock = Pointer to a block of memory that possesses the pointers 
+ * to the input and output files
  * 
- * Description: Fecha os ficheiros presentes no bloco e liberta a sua memória
+ * Description: Closes the files in the block and frees the memory of
+ * the output file's string
  * 
  * Return: void
  */

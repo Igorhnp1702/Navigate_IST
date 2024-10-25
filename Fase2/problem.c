@@ -58,11 +58,12 @@ int read_problem(Files *fblock, ProbInfo **prob){
         int numbs_2_read_to_diamond;                        // number of integers to read from the file and save in the diamond's data structure 
         int numbs_2_read_to_reduced_map;                    // number of integers to store in the reduced map                
         int i, j;                                           // iterators
-        int distance;
+        int distance;                                       // temporary variable to store a Manhattan distance between two cells
         
-        (*prob)->max_pocket = 0;
-        (*prob)->last_max = 0;
+        (*prob)->max_pocket = 0;        
       
+        // check the portions of the diamond that are missing 
+
         if(radius >= dist_to_edge_R){
             columns_missing_R = abs(dist_to_edge_R - radius);
         }else columns_missing_R = 0;
@@ -102,7 +103,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
         //cells in the center column of the diamond
         numbs_2_read_to_diamond = 2 * radius + 1 - lines_missing_T - lines_missing_B;                    
 
-        // left side of the diamond 
+        // cells on the left side of the diamond 
         for(i = 1; i <= radius - columns_missing_L; i++){
             numbs_2_read_to_diamond += (2 * (radius-i) + 1 );
             if((lines_missing_T -  i) > 0) {
@@ -113,7 +114,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
             }            
         }
 
-        // right side of the diamond
+        // cells on the right side of the diamond
         for(i = 1; i <= radius - columns_missing_R; i++){ 
             numbs_2_read_to_diamond += (2 * (radius-i) + 1 );
             if((lines_missing_T -  i)> 0) {
@@ -124,10 +125,12 @@ int read_problem(Files *fblock, ProbInfo **prob){
             }           
         }
 
+        // initialize the limits of the reduced map
         (*prob)->reduced_map_columns = 2 * radius + 1 - (columns_missing_L + columns_missing_R);
         (*prob)->reduced_map_lines = 2 * radius + 1 - (lines_missing_B + lines_missing_T);
         (*prob)->diamond_size = numbs_2_read_to_diamond; 
 
+        // allocate memory for the reduced map
         if (numbs_2_read_to_diamond > 0){        
             (*prob)->reduced_map = (rm_cell***)calloc((*prob)->reduced_map_lines, sizeof(rm_cell**));
 
@@ -141,25 +144,20 @@ int read_problem(Files *fblock, ProbInfo **prob){
         }        
         
 
-        while (numbs_before_reduced_map_start != 0) //skip the useless numbers
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
+        while (numbs_before_reduced_map_start != 0 && fscanf(fblock->Input, "%d", &aux) == 1) //skip the useless numbers
+        {            
             numbs_before_reduced_map_start--;
             remaining_nums--;
         }
         column_tracker = first_cell_column;
         line_tracker = first_cell_line;
+        
+        /* Pass the necessary information from the file to memory */
 
         i = 0, j = 0;
-        /* Then, pass the information from the file to memory */
-        while (numbs_2_read_to_reduced_map != 0)
+        while (numbs_2_read_to_reduced_map != 0 && fscanf(fblock->Input, "%d", &aux) == 1)
         {            
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            
+                    
             remaining_nums--;            
 
             dist_Ctracker_center = abs(c_1 - column_tracker);
@@ -175,43 +173,39 @@ int read_problem(Files *fblock, ProbInfo **prob){
                     (*prob)->reduced_map[i][j]->col = column_tracker;                    
                     (*prob)->reduced_map[i][j]->inDiamond = 0;
                     (*prob)->reduced_map[i][j]->inStack = 0;
-                    (*prob)->reduced_map[i][j]->inSum_maxs = 1;
+                    (*prob)->reduced_map[i][j]->inSum_maxs = 0;
                     
                     
                     distance = dist(l_1, c_1, line_tracker, column_tracker);
                     
-                    if((distance <= radius) && (distance >= 0)){
+                    if((distance <= radius) && (distance >= 0)){ // belongs to the diamond
                         
                         (*prob)->reduced_map[i][j]->inDiamond = 1;                    
                         numbs_2_read_to_diamond--;
 
-                        if(distance == 0){
+                        if(distance == 0){ // coordinates of the starting cell in teh reduced map
                             (*prob)->reduced_map_l1 = i;
                             (*prob)->reduced_map_c1 = j;
                         }
                     }
                     
                     j++;
-                    if(j == (*prob)->reduced_map_columns){
+                    if(j == (*prob)->reduced_map_columns){ // carriage return, line feed in the reduced map
                         j = 0;
                         i++;
                     }
                 }
             }          
             column_tracker++;            
-            if(column_tracker > C){
+            if(column_tracker > C){ // carriage return, line feed in the original map
                 column_tracker = 1;                
                 line_tracker++;            
             }
         }
 
-        while (remaining_nums != 0) //skip the rest of the map
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            remaining_nums--;
-        }                
+        //skip the rest of the map
+        while (remaining_nums != 0 && fscanf(fblock->Input, "%d", &aux) == 1) remaining_nums--;
+        
     }
     return prob_flag;    
 }
@@ -219,7 +213,7 @@ int read_problem(Files *fblock, ProbInfo **prob){
 int check_prob(ProbInfo **prob, Files *fblock) {
 
     int remaining_nums = (*prob)->L * (*prob)->C;                 // remaining map cells to read from the file        
-    int aux = 0;
+    int aux = 0;                                                  // temporary variable
     int exit_signal = 0;                                          // 1 = read_problem() terminates earlier
 
     if (((*prob)->task) == -2){
@@ -230,58 +224,50 @@ int check_prob(ProbInfo **prob, Files *fblock) {
         (*prob)->task = 1;
     }
     else{
+        
         (*prob)->bad = 1; /* it's a bad problem */
+        
         exit_signal++;
-        while (remaining_nums != 0) // skip the map
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            remaining_nums--;
-        }  
+        
+        while (remaining_nums != 0 && fscanf(fblock->Input, "%d", &aux) == 1) remaining_nums--; // skip the map
+       
         return exit_signal;
     }
     
     /* if the initial energy is a non-positive number */
     if((*prob)->initial_energy <= 0){
+        
         (*prob)->bad = 1; /* it's a bad problem */        
+        
         exit_signal++;
-        while (remaining_nums != 0) // skip the map
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            remaining_nums--;
-        }  
+
+        while (remaining_nums != 0 && fscanf(fblock->Input, "%d", &aux) == 1) remaining_nums--; // skip the map
+         
         return exit_signal; 
     }
     
     /* if the number of steps is not valid */
     if((*prob)->k <= 0){
+        
         (*prob)->bad = 1; /* it's a bad problem */        
+        
         exit_signal++;
-        while (remaining_nums != 0) // skip the map
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            remaining_nums--;
-        }  
+        
+        while (remaining_nums != 0 && fscanf(fblock->Input, "%d", &aux) == 1) remaining_nums--; // skip the map
+        
         return exit_signal; 
     }
 
     /* if the start position is out of bounds */
     if((((*prob)->l_1 > (*prob)->L || (*prob)->l_1 <= 0) || 
     ((*prob)->c_1 > (*prob)->C || (*prob)->c_1 <= 0)) && (*prob)->bad == 0){
+        
         (*prob)->bad = 1; /* it's a bad problem */        
+        
         exit_signal++;
-        while (remaining_nums != 0) // skip the map
-        {
-            if(fscanf(fblock->Input, "%d", &aux)!= 1){
-                exit(0);
-            }
-            remaining_nums--;
-        }  
+        
+        while (remaining_nums != 0 && fscanf(fblock->Input, "%d", &aux) == 1) remaining_nums--; // skip the map
+        
         return exit_signal; 
     } 
     return exit_signal;
@@ -302,7 +288,7 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
                 (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);
         return;
     }
-    else{
+    else{ // incorrect problem variant
         fprintf(fpOut, "%d %d %d %d %d %d %d\n\n", 
                 (*prob_node)->L, (*prob_node)->C, (*prob_node)->task, (*prob_node)->l_1, 
                 (*prob_node)->c_1, (*prob_node)->k, (*prob_node)->initial_energy);            
@@ -313,17 +299,17 @@ void bad_prob_ans(FILE *fpOut, ProbInfo **prob_node){
 void t1_solver(FILE *fpOut, ProbInfo **prob_node){      
 
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path    
-    int distance = 0;            
-    int sum_positives = 0;
+    int distance = 0;                                      // auxiliary variable to store a Manhattan distance
+    int sum_positives = 0;                                 // sum of the highest positives in the array
     int step_counter = 0;                                  // steps taken
     int target = (*prob_node)->target_energy;              // target energy to achieve               
     int i, j, m;                                           // iterators
-    int path_found = 0;
+    int path_found = 0;                                    // flag that indicates whether a path was found or not
     int line_tracker = (*prob_node)->reduced_map_l1;       // line coordinate of the path's current endpoint
     int col_tracker = (*prob_node)->reduced_map_c1;        // column coordinate of the path's current endpoint   
     int *child_tracker;                                    // to keep track of the child to visit at each step of the path    
     stat_cell **diamond_vect;                              // array to store the diamond's cells in descending order    
-    Stackblock* pathStack;                                 // auxiliary stack to use for the DFS algorithm
+    Stackblock* pathStack;                                 // auxiliary stack for the DFS algorithm
 
     if((*prob_node)->k >= (*prob_node)->L * (*prob_node)->C){ // not allowed to have repeated cells in the path, therefore no solution
         
@@ -373,7 +359,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 
     for(i = 0; i < (*prob_node)->k; i++){
                             
-        if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is already smaller
+        if(diamond_vect[i]->energy <= 0 && sum_positives == 0){ // check if the sum of the positives is already smaller than the target
 
             sum_positives = (*prob_node)->sum_maxs + pocket;
             if(sum_positives < target){ // else, add the negatives                 
@@ -402,7 +388,7 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
         return;
     }
     
-    /* There is hope, initialize the stack */
+    /* Initialize the stack */
     
     pathStack = initializeStack((*prob_node)->k + 1, sizeof(rm_cell));
 
@@ -431,23 +417,24 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds
+                // Is it within the map's bounds?
                 if((0 <= line_tracker - 1 && line_tracker - 1 < (*prob_node)->reduced_map_lines) &&
                    (0 <= col_tracker && col_tracker < (*prob_node)->reduced_map_columns)){
 
-                    // check diamond bounds
+                    // Is it within the diamond's bounds?
 
                     distance = dist(line_tracker - 1, col_tracker, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance) && (distance <= (*prob_node)->k)){
                         
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack == 0){ 
                             
                             if(Thereishope(prob_node, &diamond_vect, 
                                            pocket + (*prob_node)->reduced_map[line_tracker - 1][col_tracker]->energy,
                                            target, (*prob_node)->k - step_counter - 1) == 1){
-                                                                        // push to stack and update variables
+                                
+                                // push to stack and update variables
                                 line_tracker--;
                                 step_counter++;
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));
@@ -464,17 +451,17 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds
+                // Is it within the map's bounds?
                 if((0 <= line_tracker && line_tracker < (*prob_node)->reduced_map_lines) &&
                 (0 <= col_tracker + 1 && col_tracker + 1 < (*prob_node)->reduced_map_columns)){
                     
-                    // check diamond bounds
+                    // Is it within the diamond's bounds?
 
                     distance = dist(line_tracker, col_tracker + 1, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance) && (distance <= (*prob_node)->k)){
                     
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack == 0){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -497,17 +484,17 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds            
+                // Is it within the map's bounds?            
                 if((0 <= line_tracker + 1 && line_tracker + 1 < (*prob_node)->reduced_map_lines) &&
                 (0 <= col_tracker && col_tracker < (*prob_node)->reduced_map_columns)){
                     
-                    // check diamond bounds
+                    // Is it within the diamond's bounds?
 
                     distance = dist(line_tracker + 1, col_tracker, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance) && (distance <= (*prob_node)->k)){
 
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack == 0){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -530,17 +517,17 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds
+                // Is it within the map's bounds?
                 if((0 <= line_tracker && line_tracker < (*prob_node)->reduced_map_lines) &&
                 (0 <= col_tracker - 1 && col_tracker - 1 < (*prob_node)->reduced_map_columns)){
                     
-                    // check diamond bounds                 
+                    // Is it within the diamond's bounds?                 
 
                     distance = dist(line_tracker, col_tracker - 1, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance ) && (distance <= (*prob_node)->k)){
 
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack == 0){
 
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -713,8 +700,8 @@ void t1_solver(FILE *fpOut, ProbInfo **prob_node){
 void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
 
     int pocket = (*prob_node)->initial_energy;             // energy tracker along the path            
-    int distance = 0;
-    int sum_positives = 0;
+    int distance = 0;                                      // auxiliary variable to compute the manhattan distance between two cells
+    int sum_positives = 0;                                 // sum of the highest positive cells within k steps
     int step_counter = 0;                                  // steps taken
     int target = 0;                                        // target energy to achieve (final energy of the best path so far)        
     int i, j, m;                                           // iterator
@@ -836,17 +823,17 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds
+                // Is it within the map's bounds?
                 if((0 <= line_tracker - 1 && line_tracker - 1 < (*prob_node)->reduced_map_lines) &&
                 (0 <= col_tracker && col_tracker < (*prob_node)->reduced_map_columns)){
 
-                    // check diamond bounds
+                    // Is it within the diamond's bounds?
 
                     distance = dist(line_tracker - 1, col_tracker, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance ) && (distance <= (*prob_node)->k)){
                         
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker - 1][col_tracker]->inStack == 0){ 
                             
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -870,17 +857,17 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds
+                // Is it within the map's bounds?
                 if((0 <= line_tracker && line_tracker < (*prob_node)->reduced_map_lines) &&
                    (0 <= col_tracker + 1 && col_tracker + 1 < (*prob_node)->reduced_map_columns)){
                     
-                    // check diamond bounds                    
+                    // Is it within the diamond's bounds?                    
 
                     distance = dist(line_tracker, col_tracker + 1, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance ) && (distance <= (*prob_node)->k)){
                     
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker][col_tracker + 1]->inStack == 0){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -904,17 +891,17 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds            
+                // Is it within the map's bounds?            
                 if((0 <= line_tracker + 1 && line_tracker + 1 < (*prob_node)->reduced_map_lines) &&
                 (0 <= col_tracker && col_tracker < (*prob_node)->reduced_map_columns)){
                     
-                    // check diamond bounds
+                    // Is it within the diamond's bounds?
 
                     distance = dist(line_tracker + 1, col_tracker, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance ) && (distance <= (*prob_node)->k)){
 
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker + 1][col_tracker]->inStack == 0){
                             
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -938,17 +925,17 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                 // indicate the next child to visit
                 child_tracker[step_counter]++;
 
-                // check map bounds
+                // Is it within the map's bounds?
                 if((0 <= line_tracker && line_tracker < (*prob_node)->reduced_map_lines) &&
                 (0 <= col_tracker - 1 && col_tracker - 1 < (*prob_node)->reduced_map_columns)){
                     
-                    // check diamond bounds
+                    // Is it within the diamond's bounds?
 
                     distance = dist(line_tracker, col_tracker - 1, (*prob_node)->reduced_map_l1, (*prob_node)->reduced_map_c1);
 
                     if((0 < distance ) && (distance <= (*prob_node)->k)){
 
-                        //check presence in stack
+                        //Is it inside the stack?
                         if((*prob_node)->reduced_map[line_tracker][col_tracker - 1]->inStack == 0){
 
                             if(Thereishope(prob_node, &diamond_vect, 
@@ -1227,17 +1214,26 @@ void copy_path(Stackblock **pathstack, int ***dest_vect, int position){
 
     rm_cell *aux1, *aux2;
 
+    // copy the top to an auxiliary block of memory
     aux1 = (rm_cell*)calloc(1, sizeof(rm_cell));
     aux2 = (rm_cell*)peekTop(pathstack);    
     aux1->row = aux2->row;
     aux1->col = aux2->col;
     aux1->energy = aux2->energy;
+
+    // pop it from the stack
     pop(pathstack);
+
+    //place it in the vector
     (*dest_vect)[position][0] = aux1->row;
     (*dest_vect)[position][1] = aux1->col;
     (*dest_vect)[position][2] = aux1->energy;
 
-    if(position == 0){
+    // check the recursion's stop condition
+    if(position == 0){    
+
+        // push the cell back to the stack, free the auxiliary variable and
+        // return to the previous call
 
         push(pathstack, (Item)aux1);
         free(aux1);
@@ -1256,16 +1252,22 @@ void insertionSort(stat_cell***arr, int left, int right) {
     stat_cell* temp = (stat_cell*)calloc(1, sizeof(stat_cell));
 
     for (int i = left + 1; i <= right; i++) {
+
+        // place the next cell in a temporary block
         temp->rm_row = (*arr)[i]->rm_row;
         temp->rm_col = (*arr)[i]->rm_col;
         temp->energy = (*arr)[i]->energy;
         int j = i - 1;
+
+        // while the cells on the left side of temp are smaller than temp
+        // move them to the right
         while (j >= left && (*arr)[j]->energy < temp->energy) {
             (*arr)[j + 1]->rm_row = (*arr)[j]->rm_row;
             (*arr)[j + 1]->rm_col = (*arr)[j]->rm_col;
             (*arr)[j + 1]->energy = (*arr)[j]->energy;
             j--;
         }
+        //insert temp in the right place
         (*arr)[j + 1]->rm_row = temp->rm_row;
         (*arr)[j + 1]->rm_col = temp->rm_col;
         (*arr)[j + 1]->energy = temp->energy;
@@ -1277,8 +1279,10 @@ void insertionSort(stat_cell***arr, int left, int right) {
 // Merge function to merge two sorted halves
 void merge(stat_cell***arr, int left, int mid, int right) {
     
-    int i, j, k;
-    int len1 = mid - left + 1, len2 = right - mid;
+    int i, j, k;                                    // iterators
+    int len1 = mid - left + 1, len2 = right - mid;  // sizes of the two halves
+
+    // Allocate memory for the two partitions
     
     stat_cell** leftArr = (stat_cell**)calloc(len1, sizeof(stat_cell*));
     for(i = 0; i < len1; i++){
@@ -1289,6 +1293,8 @@ void merge(stat_cell***arr, int left, int mid, int right) {
     for(i = 0; i < len2; i++){
         rightArr[i] = (stat_cell*)calloc(1, sizeof(stat_cell));
     }
+
+    // copy the memory from the array to the partitions
     
     for (i = 0; i < len1; i++){
      
@@ -1302,16 +1308,18 @@ void merge(stat_cell***arr, int left, int mid, int right) {
         rightArr[i]->rm_col = (*arr)[mid + 1 + i]->rm_col;
         rightArr[i]->energy = (*arr)[mid + 1 + i]->energy;
     }
-    i = 0, j = 0, k = left;
-    
+
+    // merge the two halves
+
+    i = 0, j = 0, k = left;    
     while (i < len1 && j < len2) {
-        if (leftArr[i]->energy >= rightArr[j]->energy){
+        if (leftArr[i]->energy >= rightArr[j]->energy){ // cell from the left partition goes first
 
             (*arr)[k]->rm_row = leftArr[i]->rm_row;
             (*arr)[k]->rm_col = leftArr[i]->rm_col;
             (*arr)[k]->energy = leftArr[i]->energy;
             i++;
-        } else {
+        } else {                                        // cell from the right partition goes first
             (*arr)[k]->rm_row = rightArr[j]->rm_row;
             (*arr)[k]->rm_col = rightArr[j]->rm_col;
             (*arr)[k]->energy = rightArr[j]->energy;
@@ -1320,7 +1328,9 @@ void merge(stat_cell***arr, int left, int mid, int right) {
         k++;
     }
 
-    while (i < len1) {
+    // if all the cells from the right partition were used, 
+    // fill the remaining spaces with the cells from the left partition
+    while (i < len1) { 
         
         (*arr)[k]->rm_row = leftArr[i]->rm_row;
         (*arr)[k]->rm_col = leftArr[i]->rm_col;
@@ -1329,6 +1339,8 @@ void merge(stat_cell***arr, int left, int mid, int right) {
         k++;
     }
 
+    // if all the cells from the left partition were used, 
+    // fill the remaining spaces with the cells from the right partition
     while (j < len2) {
         
         (*arr)[k]->rm_row = rightArr[j]->rm_row;
@@ -1337,6 +1349,8 @@ void merge(stat_cell***arr, int left, int mid, int right) {
         j++;
         k++;
     }
+
+    // free the auxiliary partitions
         
     for(i = 0; i < len1; i++){
         free(leftArr[i]);
@@ -1386,9 +1400,9 @@ int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int possible_poc
 
 int dist(int a_line, int a_column, int b_line, int b_column){
 
-    int line_dist = abs(a_line - b_line);
-    int column_dist = abs(a_column - b_column);
-    int steps = line_dist + column_dist;
+    int line_dist = abs(a_line - b_line);        // distance in the lines
+    int column_dist = abs(a_column - b_column);  // distance in the columns
+    int steps = line_dist + column_dist;         // Manhattan distance
 
     return steps;
 }

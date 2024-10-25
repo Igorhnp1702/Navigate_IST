@@ -72,9 +72,9 @@ int pop(Stackblock**);
  * 
  * -The memory address of the stack
  * 
- * Description: Frees s
+ * Description: Frees the stack
  * 
- * Return:
+ * Return: void
  */
 void freeStack(Stackblock**);
 
@@ -83,9 +83,11 @@ void freeStack(Stackblock**);
  * 
  * Arguments:
  * 
- * Description:
+ * -The memory address of the stack
  * 
- * Return:
+ * Description: Frees the memory at the top of the stack
+ * 
+ * Return: 1 if successful, 0 if not
  */
 int freeTop(Stackblock **);
 
@@ -94,9 +96,11 @@ int freeTop(Stackblock **);
  * 
  * Arguments:
  * 
- * Description:
+ * -The memory address of the stack
  * 
- * Return:
+ * Description: checks if the stack is empty
+ * 
+ * Return: 1 if empty, 0 if not
  */
 int isEmpty(Stackblock**);
 
@@ -105,9 +109,11 @@ int isEmpty(Stackblock**);
  * 
  * Arguments:
  * 
- * Description:
+ * -The memory address of the stack
  * 
- * Return:
+ * Description: checks if the stack if full
+ * 
+ * Return: 1 if full, 0 if not
  */
 int isFull(Stackblock**);
 
@@ -116,9 +122,9 @@ int isFull(Stackblock**);
  * 
  * Arguments:
  * 
- * Description:
+ * -The memory address of the stack
  * 
- * Return:
+ * Description/return: gets the current number of elements in the stack
  */
 int Stacklen(Stackblock**);
 
@@ -127,9 +133,9 @@ int Stacklen(Stackblock**);
  * 
  * Arguments:
  * 
- * Description:
+ * -The memory address of the stack
  * 
- * Return:
+ * Description/return: Gets the data at the top of the stack
  */
 Item peekTop(Stackblock**);
 

@@ -93,7 +93,7 @@ runall:
 	$(foreach F,$(FILES), ./navigate $(F);)
 
 timeall:
-	$(foreach F,$(FILES), echo $(F) ; time  -p ./navigate $(F) ; sleep 2 ;)
+	$(foreach F,$(FILES), echo $(F) ; time  -p ./navigate $(F) ; sleep 0.5 ;)
 
 clean: # clean object files	
 	rm *.o

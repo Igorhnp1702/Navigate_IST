@@ -15,12 +15,12 @@
 
 int main (int argc, char* argv[]){
 
-    /*Verifica o número de argumentos*/
+    /*Check the number of arguments*/
     if(argc !=2){
         return 0;
     }
 
-    /* Tenta abrir os ficheiros de entrada e de saída */
+    /* Try to open the files */
     Files *fblock; 
     fblock = open_files(argv[1]);
 
@@ -28,16 +28,19 @@ int main (int argc, char* argv[]){
         exit(0);
     }
     
-    /* Resolução de problemas */
+    /* Allocate memory for a problem */
     ProbInfo *problem;
-    int alert;
+    
     if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
         close_files(&fblock);
         free(fblock->outfile_str);
         free(fblock);
         exit(0);
     }
-    alert = read_problem(fblock, &problem);
+    
+    //As long as there's a problem to solve, keep processing the input file
+
+    int alert = read_problem(fblock, &problem);
 
     while(alert == 1){        
 
@@ -61,7 +64,7 @@ int main (int argc, char* argv[]){
         alert = read_problem(fblock, &problem);       
     }
     
-    /* Prepara para fechar o programa */
+    /* Free the remaining memory, close all files and exit */
     free_reduced_map(&problem);
     free(problem);
     close_files(&fblock);

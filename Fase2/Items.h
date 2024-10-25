@@ -11,9 +11,13 @@
 #define _Items_
 
 /*
- * Item
+ * Item data type
  *
- * Description: Abstract data type where the client can specify what the stack is going to hold
+ * Description: Abstract data type to help store elements of any kind
+ * 
+ * Note: With this void pointer, all the client needs to do is cast the 
+ * elements to be pushed to the stack to an Item an cast the elements read 
+ * from the stack to the desired pointer
  */
 
 typedef void* Item;
