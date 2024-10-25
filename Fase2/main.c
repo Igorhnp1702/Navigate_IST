@@ -50,7 +50,7 @@ int main (int argc, char* argv[]){
         else if(problem->task == 2){
             t2_solver(fblock->Output, &problem);
         }
-        free_prob_node_data(&problem); 
+        free_reduced_map(&problem); 
         free(problem);
         if((problem = (ProbInfo*)calloc(1, sizeof(ProbInfo))) == NULL){
             close_files(&fblock);
@@ -62,7 +62,7 @@ int main (int argc, char* argv[]){
     }
     
     /* Prepara para fechar o programa */
-    free_prob_node_data(&problem);
+    free_reduced_map(&problem);
     free(problem);
     close_files(&fblock);
     free(fblock->outfile_str);

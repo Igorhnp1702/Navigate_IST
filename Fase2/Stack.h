@@ -28,10 +28,10 @@ typedef struct _stackbox Stackblock;
  *
  * Arguments:
  * 
- * -the intended maximum size of the stack
- * -the size of each element to be sotred in the stack
+ * -Maximum number of elements in the stack
+ * -The size of each element to be sotred in the stack
  * 
- * Return: An empty stack of items, implemented as an array
+ * Return: Pointer to an empty stack
  */
 Stackblock* initializeStack(int, size_t);
 
@@ -41,10 +41,12 @@ Stackblock* initializeStack(int, size_t);
  * 
  * Arguments:
  * 
- * -The adress of the stack;
+ * -The adress of the stack
  * -The item to be pushed
  * 
- * Return: 1 if successfull, 0 if not
+ * Description: Adds Item to the top of the stack
+ * 
+ * Return: 1 if successful, 0 if not
  */
 int push(Stackblock**, Item);
 
@@ -56,9 +58,9 @@ int push(Stackblock**, Item);
  * 
  * -The memory adress of the stack
  * 
- * Description:
+ * Description: Removes the top of the stack
  * 
- * Return:
+ * Return: 1 if successful, 0 if not
  */
 int pop(Stackblock**);
 
@@ -68,7 +70,9 @@ int pop(Stackblock**);
  * 
  * Arguments:
  * 
- * Description:
+ * -The memory address of the stack
+ * 
+ * Description: Frees s
  * 
  * Return:
  */

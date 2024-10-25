@@ -13,8 +13,7 @@
 /*
  * rm_cell datatype
  *
- * Description: Block of memory that holds information about a cell
- * on the map
+ * Description: Block of memory that holds information about a cell.
  * 
  * Members:
  * 
@@ -25,7 +24,7 @@
  * -inDiamond: Is this cell inside the diamond or not? 0 = no; 1 = yes
  * -inSum:     Is this cell inside the field of view of the path? 0 = no; 1 = yes
  */
-typedef struct _rm_cell{    // reduced map cell 
+typedef struct _rm_cell{   
     
     int row;
     int col;
@@ -77,6 +76,7 @@ typedef struct _stat_cell{
  * -target_energy = 
  * 
  * Members related to auxiliary data:
+ * 
  * -reduced_map = 
  * -reduced_map_lines = 
  * -reduced_map_columns =
@@ -89,8 +89,7 @@ typedef struct _stat_cell{
  */
 
 typedef struct _prob_info{
-    
-    // problem parameters
+        
     int L;
     int C;
     int task;
@@ -99,8 +98,7 @@ typedef struct _prob_info{
     int k;
     int initial_energy;
     int target_energy;
-        
-    // problem data
+            
     rm_cell ***reduced_map;       
     int reduced_map_lines;
     int reduced_map_columns;
