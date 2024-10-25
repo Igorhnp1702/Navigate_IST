@@ -11,7 +11,7 @@ DEBUGFLAGS = -Wall -std=c99 -g
 BESTFLAGS = -Wall -std=c99 -O3 
 PROFFLAGS = -Wall -std=c99 -O3 -pg 
 
-FILES = $(shell ls ./MediumPool/*.maps)
+FILES = $(shell ls ./*/*.maps)
 VALG = valgrind --leak-check=full -s
 
 navigate: IOmodule.o Stack.o problem.o main.o    # default compilation

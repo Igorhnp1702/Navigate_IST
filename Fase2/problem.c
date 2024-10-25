@@ -981,8 +981,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                                 line_tracker--;
                                 step_counter++;
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));
-                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
                                 pocket += (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
+                                
                             }                                                                                                   
                         }
                     }
@@ -1014,9 +1015,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                                 // push to stack and update variables
                                 col_tracker ++;
                                 step_counter++;
-                                push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));
-                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
+                                push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));                                
                                 pocket += (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
                             }                                                                                                     
                         }
                     }
@@ -1048,8 +1049,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                                 line_tracker++;
                                 step_counter++;                                
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));
-                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
                                 pocket += (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
+                                
                             }                                                            
                         }
                     }
@@ -1082,8 +1084,9 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                                 col_tracker--;
                                 step_counter++;                                                        
                                 push(&pathStack, (Item)((*prob_node)->reduced_map[line_tracker][col_tracker]));
-                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
                                 pocket += (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
+                                (*prob_node)->reduced_map[line_tracker][col_tracker]->inStack = 1;
+                                
                             }
                         }
                     }
@@ -1507,6 +1510,7 @@ void t2_solver(FILE *fpOut, ProbInfo **prob_node) {
                                              [diamond_vect[(*prob_node)->smaller_bests[(*prob_node)->k - step_counter]]->rm_col]->isCounted = 1;
 
                 }
+                pocket -= (*prob_node)->reduced_map[line_tracker][col_tracker]->energy;
                 col_tracker++;
                 step_counter--;
             }
@@ -1735,6 +1739,13 @@ void timsort(stat_cell ***arr, int arrSize) {
 int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, 
                 int next_pocket, int target, int steps2take, int next_line, int next_col){
  
+    int i;
+
+    for(i = 0; i < (*prob_node)->diamond_size - 1; i++){
+        (*prob_node)->max_pocket = diamond_vect[i];
+    }
+    
+    
     if((*prob_node)->reduced_map[next_line][next_col]->inSum_maxs == 1 && // Is the next cell one of the max cells in the middle of sum_maxs?
        (*prob_node)->reduced_map[next_line][next_col]->isCounted == 1 ){
          
