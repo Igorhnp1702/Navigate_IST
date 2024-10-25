@@ -22,7 +22,8 @@
  * -energy:     The energy the cell possesses
  * -isStack:    Is this cell inside the stack/path? 0 = no; 1 = yes
  * -inDiamond:  Is this cell inside the diamond or not? 0 = no; 1 = yes
- * -inSum_maxs: Is this cell's energy value inside the upper bound? 0 = 0; 1 = yes
+ * -inSum_maxs: Is this cell's energy value inside the upper bound at the moment? 0 = no; 1 = yes
+ * -bests:      Was this cell added to the first upper bound calculated in the program? 0 = no; 1 = yes
  * -isCounted:  Is this cell's energy value inside the sum of the highest cells available? 0 = no; 1 = yes
  */
 typedef struct _rm_cell{   
@@ -33,6 +34,7 @@ typedef struct _rm_cell{
     int inDiamond;
     int inStack;
     int inSum_maxs;
+    int bests;
     int isCounted;   
 
 }rm_cell;
@@ -83,6 +85,8 @@ typedef struct _stat_cell{
  * -reduced_map_columns = number of columns of the reduced map
  * -reduced_map_l1 = line coordinate of the starting cell in the reduced map
  * -reduced_map_c1 = column coordinate of the starting cell in the reduced map
+ * -smaller_bests = array of positions in the diamond_vect to localize the smaller
+ * bests that were removed from the upper bound
  * -diamond_size = number of energy values in diamond_vect
  * -max_pocket = upper bound for the energy
  * -sum_maxs = sum of the k highest cells in the diamond
@@ -90,7 +94,6 @@ typedef struct _stat_cell{
  */
 typedef struct _prob_info{
         
-    
     int L; 
     int C;
     int task;
@@ -100,14 +103,14 @@ typedef struct _prob_info{
     int initial_energy;
     int target_energy;
                         
-    rm_cell ***reduced_map;       
+    rm_cell ***reduced_map;
+    int *smaller_bests;
     int reduced_map_lines;
     int reduced_map_columns;
     int reduced_map_l1;
     int reduced_map_c1;    
     int diamond_size;
-    int max_pocket;
-    int last_max;
+    int max_pocket;    
     int sum_maxs;  
     int bad;     
        

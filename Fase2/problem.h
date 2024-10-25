@@ -156,13 +156,15 @@ void timsort(stat_cell ***arr, int arrSize);
  * -possible_pocket = current pocket of energy plus the energy of the next cell to analyze in the path;
  * -target = value of energy to beat after k steps;
  * -steps2take = remaining steps to take to complete a valid path;
+ * -next_line = future line of the line tracker if we push the next cell in the tree search
+ * -next_column = future column of the column tracker if we push the next cell in the tree search
  * 
  * Description: Checks whether the next cell in the tree search should be added to the paths's stack or not;.
  * 
  * Return: 1 => The next cell can be added to the path's stack;
  *         0 => Don't push the next cell to the stack;
  */
-int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int possible_pocket, int target, int steps2take);
+int Thereishope(ProbInfo **prob_node, stat_cell***diamond_vect, int next_pocket, int target, int steps2take, int next_line, int next_column);
 
 /*
  * dist()
